@@ -1,0 +1,49 @@
+<div th:fragment="form">
+	<form th:action="@{/user/add}" th:object="${user}" method="post">
+
+		<!-- Username -->
+		<div class="mb-3">
+			<label class="form-label">Username</label>
+			<div class="input-group">
+				<span class="input-group-text"><i class="bi bi-person"></i></span> <input
+					type="text" th:field="*{username}" class="form-control"
+					placeholder="Enter username" required>
+			</div>
+		</div>
+
+		<!-- Password -->
+		<div class="mb-3">
+			<label class="form-label">Password</label>
+			<div class="input-group">
+				<span class="input-group-text"><i class="bi bi-lock"></i></span> <input
+					type="password" th:field="*{password}" class="form-control"
+					placeholder="Enter password" required>
+			</div>
+		</div>
+
+		<!-- Role -->
+		<div class="mb-3">
+			<label for="role" class="form-label">Role</label>
+			<div class="input-group">
+				<span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+				<select id="role" th:field="*{role}" class="form-select" required>
+					<option value="">-- Select Role --</option>
+					<option value="admin">Admin</option>
+					<option value="sale">Sale</option>
+					<option value="staff">Staff</option>
+				</select>
+			</div>
+		</div>
+
+		<!-- Buttons -->
+		<div class="d-flex justify-content-end mt-4 gap-2">
+			<button type="submit" class="btn btn-success">
+				<i class="bi bi-save me-1"></i> Save
+			</button>
+			<button type="button" class="btn btn-secondary"
+				data-bs-dismiss="modal">
+				<i class="bi bi-x-circle me-1"></i> Cancel
+			</button>
+		</div>
+	</form>
+</div>

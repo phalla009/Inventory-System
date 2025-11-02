@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Product Dashboard</title>
+<!-- Favicon / Logo -->
+<link rel="icon" type="image/png" href="/images/kr.png">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+	rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<style>
+.dashboard-card {
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	text-align: center;
+}
+
+.dashboard-card h2 {
+	font-size: 2rem;
+	margin: 0;
+}
+
+.dashboard-card .change {
+	font-size: 0.875rem;
+	color: white;
+	margin-top: 0.25rem;
+}
+
+.charts {
+	margin-top: 2rem;
+}
+</style>
+</head>
+<body>
+	<div class="d-flex">
+
+		<!-- Sidebar -->
+		<div th:replace="fragments/sidebar :: sidebar"></div>
+
+		<!-- Main Content -->
+		<div class="content flex-grow-1 p-4">
+			<h1 class="mb-4">
+				<i class="bi bi-box-seam me-2"></i> Product Dashboard
+			</h1>
+
+			<!-- <div class="d-flex gap-3 mb-4">
+				<input type="text" class="form-control"
+					placeholder="Auto date range"> <select class="form-select">
+					<option value="">All Categories</option>
+					<th:block th:each="cat : ${categories}">
+						<option th:value="${cat.id}" th:text="${cat.name}"></option>
+					</th:block>
+				</select> <select class="form-select">
+					<option value="">All Suppliers</option>
+					<th:block th:each="sup : ${suppliers}">
+						<option th:value="${sup.id}" th:text="${sup.name}"></option>
+					</th:block>
+				</select>
+			</div> -->
+
+			<!-- Dashboard Stats -->
+			<div class="row g-4">
+				<div class="col-md-3">
+					<div class="dashboard-card bg-primary text-white">
+						<h5>Total Products</h5>
+						<h2 th:text="${products != null ? products.size() : 0}"></h2>
+
+						<!-- 		<h2 th:text="${products.size()}">0</h2> -->
+						<div class="change">↑ 20% vs previous 30 days</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="dashboard-card bg-success text-white">
+						<h5>Total Quantity</h5>
+						<h2 th:text="${totalQuantity != null ? totalQuantity : 0}">0</h2>
+						<div class="change">↑ 15 vs previous 30 days</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="dashboard-card bg-warning text-white">
+						<h5>Total Value</h5>
+						<h2 th:text="${totalValue != null ? totalValue : 0.0}">0.00</h2>
+						<div class="change">↑ 7.3% vs previous 30 days</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="dashboard-card bg-info text-white">
+						<h5>Growth Rate</h5>
+						<h2>99.99%</h2>
+						<div class="change">↑ 1.3% vs previous 30 days</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Charts -->
+			<div class="charts row mt-4 g-4">
+				<div class="col-md-6">
+					<div class="card p-3">
+						<h5>Stock Value by Category</h5>
+						<canvas id="categoryChart" height="250"></canvas>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="card p-3">
+						<h5>Sales per Supplier</h5>
+						<canvas id="supplierChart" height="250"></canvas>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+		const ctx1 = document.getElementById('categoryChart').getContext('2d');
+		const categoryChart = new Chart(ctx1, {
+			type : 'line',
+			data : {
+				labels : [ 'Jan', 'Feb', 'Mar', 'Apr', 'May' ],
+				datasets : [ {
+					label : 'Category A',
+					data : [ 1200, 1300, 1250, 1400, 1350 ],
+					borderColor : 'blue',
+					fill : false
+				}, {
+					label : 'Category B',
+					data : [ 1100, 1150, 1200, 1250, 1300 ],
+					borderColor : 'green',
+					fill : false
+				}, {
+					label : 'Category C',
+					data : [ 900, 950, 1000, 1100, 1080 ],
+					borderColor : 'purple',
+					fill : false
+				} ]
+			},
+			options : {
+				responsive : true
+			}
+		});
+
+		const ctx2 = document.getElementById('supplierChart').getContext('2d');
+		const supplierChart = new Chart(ctx2,
+				{
+					type : 'bar',
+					data : {
+						labels : [ 'Supplier A', 'Supplier B', 'Supplier C',
+								'Supplier D' ],
+						datasets : [ {
+							label : 'Sales',
+							data : [ 2000, 1800, 1500, 2200 ],
+							backgroundColor : [ 'lightblue', 'blue',
+									'darkblue', 'navy' ]
+						} ]
+					},
+					options : {
+						responsive : true
+					}
+				});
+	</script>
+
+</body>
+</html>
