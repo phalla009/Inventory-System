@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Edit Product</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+	rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<!-- Favicon / Logo -->
+<link rel="icon" type="image/png" href="/images/kr.png">
+</head>
+<body>
+
+	<!-- Sidebar -->
+	<div th:replace="fragments/sidebar :: sidebar"></div>
+
+	<div class="container table-container">
+		<h1 class="mb-4 text-center">Edit Product</h1>
+
+		<!-- Success / Error Messages -->
+		<div th:if="${successMessage}"
+			class="alert alert-success alert-dismissible fade show text-center">
+			<span th:text="${successMessage}"></span>
+			<button type="button" class="btn-close" data-bs-dismiss="alert"
+				aria-label="Close"></button>
+		</div>
+		<div th:if="${errorMessage}"
+			class="alert alert-danger alert-dismissible fade show text-center">
+			<span th:text="${errorMessage}"></span>
+			<button type="button" class="btn-close" data-bs-dismiss="alert"
+				aria-label="Close"></button>
+		</div>
+
+		<form th:action="@{'/products/edit/' + ${product.id}}"
+			th:object="${product}" method="post">
+
+			<div class="mb-3">
+				<label class="form-label">Product Name</label> <input type="text"
+					th:field="*{name}" class="form-control"
+					placeholder="Enter product name" required>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6 mb-3">
+					<label class="form-label">Quantity</label> <input type="number"
+						th:field="*{quantity}" id="quantityInput" class="form-control"
+						min="0" placeholder="Enter quantity" required>
+				</div>
+				<div class="col-md-6 mb-3">
+					<label class="form-label">Price</label> <input type="number"
+						th:field="*{price}" class="form-control" step="0.01" min="0"
+						placeholder="Enter price" required>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6 mb-3">
+					<label class="form-label">Category</label> <select
+						name="category_id" class="form-select" required>
+						<option value="" disabled>Select category</option>
+						<option th:each="cat : ${categories}" th:value="${cat.id}"
+							th:text="${cat.name}"
+							th:selected="${product.category != null} ? ${product.category.id} == ${cat.id} : false">
+						</option>
+					</select>
+				</div>
+				<div class="col-md-6 mb-3">
+					<label class="form-label">Supplier</label> <select
+						name="supplier_id" class="form-select" required>
+						<option value="" disabled>Select supplier</option>
+						<option th:each="sup : ${suppliers}" th:value="${sup.id}"
+							th:text="${sup.name}"
+							th:selected="${product.supplier != null} ? ${product.supplier.id} == ${sup.id} : false">
+						</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Description</label>
+				<textarea th:field="*{description}" class="form-control" rows="3"
+					placeholder="Enter product description" style="resize: none;"></textarea>
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Status</label> <select
+					th:field="*{status}" id="statusSelect" class="form-select">
+					<option value="Active">Active</option>
+					<option value="Inactive">Inactive</option>
+					<option value="Out of Stock">Out of Stock</option>
+				</select>
+			</div>
+
+			<div class="d-flex justify-content-center mt-4 gap-3">
+				<button type="submit" class="btn btn-success">
+					<i class="bi bi-save me-1"></i> Update
+				</button>
+				<a th:href="@{/products}" class="btn btn-secondary"> <i
+					class="bi bi-arrow-left-circle me-1"></i> Back
+				</a>
+			</div>
+
+		</form>
+	</div>
+
+	<!-- JS for status based on quantity -->
+	<script>
+		const qtyInput = document.getElementById("quantityInput");
+		const statusSelect = document.getElementById("statusSelect");
+
+		function updateStatus() {
+			const qty = parseInt(qtyInput.value) || 0;
+			const selectedStatus = statusSelect.value;
+
+			if (qty === 0) {
+				statusSelect.value = "Out of Stock";
+				statusSelect.disabled = true;
+			} else {
+				statusSelect.disabled = false;
+				// Keep user's selected Active/Inactive if not Out of Stock
+				if (selectedStatus !== "Out of Stock") {
+					statusSelect.value = selectedStatus;
+				} else {
+					statusSelect.value = "Active";
+				}
+			}
+		}
+
+		qtyInput.addEventListener("input", updateStatus);
+		statusSelect.addEventListener("change", updateStatus);
+		window.addEventListener("load", updateStatus);
+	</script>
+
+	<!-- Bootstrap JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Auto-hide alert after 3 seconds -->
+	<script>
+		setTimeout(() => {
+			const alert = document.querySelector('.alert');
+			if (alert) {
+				const bsAlert = new bootstrap.Alert(alert);
+				bsAlert.close();
+			}
+		}, 3000);
+	</script>
+
+</body>
+</html>

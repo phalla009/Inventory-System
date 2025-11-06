@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<!-- Favicon / Logo -->
+<link rel="icon" type="image/png" href="/images/kr.png">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+	rel="stylesheet">
+
+<style>
+body {
+	background: linear-gradient(135deg, #000000, #1a1a1a, #2c2c2c);
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Poppins', sans-serif;
+	color: #fff;
+}
+
+.login-wrapper {
+	display: flex;
+	width: 900px;
+	height: 550px;
+	background-color: #fff;
+	border-radius: 15px;
+	overflow: hidden;
+	box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Left: Login form */
+.login-form {
+	width: 50%;
+	padding: 40px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background-color: #ffffff;
+	color: #000;
+}
+
+/* Right: Welcome image & text */
+.login-image {
+	width: 50%;
+	background: linear-gradient(to bottom right, #000000, #2b2b2b, #3d3d3d);
+	color: #ffffff;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	padding: 40px;
+}
+
+.login-image img {
+	width: 200px;
+	margin-bottom: 20px;
+	filter: brightness(0.9);
+}
+
+.login-image h2 {
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.login-image p {
+	font-size: 1rem;
+	opacity: 0.9;
+}
+
+/* Input & button styling */
+.form-control, .form-select {
+	border-radius: 8px;
+}
+
+.btn-primary {
+	background-color: #000;
+	border: none;
+}
+
+.btn-primary:hover {
+	background-color: #333;
+}
+
+/* Responsive */
+@media ( max-width : 768px) {
+	.login-wrapper {
+		flex-direction: column;
+		width: 95%;
+		height: auto;
+	}
+	.login-form, .login-image {
+		width: 100%;
+	}
+}
+</style>
+</head>
+<body>
+
+	<div class="login-wrapper">
+
+		<!-- Left: Login Form -->
+		<div class="login-form">
+			<h2 class="text-center mb-4">Login</h2>
+
+			<!-- Error message -->
+			<div th:if="${errorMessage}" class="alert alert-danger text-center">
+				<span th:text="${errorMessage}"></span>
+			</div>
+
+			<form th:action="@{/login}" method="post">
+				<!-- Username -->
+				<div class="mb-3">
+					<label for="username" class="form-label">Username</label>
+					<div class="input-group">
+						<span class="input-group-text"><i class="bi bi-person"></i></span>
+						<input type="text" id="username" name="username"
+							class="form-control" placeholder="Enter username" required>
+					</div>
+				</div>
+
+				<!-- Password -->
+				<div class="mb-3">
+					<label for="password" class="form-label">Password</label>
+					<div class="input-group">
+						<span class="input-group-text"><i class="bi bi-lock"></i></span> <input
+							type="password" id="password" name="password"
+							class="form-control" placeholder="Enter password" required>
+					</div>
+				</div>
+
+				<!-- Role -->
+				<div class="mb-3">
+					<label for="role" class="form-label">Select Role</label>
+					<div class="input-group">
+						<span class="input-group-text"> <i
+							class="bi bi-person-badge"></i>
+						</span> <select id="role" name="role" class="form-select" required>
+							<option value="" disabled selected>Select your role</option>
+							<option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+						</select>
+					</div>
+				</div>
+
+
+				<!-- Submit -->
+				<div class="d-grid mt-4">
+					<button type="submit" class="btn btn-primary">
+						<i class="bi bi-box-arrow-in-right me-1"></i> Login
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- Right: Image and Welcome Text -->
+		<div class="login-image">
+			<img src="https://cdn-icons-png.flaticon.com/512/4202/4202849.png"
+				alt="Welcome">
+			<h2>Welcome Back!</h2>
+			<p>Access your dashboard and manage your work efficiently.</p>
+		</div>
+
+	</div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
