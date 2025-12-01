@@ -42,10 +42,11 @@ public class SaleController {
 
 	// ✅ 3. Save new sale with stock update
 	@PostMapping("/save")
-	public String saveSale(@ModelAttribute("sale") Sales sale, RedirectAttributes redirectAttributes) {
+	public String saveSale(@ModelAttribute("sale") Sales sale, @RequestParam("productId") Long productId,
+			RedirectAttributes redirectAttributes) {
 
 		// Fetch the full product from DB
-		Product product = productRepository.findById(sale.getProduct().getId())
+		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Product ID"));
 
 		// Check stock
@@ -60,7 +61,7 @@ public class SaleController {
 		productRepository.save(product);
 
 		// Set sale details
-		sale.setProduct(product); // assign fully loaded product
+		sale.setProduct(product);
 		sale.setCreated_at(LocalDateTime.now());
 		sale.setSubtotal(sale.getQuantity() * sale.getPrice());
 		saleRepository.save(sale);
@@ -92,7 +93,7 @@ public class SaleController {
 				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Product ID"));
 
 		// Calculate stock difference
-		int qtyDiff = saleDetails.getQuantity() - sale.getQuantity(); // new quantity - old quantity
+		int qtyDiff = saleDetails.getQuantity() - sale.getQuantity();
 		int newQty = product.getQuantity() - qtyDiff;
 		if (newQty < 0) {
 			redirectAttributes.addFlashAttribute("errorMessage", "❌ Not enough stock!");
@@ -106,7 +107,7 @@ public class SaleController {
 		// Update sale
 		sale.setSale_date(saleDetails.getSale_date());
 		sale.setCustomer_name(saleDetails.getCustomer_name());
-		sale.setProduct(product); // assign fully loaded product
+		sale.setProduct(product);
 		sale.setQuantity(saleDetails.getQuantity());
 		sale.setPrice(saleDetails.getPrice());
 		sale.setSubtotal(saleDetails.getQuantity() * saleDetails.getPrice());
@@ -130,5 +131,14 @@ public class SaleController {
 		saleRepository.delete(sale);
 		redirectAttributes.addFlashAttribute("successMessage", "🗑️ Sale deleted successfully!");
 		return "redirect:/sales";
+	}
+
+	// 7. Show printable receipt for a sale
+	@GetMapping("/print/{id}")
+	public String printSale(@PathVariable("id") Long id, Model model) {
+		Sales sale = saleRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
+		model.addAttribute("sale", sale);
+		return "sales/receipt";
 	}
 }

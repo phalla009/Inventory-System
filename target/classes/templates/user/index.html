@@ -2,13 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Users</title>
+<title>Users-Listing</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 	rel="stylesheet">
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
 	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <link rel="stylesheet" href="/css/style.css">
 <!-- Favicon / Logo -->
 <link rel="icon" type="image/png" href="/images/kr.png">
@@ -24,11 +27,38 @@
 				<i class="bi bi-person-lines-fill me-2"></i>Users Listing
 			</h1>
 
-			<!-- Success/Error messages -->
-			<div th:if="${successMessage}" class="alert alert-success"
-				role="alert" th:text="${successMessage}"></div>
-			<div th:if="${errorMessage}" class="alert alert-danger" role="alert"
-				th:text="${errorMessage}"></div>
+			<!-- Toast Container -->
+			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+				<!-- Error Toast -->
+				<div th:if="${errorMessage}"
+					class="toast align-items-center text-bg-danger border-0 show"
+					role="alert" aria-live="assertive" aria-atomic="true"
+					data-bs-delay="3000">
+					<div class="d-flex">
+						<div class="toast-body" th:text="${errorMessage}">
+							<!-- Error message will appear here -->
+						</div>
+						<button type="button"
+							class="btn-close btn-close-white me-2 m-auto"
+							data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+				</div>
+
+				<!-- Success Toast -->
+				<div th:if="${successMessage}"
+					class="toast align-items-center text-bg-success border-0 show"
+					role="alert" aria-live="assertive" aria-atomic="true"
+					data-bs-delay="3000">
+					<div class="d-flex">
+						<div class="toast-body" th:text="${successMessage}">
+							<!-- Success message will appear here -->
+						</div>
+						<button type="button"
+							class="btn-close btn-close-white me-2 m-auto"
+							data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+				</div>
+			</div>
 
 			<!-- Add User Button -->
 			<button class="btn btn-primary mb-3" data-bs-toggle="modal"
@@ -47,20 +77,23 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="user : ${users}">
+					<tr th:each="user : ${users}" ​ class="text-center">
 						<td th:text="${user.id}"></td>
-						<td th:text="${user.username}"></td>
+						<td style="display: flex; align-items: center;"><i
+							class="fas fa-user me-2"></i> <span th:text="${user.username}"></span>
+						</td>
+
 						<td th:text="${user.role}"></td>
 						<td>
 							<!-- Edit -->
 							<button class="btn btn-warning btn-sm" data-bs-toggle="modal"
 								data-bs-target="#editUserModal" th:attr="data-id=${user.id}">
-								<i class="bi bi-pencil-square"></i> Edit
+								<i class="bi bi-pencil-square"></i>
 							</button> <!-- Delete -->
 							<button class="btn btn-danger btn-sm" data-bs-toggle="modal"
 								data-bs-target="#deleteModal"
 								th:attr="data-id=${user.id}, data-name=${user.username}">
-								<i class="bi bi-trash"></i> Delete
+								<i class="bi bi-trash"></i>
 							</button>
 						</td>
 					</tr>
@@ -124,7 +157,9 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header bg-danger text-white">
-					<h5 class="modal-title">Confirm Delete</h5>
+					<h5 class="modal-title">
+						<i class="bi bi-exclamation-triangle"></i> Confirm Delete
+					</h5>
 					<button type="button" class="btn-close btn-close-white"
 						data-bs-dismiss="modal"></button>
 				</div>
@@ -156,67 +191,75 @@
 	</div>
 
 	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+	</script>
 
 	<!-- Add/Edit/Delete AJAX -->
 	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-
-    // ---- ADD User ----
-    const addUserModal = document.getElementById('addUserModal');
-    const addBody = document.getElementById('addUserModalBody');
-    addUserModal.addEventListener('show.bs.modal', () => {
-        fetch('/user/add-form')
-            .then(res => res.text())
-            .then(html => addBody.innerHTML = html)
-            .catch(() => addBody.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>');
-    });
-    addUserModal.addEventListener('hidden.bs.modal', () => {
-        addBody.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>`;
-    });
-
-    // ---- EDIT User ----
-    const editUserModal = document.getElementById('editUserModal');
-	const editBody = document.getElementById('editUserModalBody');
-	
-	editUserModal.addEventListener('show.bs.modal', function(event) {
-	    const id = event.relatedTarget.getAttribute('data-id');
-	    fetch(`/user/edit-form/${id}`)
-	        .then(res => res.text())
-	        .then(html => editBody.innerHTML = html)
-	        .catch(() => editBody.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>');
-	});
-	
-	editUserModal.addEventListener('hidden.bs.modal', () => {
-	    editBody.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-warning"></div></div>`;
-	});
-
-    // ---- DELETE User ----
-    const deleteModal = document.getElementById('deleteModal');
-    const deleteForm = document.getElementById('deleteForm');
-    const deleteUserName = document.getElementById('deleteUserName');
-    deleteModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const id = button.getAttribute('data-id');
-        const name = button.getAttribute('data-name');
-        deleteUserName.textContent = name;
-        deleteForm.action = `/user/delete/${id}`;
-    });
-
-});
-</script>
+		document.addEventListener('DOMContentLoaded', function() {
+		
+		    // ---- ADD User ----
+		    const addUserModal = document.getElementById('addUserModal');
+		    const addBody = document.getElementById('addUserModalBody');
+		    addUserModal.addEventListener('show.bs.modal', () => {
+		        fetch('/user/add-form')
+		            .then(res => res.text())
+		            .then(html => addBody.innerHTML = html)
+		            .catch(() => addBody.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>');
+		    });
+		    addUserModal.addEventListener('hidden.bs.modal', () => {
+		        addBody.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>`;
+		    });
+		
+		    // ---- EDIT User ----
+		    const editUserModal = document.getElementById('editUserModal');
+			const editBody = document.getElementById('editUserModalBody');
+			
+			editUserModal.addEventListener('show.bs.modal', function(event) {
+			    const id = event.relatedTarget.getAttribute('data-id');
+			    fetch(`/user/edit-form/${id}`)
+			        .then(res => res.text())
+			        .then(html => editBody.innerHTML = html)
+			        .catch(() => editBody.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>');
+			});
+			
+			editUserModal.addEventListener('hidden.bs.modal', () => {
+			    editBody.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-warning"></div></div>`;
+			});
+		
+		    // ---- DELETE User ----
+		    const deleteModal = document.getElementById('deleteModal');
+		    const deleteForm = document.getElementById('deleteForm');
+		    const deleteUserName = document.getElementById('deleteUserName');
+		    deleteModal.addEventListener('show.bs.modal', function(event) {
+		        const button = event.relatedTarget;
+		        const id = button.getAttribute('data-id');
+		        const name = button.getAttribute('data-name');
+		        deleteUserName.textContent = name;
+		        deleteForm.action = `/user/delete/${id}`;
+		    });
+		});
+	</script>
 	<script>
-// Auto-hide success/error messages after 3 seconds
-document.addEventListener('DOMContentLoaded', function() {
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-        setTimeout(() => {
-            const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-            bsAlert.close();
-        }, 3000); // 3000ms = 3 seconds
-    });
-});
-</script>
-
+		// Auto-hide success/error messages after 3 seconds
+		document.addEventListener('DOMContentLoaded', function() {
+		    const alerts = document.querySelectorAll('.alert');
+		    alerts.forEach(alert => {
+		        setTimeout(() => {
+		            const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+		            bsAlert.close();
+		        }, 3000); // 3000ms = 3 seconds
+		    });
+		});
+	</script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+		    toastElList.map(function (toastEl) {
+		        var toast = new bootstrap.Toast(toastEl)
+		        toast.show()
+		    })
+		});
+	</script>
 </body>
 </html>

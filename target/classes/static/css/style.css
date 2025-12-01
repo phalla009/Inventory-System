@@ -128,3 +128,31 @@ h1 {
 	color: red;
 	font-weight: 600;
 }
+
+/* Button hover effects */
+.btn-warning:hover {
+	background-color: #e0a800 !important;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(224, 168, 0, 0.3);
+	transition: all 0.2s ease-in-out;
+}
+
+.btn-danger:hover {
+	background-color: #c82333 !important;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(200, 35, 51, 0.3);
+	transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+	background-color: #0056b3 !important;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 86, 179, 0.3);
+	transition: all 0.2s ease-in-out;
+}
+
+/* Smooth hover for Add New User button */
+.btn.btn-primary.mb-3:hover i {
+	transform: rotate(10deg);
+	transition: transform 0.2s ease-in-out;
+}

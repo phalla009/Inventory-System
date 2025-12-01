@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Products</title>
+<title>Products-Listing</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -28,24 +28,47 @@
 				<i class="bi bi-box-seam me-2"></i> Products Listing
 			</h1>
 
-			<div th:if="${errorMessage}"
-				class="alert alert-danger alert-dismissible fade show" role="alert">
-				<span th:text="${errorMessage}"></span>
-				<button type="button" class="btn-close" data-bs-dismiss="alert"
-					aria-label="Close"></button>
-			</div>
-			<!-- ✅ Success Message -->
-			<div th:if="${successMessage}"
-				class="alert alert-success alert-dismissible fade show text-center"
-				role="alert">
-				<span th:text="${successMessage}"></span>
-				<button type="button" class="btn-close" data-bs-dismiss="alert"
-					aria-label="Close"></button>
+			<!-- Toast Container -->
+			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+				<!-- Error Toast -->
+				<div th:if="${errorMessage}"
+					class="toast align-items-center text-bg-danger border-0 show"
+					role="alert" aria-live="assertive" aria-atomic="true"
+					data-bs-delay="3000">
+					<div class="d-flex">
+						<div class="toast-body" th:text="${errorMessage}">
+							<!-- Error message will appear here -->
+						</div>
+						<button type="button"
+							class="btn-close btn-close-white me-2 m-auto"
+							data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+				</div>
+
+				<!-- Success Toast -->
+				<div th:if="${successMessage}"
+					class="toast align-items-center text-bg-success border-0 show"
+					role="alert" aria-live="assertive" aria-atomic="true"
+					data-bs-delay="3000">
+					<div class="d-flex">
+						<div class="toast-body" th:text="${successMessage}">
+							<!-- Success message will appear here -->
+						</div>
+						<button type="button"
+							class="btn-close btn-close-white me-2 m-auto"
+							data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+				</div>
 			</div>
 
-			<a href="/products/add" class="btn btn-primary mb-3"> <i
+
+			<!-- 	<a href="/products/add" class="btn btn-primary mb-3"> <i
 				class="bi bi-plus-circle me-1"></i> Add Product
-			</a>
+			</a> -->
+			<button type="button" class="btn btn-primary mb-3"
+				data-bs-toggle="modal" data-bs-target="#addProductModal">
+				<i class="bi bi-plus-circle me-1"></i> Add Product
+			</button>
 
 			<table class="table table-bordered table-hover align-middle">
 				<thead class="table-dark">
@@ -67,7 +90,6 @@
 						<td th:text="${product.name}"></td>
 						<td th:text="${product.quantity}"></td>
 						<td th:text="${product.price} + ' $'"></td>
-
 						<td
 							th:text="${product.category != null ? product.category.name : 'N/A'}"></td>
 						<td
@@ -79,19 +101,72 @@
 						</span> <span th:text="${product.status}" class="ms-1"></span></td>
 						<td
 							th:text="${product.create_at != null ? #temporals.format(product.create_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-						<td><a th:href="@{'/products/edit/' + ${product.id}}"
-							class="btn btn-warning btn-sm"> <i
-								class="bi bi-pencil-square"></i> Edit
-						</a>
+						<td>
+							<button type="button" class="btn btn-warning btn-sm"
+								data-bs-toggle="modal" data-bs-target="#editProductModal"
+								th:attr="data-id=${product.id}">
+								<i class="bi bi-pencil-square"></i>
+							</button>
 							<button type="button" class="btn btn-danger btn-sm"
 								data-bs-toggle="modal" data-bs-target="#deleteModal"
 								th:attr="data-id=${product.id}, data-name=${product.name}">
-								<i class="bi bi-trash"></i> Delete
-							</button></td>
+								<i class="bi bi-trash"></i>
+							</button>
+						</td>
 					</tr>
 				</tbody>
 
 			</table>
+		</div>
+	</div>
+
+	<!-- Add Product Modal -->
+	<div class="modal fade" id="addProductModal" tabindex="-1"
+		aria-labelledby="addProductModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<div
+					class="modal-header bg-primary text-white justify-content-center position-relative">
+					<h5 class="modal-title text-center" id="addProductModalLabel">
+						<i class="bi bi-plus-circle"></i> Add New Product
+					</h5>
+
+				</div>
+
+				<div class="modal-body" id="addProductForm">
+					<div class="text-center py-4">
+						<div class="spinner-border text-primary"></div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Edit Product Modal -->
+	<div class="modal fade" id="editProductModal" tabindex="-1"
+		aria-labelledby="editProductModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div
+					class="modal-header text-dark justify-content-center position-relative"
+					style="background-color: #ffc107;">
+					<h5 class="modal-title text-center" id="editProductModalLabel">
+						<i class="bi bi-pencil-square"></i> Edit Product
+					</h5>
+				</div>
+
+
+				<!-- Modal Body -->
+				<div class="modal-body" id="editProductForm">
+					<!-- Spinner while loading form -->
+					<div class="text-center py-4">
+						<div class="spinner-border text-primary"></div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -140,6 +215,67 @@
 	<!-- ✅ Bootstrap JS -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- add new form  -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+		    const addProductModal = document.getElementById('addProductModal');
+		    const formContainer = document.getElementById('addProductForm');
+		
+		    addProductModal.addEventListener('show.bs.modal', function() {
+		        // Fetch the form HTML from your server
+		        fetch('/products/add') // Make sure this endpoint returns the fragment 'add_new_products :: form'
+		            .then(response => response.text())
+		            .then(html => {
+		                formContainer.innerHTML = html;
+		            })
+		            .catch(error => {
+		                formContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
+		                console.error(error);
+		            });
+		    });
+		
+		    // Clear form when modal is closed
+		    addProductModal.addEventListener('hidden.bs.modal', function() {
+		        formContainer.innerHTML = '';
+		    });
+		});
+	</script>
+	<!-- edit form -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+		    const editProductModal = document.getElementById('editProductModal');
+		    const formContainer = document.getElementById('editProductForm');
+		
+		    editProductModal.addEventListener('show.bs.modal', function(event) {
+		        const button = event.relatedTarget;
+		        const productId = button.getAttribute('data-id');
+		
+		        // Show spinner while loading
+		        formContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+		
+		        // Fetch the edit form from the server
+		        fetch(`/products/edit/${productId}`) // Endpoint must return Thymeleaf fragment 'edit_product :: form'
+		            .then(response => {
+		                if (!response.ok) throw new Error('Network response was not ok');
+		                return response.text();
+		            })
+		            .then(html => {
+		                formContainer.innerHTML = html;
+		            })
+		            .catch(error => {
+		                formContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
+		                console.error('Error fetching edit form:', error);
+		            });
+		    });
+		
+		    // Optional: clear form when modal is hidden
+		    editProductModal.addEventListener('hidden.bs.modal', function() {
+		        formContainer.innerHTML = '';
+		    });
+		});
+	</script>
+
+
 
 	<!-- ✅ Auto-hide success message -->
 	<script>
@@ -169,5 +305,16 @@
 	  });
 	});
 	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+		    toastElList.map(function (toastEl) {
+		        var toast = new bootstrap.Toast(toastEl)
+		        toast.show()
+		    })
+		});
+	</script>
+
 </body>
 </html>

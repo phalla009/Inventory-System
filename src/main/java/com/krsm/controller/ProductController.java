@@ -74,7 +74,7 @@ public class ProductController {
 
 		productService.saveProduct(product);
 		redirectAttributes.addFlashAttribute("successMessage", "✅ Product saved successfully!");
-		return "redirect:/products/add";
+		return "redirect:/products";
 	}
 
 	// ✅ Show Edit Product Form

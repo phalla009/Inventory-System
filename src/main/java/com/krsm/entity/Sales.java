@@ -1,6 +1,8 @@
 package com.krsm.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,11 +30,14 @@ public class Sales {
 	private double total_amount;
 	private LocalDateTime created_at;
 
+	@OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<SaleDetail> saleDetails;
+
 	@PrePersist
 	@PreUpdate
 	public void calculateTotals() {
 		this.subtotal = this.quantity * this.price;
-		this.total_amount = this.subtotal; // adjust if needed for tax/discount
+		this.total_amount = this.subtotal;
 		if (this.created_at == null) {
 			this.created_at = LocalDateTime.now();
 		}

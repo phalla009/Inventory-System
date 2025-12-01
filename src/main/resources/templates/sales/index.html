@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Sales Management - Sales</title>
+<title>Sales Management</title>
 
 <!-- ✅ Bootstrap CSS -->
 <link
@@ -30,19 +30,47 @@
 				<i class="bi bi-cash-stack me-2"></i>Sales Listing
 			</h1>
 
-			<!-- ✅ Success Message -->
-			<div th:if="${successMessage}"
-				class="alert alert-success alert-dismissible fade show text-center"
-				role="alert">
-				<span th:text="${successMessage}"></span>
-				<button type="button" class="btn-close" data-bs-dismiss="alert"
-					aria-label="Close"></button>
-			</div>
+			<!-- Toast Container -->
+			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+				<!-- Error Toast -->
+				<div th:if="${errorMessage}"
+					class="toast align-items-center text-bg-danger border-0 show"
+					role="alert" aria-live="assertive" aria-atomic="true"
+					data-bs-delay="3000">
+					<div class="d-flex">
+						<div class="toast-body" th:text="${errorMessage}">
+							<!-- Error message will appear here -->
+						</div>
+						<button type="button"
+							class="btn-close btn-close-white me-2 m-auto"
+							data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+				</div>
 
+				<!-- Success Toast -->
+				<div th:if="${successMessage}"
+					class="toast align-items-center text-bg-success border-0 show"
+					role="alert" aria-live="assertive" aria-atomic="true"
+					data-bs-delay="3000">
+					<div class="d-flex">
+						<div class="toast-body" th:text="${successMessage}">
+							<!-- Success message will appear here -->
+						</div>
+						<button type="button"
+							class="btn-close btn-close-white me-2 m-auto"
+							data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+				</div>
+			</div>
 			<!-- ✅ Add Button -->
-			<a th:href="@{/sales/add}" class="btn btn-primary mb-3"> <i
+			<!-- <a th:href="@{/sales/add}" class="btn btn-primary mb-3"> <i
 				class="bi bi-plus-circle me-1"></i> Add Sale
-			</a>
+			</a> -->
+			<button type="button" class="btn btn-primary mb-3"
+				data-bs-toggle="modal" data-bs-target="#addSalesModal">
+				<i class="bi bi-plus-circle me-1"></i> Add Sale
+			</button>
+
 
 			<!-- ✅ Sales Table -->
 			<table class="table table-bordered table-hover align-middle">
@@ -53,7 +81,6 @@
 						<th>Customer Name</th>
 						<th>Product</th>
 						<th>SubTotal ($)</th>
-						<th>Created At</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -66,19 +93,21 @@
 						<td th:text="${sale.product != null ? sale.product.name : 'N/A'}"></td>
 						<td
 							th:text="${#numbers.formatDecimal(sale.subtotal, 1, 2)} + ' $'"></td>
-						<td
-							th:text="${sale.created_at != null ? #temporals.format(sale.created_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
+
 						<td class="text-center" style="font-family: Arial, sans-serif;"​​>
-							<!-- Edit button keeps inherited style --> <a
-							th:href="@{'/sales/edit/' + ${sale.id}}"
-							class="btn btn-warning btn-sm me-1"> <i
-								class="bi bi-pencil-square"></i> Edit
-						</a> <!-- Delete button isolated from tbody style --> <span
-							style="font-family: Arial, sans-serif;">
+							<!-- Print --> <a th:href="@{'/sales/print/' + ${sale.id}}"
+							target="_blank" class="btn btn-primary btn-sm"> <i
+								class="bi bi-printer"></i>
+						</a>
+							<button type="button" class="btn btn-warning btn-sm"
+								data-bs-toggle="modal" data-bs-target="#editSalesModal"
+								th:attr="data-id=${sale.id}">
+								<i class="bi bi-pencil-square"></i>
+							</button> <span style="font-family: Arial, sans-serif;">
 								<button type="button" class="btn btn-danger btn-sm"
 									data-bs-toggle="modal" data-bs-target="#deleteModal"
 									th:attr="data-id=${sale.id}, data-name=${sale.customer_name}">
-									<i class="bi bi-trash"></i> Delete
+									<i class="bi bi-trash"></i>
 								</button>
 						</span>
 						</td>
@@ -94,6 +123,55 @@
 
 			</table>
 
+		</div>
+	</div>
+	<!-- Add Supplier Modal -->
+	<div class="modal fade" id="addSalesModal" tabindex="-1"
+		aria-labelledby="addSalesModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<div
+					class="modal-header bg-primary text-white justify-content-center position-relative">
+					<h5 class="modal-title text-center" id="addSalesModalLabel">
+						<i class="bi bi-plus-circle"></i> Add New Sales
+					</h5>
+
+				</div>
+
+				<div class="modal-body" id="addSalesForm">
+					<div class="text-center py-4">
+						<div class="spinner-border text-primary"></div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!-- Edit Supplier Modal -->
+	<div class="modal fade" id="editSalesModal" tabindex="-1"
+		aria-labelledby="editSalesModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div
+					class="modal-header text-dark justify-content-center position-relative"
+					style="background-color: #ffc107;">
+					<h5 class="modal-title text-center" id="editSalesModalLabel">
+						<i class="bi bi-pencil-square"></i> Edit Sales
+					</h5>
+				</div>
+
+
+				<!-- Modal Body -->
+				<div class="modal-body" id="editSalesForm">
+					<!-- Spinner while loading form -->
+					<div class="text-center py-4">
+						<div class="spinner-border text-primary"></div>
+					</div>
+				</div>
+
+			</div>
 		</div>
 	</div>
 
@@ -141,6 +219,67 @@
 	<!-- ✅ Bootstrap JS -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- add new form  -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+		    const addSalesModal = document.getElementById('addSalesModal');
+		    const formContainer = document.getElementById('addSalesForm');
+		
+		    addSalesModal.addEventListener('show.bs.modal', function() {
+		        // Fetch the form HTML from your server
+		        fetch('/sales/add') // Make sure this endpoint returns the fragment 'add_new_products :: form'
+		            .then(response => response.text())
+		            .then(html => {
+		                formContainer.innerHTML = html;
+		            })
+		            .catch(error => {
+		                formContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
+		                console.error(error);
+		            });
+		    });
+		
+		    // Clear form when modal is closed
+		    addSalesModal.addEventListener('hidden.bs.modal', function() {
+		        formContainer.innerHTML = '';
+		    });
+		});
+	</script>
+	<!-- edit form -->
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+	    const editSalesModal = document.getElementById('editSalesModal');
+	    const formContainer = document.getElementById('editSalesForm');
+
+	    editSalesModal.addEventListener('show.bs.modal', function(event) {
+	        const button = event.relatedTarget;
+	        const salesId = button.getAttribute('data-id'); // use consistent variable name
+
+	        // Show spinner while loading
+	        formContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+
+	        // Fetch the edit form from the server
+	        fetch(`/sales/edit/${salesId}`) 
+	            .then(response => {
+	                if (!response.ok) throw new Error('Network response was not ok');
+	                return response.text();
+	            })
+	            .then(html => {
+	                formContainer.innerHTML = html;
+	            })
+	            .catch(error => {
+	                formContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
+	                console.error('Error fetching edit form:', error);
+	            });
+	    });
+
+	    // Optional: clear form when modal is hidden
+	    editSalesModal.addEventListener('hidden.bs.modal', function() {
+	        formContainer.innerHTML = '';
+	    });
+	});
+
+		</script>
+
 
 	<!-- ✅ Auto-hide success message -->
 	<script>
@@ -170,5 +309,14 @@
 	  });
 	});
 	</script>
+	<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    toastElList.map(function (toastEl) {
+        var toast = new bootstrap.Toast(toastEl)
+        toast.show()
+    })
+});
+</script>
 </body>
 </html>

@@ -9,66 +9,90 @@
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
 	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="/css/style.css">
 <!-- Favicon / Logo -->
 <link rel="icon" type="image/png" href="/images/kr.png">
 </head>
 <body>
 
-	<div th:replace="fragments/sidebar :: sidebar"></div>
+	<!-- Form action points to update endpoint with sale id -->
+	<form th:action="@{'/sales/update/' + ${sale.id}}" th:object="${sale}"
+		method="post">
 
-	<div class="container table-container">
-		<h1 class="mb-4 text-center">Edit Sale</h1>
-		<div th:if="${errorMessage}" class="alert alert-danger" role="alert">
-			<span th:text="${errorMessage}"></span>
+		<!-- Customer Name -->
+		<div class="mb-3">
+			<label class="form-label">Customer Name</label>
+			<div class="input-group">
+				<span class="input-group-text"><i class="bi bi-person"></i></span> <input
+					type="text" th:field="*{customer_name}" class="form-control"
+					required>
+			</div>
+			
 		</div>
 
-		<!-- Form action points to update endpoint with sale id -->
-		<form th:action="@{'/sales/update/' + ${sale.id}}" th:object="${sale}"
-			method="post">
-
-			<div class="mb-3">
-				<label class="form-label">Customer Name</label> <input type="text"
-					th:field="*{customer_name}" class="form-control" required>
-			</div>
-
-			<div class="mb-3">
-				<label class="form-label">Product</label> <select
-					th:field="*{product.id}" class="form-select" required>
+		<!-- Product -->
+		<div class="mb-3">
+			<label class="form-label">Product</label>
+			<div class="input-group">
+				<span class="input-group-text"><i class="bi bi-box-seam"></i></span>
+				<select th:field="*{product.id}" class="form-select" required>
 					<option value="" disabled>-- Select Product --</option>
 					<option th:each="product : ${productsList}"
 						th:value="${product.id}" th:text="${product.name}"
 						th:selected="${product.id} == ${sale.product.id}"></option>
 				</select>
 			</div>
+		</div>
 
-			<div class="row">
-				<div class="col-md-4 mb-3">
-					<label class="form-label">Quantity</label> <input type="number"
-						th:field="*{quantity}" min="1" class="form-control" required>
+		<div class="row">
+			<!-- Quantity -->
+			<div class="mb-3">
+				<label class="form-label">Quantity</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-calculator"></i></span>
+					<input type="number" th:field="*{quantity}" min="1"
+						class="form-control" required>
 				</div>
-				<div class="col-md-4 mb-3">
-					<label class="form-label">Price ($)</label> <input type="number"
+			</div>
+
+			<!-- Price -->
+			<div class="mb-3">
+				<label class="form-label">Price ($)</label>
+				<div class="input-group">
+					<span class="input-group-text"><i
+						class="bi bi-currency-dollar"></i></span> <input type="number"
 						th:field="*{price}" step="0.01" min="0" class="form-control"
 						required>
 				</div>
-				<div class="col-md-4 mb-3">
-					<label class="form-label">Sale Date</label> <input
-						type="datetime-local" th:field="*{sale_date}" class="form-control"
-						required>
-				</div>
 			</div>
 
-			<div class="d-flex justify-content-center mt-4 gap-3">
-				<button type="submit" class="btn btn-success">
-					<i class="bi bi-save me-1"></i> Update
-				</button>
-				<a th:href="@{/sales}" class="btn btn-secondary"> <i
-					class="bi bi-arrow-left-circle me-1"></i> Back
-				</a>
+			<!-- Sale Date -->
+			<div class="mb-3">
+				<label class="form-label">Sale Date</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-calendar"></i></span>
+					<input type="datetime-local" th:field="*{sale_date}"
+						class="form-control" required>
+				</div>
 			</div>
-		</form>
-	</div>
+		</div>
+
+		<!-- Buttons -->
+		<div class="d-flex justify-content-center mt-4 gap-3">
+
+			<a th:href="@{/sales}" class="btn btn-secondary"> <i
+				class="bi bi-arrow-left-circle me-1"></i> Back
+			</a>
+			<button type="submit" class="btn btn-success">
+				<i class="bi bi-save me-1"></i> Update
+			</button>
+		</div>
+
+	</form>
+
+
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

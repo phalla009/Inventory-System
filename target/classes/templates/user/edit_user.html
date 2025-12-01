@@ -1,34 +1,51 @@
 <div th:fragment="form">
 	<form th:action="@{/user/edit/{id}(id=${user.id})}" th:object="${user}"
 		method="post">
+
+		<!-- Username -->
 		<div class="mb-3">
-			<label>UserName</label> <input type="text" th:field="*{username}"
-				class="form-control" required>
+			<label class="form-label">Username</label>
+			<div class="input-group">
+				<span class="input-group-text"><i class="bi bi-person"></i></span> <input
+					type="text" th:field="*{username}" class="form-control" required>
+			</div>
 		</div>
+
+		<!-- Password -->
 		<div class="mb-3">
-			<label>Password</label> <input type="password" th:field="*{password}"
-				class="form-control" required>
+			<label class="form-label">Password</label>
+			<div class="input-group">
+				<span class="input-group-text"><i class="bi bi-lock"></i></span> <input
+					type="password" th:field="*{password}" class="form-control"
+					required>
+			</div>
 		</div>
+
+		<!-- Role -->
 		<div class="mb-3">
-			<label>Role</label> <select th:field="*{role}" class="form-select"
-				required>
-				<option value="">-- Select Role --</option>
-				<option value="admin" th:selected="${user.role=='admin'}">Admin</option>
-				<option value="sale" th:selected="${user.role=='sale'}">Sale</option>
-				<option value="staff" th:selected="${user.role=='staff'}">Staff</option>
-			</select>
+			<label class="form-label">Role</label>
+			<div class="input-group">
+				<span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+				<select th:field="*{role}" class="form-select" required>
+					<option value="">-- Select Role --</option>
+					<option value="admin" th:selected="${user.role=='admin'}">Admin</option>
+					<option value="sale" th:selected="${user.role=='sale'}">Sale</option>
+					<option value="staff" th:selected="${user.role=='staff'}">Staff</option>
+				</select>
+			</div>
 		</div>
+
+		<!-- Buttons -->
 		<div class="d-flex justify-content-end gap-2 mt-4 flex-row">
-			<button type="submit" class="btn btn-success">
-				<i class="bi bi-check-lg"></i> Update
-			</button>
+
 			<button type="button" class="btn btn-secondary"
 				data-bs-dismiss="modal">
-				<i class="bi bi-x-lg"></i> Cancel
+				<i class="bi bi-x-circle me-1"></i> Cancel
+			</button>
+			<button type="submit" class="btn btn-success">
+				<i class="bi bi-save me-1"></i> Update
 			</button>
 		</div>
-
-
 
 	</form>
 </div>

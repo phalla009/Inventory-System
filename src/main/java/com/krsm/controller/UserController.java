@@ -35,7 +35,7 @@ public class UserController {
 	public String addUser(@ModelAttribute Users user, RedirectAttributes redirect) {
 		try {
 			userService.saveUser(user);
-			redirect.addFlashAttribute("successMessage", "User added!");
+			redirect.addFlashAttribute("successMessage", "User added successfully!");
 		} catch (Exception e) {
 			redirect.addFlashAttribute("errorMessage", "Failed to add user.");
 		}
@@ -53,7 +53,7 @@ public class UserController {
 		try {
 			user.setId(id);
 			userService.saveUser(user);
-			redirect.addFlashAttribute("successMessage", "User updated!");
+			redirect.addFlashAttribute("successMessage", "User updated successfully!");
 		} catch (Exception e) {
 			redirect.addFlashAttribute("errorMessage", "Failed to update user.");
 		}
@@ -64,7 +64,7 @@ public class UserController {
 	public String deleteUser(@PathVariable Long id, RedirectAttributes redirect) {
 		try {
 			userService.deleteUser(id);
-			redirect.addFlashAttribute("successMessage", "User deleted!");
+			redirect.addFlashAttribute("successMessage", "User deleted successfully!");
 		} catch (Exception e) {
 			redirect.addFlashAttribute("errorMessage", "Failed to delete user.");
 		}
