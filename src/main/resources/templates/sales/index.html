@@ -16,13 +16,37 @@
 <link rel="icon" type="image/png" href="/images/kr.png">
 </head>
 <!-- CSS for Delete button to isolate styles -->
-
-
+<style>
+@media print {
+	.receipt {
+		page-break-after: always;
+	}
+}
+</style>
 <body>
 
 	<div class="d-flex">
 		<!-- ✅ Sidebar Fragment -->
 		<div th:replace="fragments/sidebar :: sidebar"></div>
+
+
+		<!-- Print Message Modal -->
+		<div class="modal fade" id="printSalesModal" tabindex="-1"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-warning text-dark">
+						<h5 class="modal-title">
+							<i class="bi bi-exclamation-triangle-fill me-2"></i>Warning
+						</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body" id="printMessage">
+						<!-- message will appear here -->
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- ✅ Main Content -->
 		<div class="content p-4 flex-grow-1">
@@ -32,20 +56,22 @@
 
 			<!-- Toast Container -->
 			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-				<!-- Error Toast -->
+				<!-- Error Toast with Icon -->
 				<div th:if="${errorMessage}"
 					class="toast align-items-center text-bg-danger border-0 show"
 					role="alert" aria-live="assertive" aria-atomic="true"
 					data-bs-delay="3000">
 					<div class="d-flex">
-						<div class="toast-body" th:text="${errorMessage}">
-							<!-- Error message will appear here -->
+						<div class="toast-body">
+							<i class="bi bi-exclamation-triangle-fill me-2"></i> <span
+								th:text="${errorMessage}"></span>
 						</div>
 						<button type="button"
 							class="btn-close btn-close-white me-2 m-auto"
 							data-bs-dismiss="toast" aria-label="Close"></button>
 					</div>
 				</div>
+
 
 				<!-- Success Toast -->
 				<div th:if="${successMessage}"
@@ -70,12 +96,23 @@
 				data-bs-toggle="modal" data-bs-target="#addSalesModal">
 				<i class="bi bi-plus-circle me-1"></i> Add Sale
 			</button>
+			<button type="button" id="btnPrintSelected"
+				class="btn btn-success mb-3" style="width: 85px;">
+				<i class="bi bi-printer me-1"></i> Print
+			</button>
 
+
+			<!-- Print -->
+			<!-- 	<a th:href="@{'/sales/print/' + ${sale.id}}" target="_blank"
+				class="btn btn-primary btn-sm"> <i class="bi bi-printer"></i>
+			</a>
+ -->
 
 			<!-- ✅ Sales Table -->
 			<table class="table table-bordered table-hover align-middle">
 				<thead class="table-dark text-center">
 					<tr>
+						<th>Check</th>
 						<th>ID</th>
 						<th>Sale Date</th>
 						<th>Customer Name</th>
@@ -86,6 +123,8 @@
 				</thead>
 				<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
 					<tr th:each="sale : ${salesList}">
+						<td class="text-center"><input type="checkbox"
+							class="selectSale" th:value="${sale.id}" /></td>
 						<td th:text="${sale.id}"></td>
 						<td
 							th:text="${sale.sale_date != null ? #temporals.format(sale.sale_date, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
@@ -95,10 +134,7 @@
 							th:text="${#numbers.formatDecimal(sale.subtotal, 1, 2)} + ' $'"></td>
 
 						<td class="text-center" style="font-family: Arial, sans-serif;"​​>
-							<!-- Print --> <a th:href="@{'/sales/print/' + ${sale.id}}"
-							target="_blank" class="btn btn-primary btn-sm"> <i
-								class="bi bi-printer"></i>
-						</a>
+
 							<button type="button" class="btn btn-warning btn-sm"
 								data-bs-toggle="modal" data-bs-target="#editSalesModal"
 								th:attr="data-id=${sale.id}">
@@ -219,6 +255,44 @@
 	<!-- ✅ Bootstrap JS -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+	document.addEventListener('DOMContentLoaded', function () {
+	    const btnPrint = document.getElementById('btnPrintSelected');
+	    const printModalEl = document.getElementById('printSalesModal');
+	    const printModal = new bootstrap.Modal(printModalEl);
+	    const messageContainer = document.getElementById('printMessage');
+
+	    btnPrint.addEventListener('click', function () {
+	        const selectedIds = [...document.querySelectorAll('.selectSale:checked')]
+	            .map(cb => cb.value);
+
+	        if (selectedIds.length === 0) {
+	            // Show the message in the modal
+	            messageContainer.innerHTML = '<p class="text-danger text-center">Please select at least one sale to print!</p>';
+	            printModal.show();
+	            return;
+	        }
+
+	        // Clear previous message and proceed
+	        messageContainer.innerHTML = '';
+	        window.open("/sales/print/batch?ids=" + selectedIds.join(","), "_blank");
+	    });
+	});
+
+</script>
+
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+		    const selectAll = document.getElementById('selectAll');
+		    const checkboxes = document.querySelectorAll('.selectSale');
+		
+		    selectAll.addEventListener('change', function () {
+		        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+		    });
+		});
+	</script>
+
 	<!-- add new form  -->
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
@@ -245,40 +319,35 @@
 		});
 	</script>
 	<!-- edit form -->
+	<!-- edit form -->
 	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-	    const editSalesModal = document.getElementById('editSalesModal');
-	    const formContainer = document.getElementById('editSalesForm');
+document.addEventListener('DOMContentLoaded', function() {
+    const editSalesModal = document.getElementById('editSalesModal');
+    const editFormContainer = document.getElementById('editSalesForm');
 
-	    editSalesModal.addEventListener('show.bs.modal', function(event) {
-	        const button = event.relatedTarget;
-	        const salesId = button.getAttribute('data-id'); // use consistent variable name
+    editSalesModal.addEventListener('show.bs.modal', function(event) {
+        // Get the button that triggered the modal
+        const button = event.relatedTarget;
+        const saleId = button.getAttribute('data-id'); // assume button has data-id attribute
 
-	        // Show spinner while loading
-	        formContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+        // Fetch the form HTML for this specific sale
+        fetch(`/sales/edit/${saleId}`) // endpoint should return Thymeleaf fragment 'edit_sales :: form'
+            .then(response => response.text())
+            .then(html => {
+                editFormContainer.innerHTML = html;
+            })
+            .catch(error => {
+                editFormContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
+                console.error(error);
+            });
+    });
 
-	        // Fetch the edit form from the server
-	        fetch(`/sales/edit/${salesId}`) 
-	            .then(response => {
-	                if (!response.ok) throw new Error('Network response was not ok');
-	                return response.text();
-	            })
-	            .then(html => {
-	                formContainer.innerHTML = html;
-	            })
-	            .catch(error => {
-	                formContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
-	                console.error('Error fetching edit form:', error);
-	            });
-	    });
-
-	    // Optional: clear form when modal is hidden
-	    editSalesModal.addEventListener('hidden.bs.modal', function() {
-	        formContainer.innerHTML = '';
-	    });
-	});
-
-		</script>
+    // Clear form when modal is closed
+    editSalesModal.addEventListener('hidden.bs.modal', function() {
+        editFormContainer.innerHTML = '';
+    });
+});
+</script>
 
 
 	<!-- ✅ Auto-hide success message -->
@@ -318,5 +387,6 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 });
 </script>
+
 </body>
 </html>

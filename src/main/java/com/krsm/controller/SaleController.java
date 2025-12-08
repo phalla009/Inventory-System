@@ -1,16 +1,26 @@
 package com.krsm.controller;
 
 import com.krsm.entity.Product;
+import com.krsm.entity.SaleDetail;
 import com.krsm.entity.Sales;
 import com.krsm.repository.ProductRepository;
+import com.krsm.repository.SaleDetailRepository;
 import com.krsm.repository.SaleRepository;
+import com.krsm.service.SaleService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/sales")
@@ -134,11 +144,24 @@ public class SaleController {
 	}
 
 	// 7. Show printable receipt for a sale
-	@GetMapping("/print/{id}")
-	public String printSale(@PathVariable("id") Long id, Model model) {
-		Sales sale = saleRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
-		model.addAttribute("sale", sale);
-		return "sales/receipt";
+	/*
+	 * @GetMapping("/print/{id}") public String printSale(@PathVariable("id") Long
+	 * id, Model model) { Sales sale = saleRepository.findById(id) .orElseThrow(()
+	 * -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
+	 * model.addAttribute("sale", sale); return "sales/receipt"; }
+	 */
+
+
+	@GetMapping("/print/batch")
+	public String printBatch(@RequestParam("ids") String ids, Model model) {
+		List<Long> saleIds = Arrays.stream(ids.split(",")).map(Long::parseLong).toList();
+
+		List<Sales> selectedSales = saleRepository.findAllById(saleIds);
+
+		// For simplicity, assume each sale has a list of SaleDetails (product, qty,
+		// price)
+		model.addAttribute("selectedSales", selectedSales);
+		return "sales/batch_print";
 	}
+
 }

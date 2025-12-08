@@ -28,7 +28,7 @@ public class SaleDetail {
 
 	@PrePersist
 	@PreUpdate
-	public void calculateSubtotal() {
+	public void calcSubtotal() {
 		this.subtotal = this.quantity * this.price;
 	}
 }
