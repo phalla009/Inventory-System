@@ -26,6 +26,10 @@ public class DashbordController {
 	@GetMapping({ "/dashboard" })
 	public String showDashboard(Model model, HttpSession session) {
 		List<Product> products = productService.getAllProducts();
+		// Check if user is logged in
+        if (session.getAttribute("userRole") == null) {
+            return "redirect:/login"; // not logged in → redirect to login
+        }
 		if (products == null)
 			products = new ArrayList<>();
 
