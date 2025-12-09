@@ -46,34 +46,32 @@ public class LoginController {
 		}
 	}
 
-	@RequestMapping("/dashboard")
-	public String dashboard() {
-		return "dashboard";
-	}
+//	@RequestMapping("/dashboard")
+//	public String dashboard() {
+//		return "dashboard";
+//	}
 
-	// Protect the dashboard
+	// Protected pages
 	@GetMapping("/dashboard")
 	public String dashboard(HttpSession session) {
 		if (session.getAttribute("userRole") == null) {
-			return "redirect:/login"; // not logged in → redirect to login
+			return "redirect:/login"; // not logged in → redirect
 		}
 		return "dashboard";
 	}
 
-	// Example for /user page
 	@GetMapping("/user")
 	public String userPage(HttpSession session) {
 		if (session.getAttribute("userRole") == null) {
-			return "redirect:/login"; // not logged in → redirect to login
+			return "redirect:/login";
 		}
 		return "user/index";
 	}
 
-	// Example for /products page
 	@GetMapping("/products")
 	public String productsPage(HttpSession session) {
 		if (session.getAttribute("userRole") == null) {
-			return "redirect:/login"; // not logged in → redirect to login
+			return "redirect:/login";
 		}
 		return "products/index";
 	}
