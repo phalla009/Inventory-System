@@ -1,4 +1,5 @@
 com\krsm\repository\SupplierRepository.class
+com\krsm\service\SaleService.class
 com\krsm\entity\Product.class
 com\krsm\repository\PurchasesRepository.class
 com\krsm\controller\DashbordController.class
@@ -6,6 +7,7 @@ com\krsm\controller\CategoryController.class
 com\krsm\entity\Supplier$SupplierBuilder.class
 com\krsm\entity\Sales.class
 com\krsm\entity\Users$UsersBuilder.class
+com\krsm\repository\SaleDetailRepository.class
 com\krsm\entity\Category.class
 com\krsm\InventoryManagementSystemApplication.class
 com\krsm\entity\Supplier.class
@@ -28,6 +30,8 @@ com\krsm\repository\ProductRepository.class
 com\krsm\controller\PurchaseSummaryController.class
 com\krsm\controller\SaleController.class
 com\krsm\service\ProductService.class
+com\krsm\entity\SaleDetail$SaleDetailBuilder.class
+com\krsm\entity\SaleDetail.class
 com\krsm\controller\LoginController.class
 com\krsm\controller\PurchaseController.class
 com\krsm\controller\ProductController.class

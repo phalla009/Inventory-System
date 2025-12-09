@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.krsm.InventoryManagementSystemApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.826 s -- in com.krsm.InventoryManagementSystemApplicationTests
