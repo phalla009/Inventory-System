@@ -2,6 +2,7 @@ package com.krsm.controller;
 
 import com.krsm.entity.Users;
 import com.krsm.service.UserService;
+
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -17,17 +18,8 @@ public class LoginController {
 		this.userService = userService;
 	}
 
-	// ================================
-	// SHOW LOGIN PAGE (GET)
-	// ================================
 	@GetMapping({ "/", "/login" })
-	public String loginForm(Model model, @RequestParam(value = "error", required = false) String error,
-			HttpSession session) {
-
-		// If already logged in → Go to dashboard
-		if (session.getAttribute("userRole") != null) {
-			return "redirect:/dashboard";
-		}
+	public String loginForm(Model model, @RequestParam(value = "error", required = false) String error) {
 
 		model.addAttribute("roles", userService.getAllRoles());
 
@@ -38,10 +30,7 @@ public class LoginController {
 		return "login/index";
 	}
 
-	// ================================
-	// PROCESS LOGIN FORM (POST)
-	// ================================
-	@PostMapping("/login")
+	@PostMapping({ "/", "/login" })
 	public String login(@RequestParam String username, @RequestParam String password, @RequestParam String role,
 			HttpSession session, Model model) {
 
@@ -49,7 +38,6 @@ public class LoginController {
 
 		if (user != null) {
 			session.setAttribute("userRole", user.getRole());
-			session.setAttribute("username", user.getUsername());
 			return "redirect:/dashboard";
 		} else {
 			model.addAttribute("roles", userService.getAllRoles());
@@ -58,23 +46,4 @@ public class LoginController {
 		}
 	}
 
-	// ================================
-	// DASHBOARD (PROTECTED)
-	// ================================
-	@GetMapping("/dashboard")
-	public String dashboard(HttpSession session) {
-		if (session.getAttribute("userRole") == null) {
-			return "redirect:/login";
-		}
-		return "dashboard";
-	}
-
-	// ================================
-	// LOGOUT
-	// ================================
-	@GetMapping("/logout")
-	public String logout(HttpSession session) {
-		session.invalidate();
-		return "redirect:/login";
-	}
 }
