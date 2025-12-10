@@ -46,10 +46,10 @@ public class LoginController {
 		}
 	}
 
-//	@RequestMapping("/dashboard")
-//	public String dashboard() {
-//		return "dashboard";
-//	}
+	@RequestMapping("/dashboard")
+	public String dashboard() {
+		return "dashboard";
+	}
 
 	// Protected pages
 	@GetMapping("/dashboard")
