@@ -69,54 +69,56 @@
 				data-bs-toggle="modal" data-bs-target="#addProductModal">
 				<i class="bi bi-plus-circle me-1"></i> Add Product
 			</button>
+			<div style="max-height: 450px; overflow-y: auto;">
+				<table class="table table-bordered table-hover align-middle">
+					<thead class="table-dark"
+						style="position: sticky; top: 0; z-index: 2;">
+						<tr>
+							<th>ID</th>
+							<th>Product Name</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Category</th>
+							<th>Supplier</th>
+							<th>Status</th>
+							<th>Created At</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
+						<tr th:each="product : ${products}">
+							<td th:text="${product.id}"></td>
+							<td th:text="${product.name}"></td>
+							<td th:text="${product.quantity}"></td>
+							<td th:text="${product.price} + ' $'"></td>
+							<td
+								th:text="${product.category != null ? product.category.name : 'N/A'}"></td>
+							<td
+								th:text="${product.supplier != null ? product.supplier.name : 'N/A'}"></td>
+							<td><span th:if="${product.status == 'Active'}"> <i
+									class="bi bi-check-circle text-success"></i>
+							</span> <span th:if="${product.status == 'Inactive'}"> <i
+									class="bi bi-x-circle text-danger"></i>
+							</span> <span th:text="${product.status}" class="ms-1"></span></td>
+							<td
+								th:text="${product.create_at != null ? #temporals.format(product.create_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
+							<td>
+								<button type="button" class="btn btn-warning btn-sm"
+									data-bs-toggle="modal" data-bs-target="#editProductModal"
+									th:attr="data-id=${product.id}">
+									<i class="bi bi-pencil-square"></i>
+								</button>
+								<button type="button" class="btn btn-danger btn-sm"
+									data-bs-toggle="modal" data-bs-target="#deleteModal"
+									th:attr="data-id=${product.id}, data-name=${product.name}">
+									<i class="bi bi-trash"></i>
+								</button>
+							</td>
+						</tr>
+					</tbody>
 
-			<table class="table table-bordered table-hover align-middle">
-				<thead class="table-dark">
-					<tr>
-						<th>ID</th>
-						<th>Product Name</th>
-						<th>Quantity</th>
-						<th>Price</th>
-						<th>Category</th>
-						<th>Supplier</th>
-						<th>Status</th>
-						<th>Created At</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
-					<tr th:each="product : ${products}">
-						<td th:text="${product.id}"></td>
-						<td th:text="${product.name}"></td>
-						<td th:text="${product.quantity}"></td>
-						<td th:text="${product.price} + ' $'"></td>
-						<td
-							th:text="${product.category != null ? product.category.name : 'N/A'}"></td>
-						<td
-							th:text="${product.supplier != null ? product.supplier.name : 'N/A'}"></td>
-						<td><span th:if="${product.status == 'Active'}"> <i
-								class="bi bi-check-circle text-success"></i>
-						</span> <span th:if="${product.status == 'Inactive'}"> <i
-								class="bi bi-x-circle text-danger"></i>
-						</span> <span th:text="${product.status}" class="ms-1"></span></td>
-						<td
-							th:text="${product.create_at != null ? #temporals.format(product.create_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-						<td>
-							<button type="button" class="btn btn-warning btn-sm"
-								data-bs-toggle="modal" data-bs-target="#editProductModal"
-								th:attr="data-id=${product.id}">
-								<i class="bi bi-pencil-square"></i>
-							</button>
-							<button type="button" class="btn btn-danger btn-sm"
-								data-bs-toggle="modal" data-bs-target="#deleteModal"
-								th:attr="data-id=${product.id}, data-name=${product.name}">
-								<i class="bi bi-trash"></i>
-							</button>
-						</td>
-					</tr>
-				</tbody>
-
-			</table>
+				</table>
+			</div>
 		</div>
 	</div>
 
@@ -305,7 +307,7 @@
 	  });
 	});
 	</script>
-	
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
