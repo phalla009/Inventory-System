@@ -66,46 +66,48 @@
 				<i class="bi bi-plus-circle me-1"></i> Add Supplier
 			</button>
 
-			<!-- ✅ Supplier Table -->
-			<table class="table table-bordered table-hover align-middle">
-				<thead class="table-dark text-center">
-					<tr>
-						<th>ID</th>
-						<th>Name</th>
-						<th>Gender</th>
-						<th>Email</th>
-						<th>Phone Number</th>
-						<th>Address</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="s : ${suppliers}" class="text-center">
-						<td th:text="${s.id}"></td>
-						<td th:text="${s.name}"></td>
-						<td th:text="${s.gender}"></td>
-						<td th:text="${s.email}"></td>
-						<td th:text="${s.phone_number}"></td>
-						<td th:text="${s.address}"></td>
-						<td>
-							<button type="button" class="btn btn-warning btn-sm"
-								data-bs-toggle="modal" data-bs-target="#editSupplierModal"
-								th:attr="data-id=${s.id}">
-								<i class="bi bi-pencil-square"></i>
-							</button> <!-- ✅ Trigger Delete Modal -->
-							<button type="button" class="btn btn-danger btn-sm"
-								data-bs-toggle="modal" data-bs-target="#deleteModal"
-								th:attr="data-id=${s.id}, data-name=${s.name}">
-								<i class="bi bi-trash"></i>
-							</button>
+			<div style="max-height: 450px; overflow-y: auto;">
+				<!-- ✅ Supplier Table -->
+				<table class="table table-bordered table-hover align-middle">
+					<thead class="table-dark text-center" style="position: sticky; top: 0; z-index: 2;">
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Gender</th>
+							<th>Email</th>
+							<th>Phone Number</th>
+							<th>Address</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="s : ${suppliers}" class="text-center">
+							<td th:text="${s.id}"></td>
+							<td th:text="${s.name}"></td>
+							<td th:text="${s.gender}"></td>
+							<td th:text="${s.email}"></td>
+							<td th:text="${s.phone_number}"></td>
+							<td th:text="${s.address}"></td>
+							<td>
+								<button type="button" class="btn btn-warning btn-sm"
+									data-bs-toggle="modal" data-bs-target="#editSupplierModal"
+									th:attr="data-id=${s.id}">
+									<i class="bi bi-pencil-square"></i>
+								</button> <!-- ✅ Trigger Delete Modal -->
+								<button type="button" class="btn btn-danger btn-sm"
+									data-bs-toggle="modal" data-bs-target="#deleteModal"
+									th:attr="data-id=${s.id}, data-name=${s.name}">
+									<i class="bi bi-trash"></i>
+								</button>
 
-						</td>
-					</tr>
-					<tr th:if="${#lists.isEmpty(suppliers)}">
-						<td colspan="7" class="text-center">No suppliers found.</td>
-					</tr>
-				</tbody>
-			</table>
+							</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(suppliers)}">
+							<td colspan="7" class="text-center">No suppliers found.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 
