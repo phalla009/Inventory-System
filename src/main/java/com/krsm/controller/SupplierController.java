@@ -58,9 +58,17 @@ public class SupplierController {
 	}
 
 	// ✅ Handle Edit Supplier form submission
+
 	@PostMapping("/edit/{id}")
 	public String updateSupplier(@PathVariable Long id, @ModelAttribute Supplier supplier,
 			RedirectAttributes redirectAttributes) {
+
+		// Check duplicate email for other suppliers
+		if (supplierRepository.existsByEmailAndIdNot(supplier.getEmail(), id)) {
+			redirectAttributes.addFlashAttribute("errorMessage", "❌ Email already exists!");
+			return "redirect:/suppliers/edit/" + id; // go back to edit form
+		}
+
 		supplier.setId(id);
 		supplierRepository.save(supplier);
 		redirectAttributes.addFlashAttribute("successMessage", "✏️ Supplier updated successfully!");
