@@ -66,7 +66,7 @@ public class SupplierController {
 		// Check duplicate email for other suppliers
 		if (supplierRepository.existsByEmailAndIdNot(supplier.getEmail(), id)) {
 			redirectAttributes.addFlashAttribute("errorMessage", "❌ Email already exists!");
-			return "redirect:/suppliers" + id; // go back to edit form
+			return "redirect:/suppliers"; // go back to edit form
 		}
 
 		supplier.setId(id);
