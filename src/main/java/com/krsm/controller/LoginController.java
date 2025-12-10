@@ -46,34 +46,42 @@ public class LoginController {
 		}
 	}
 
-	@RequestMapping("/dashboard")
-	public String dashboard() {
-		return "dashboard";
-	}
-
-	// Protected pages
 	@GetMapping("/dashboard")
 	public String dashboard(HttpSession session) {
 		if (session.getAttribute("userRole") == null) {
-			return "redirect:/login"; // not logged in → redirect
+			return "redirect:/login";
 		}
 		return "dashboard";
 	}
 
-	@GetMapping("/user")
-	public String userPage(HttpSession session) {
-		if (session.getAttribute("userRole") == null) {
-			return "redirect:/login";
-		}
-		return "user/index";
-	}
-
-	@GetMapping("/products")
-	public String productsPage(HttpSession session) {
-		if (session.getAttribute("userRole") == null) {
-			return "redirect:/login";
-		}
-		return "products/index";
-	}
+//	@RequestMapping("/dashboard")
+//	public String dashboard() {
+//		return "dashboard";
+//	}
+//
+//	// Protected pages
+//	@GetMapping("/dashboard")
+//	public String dashboard(HttpSession session) {
+//		if (session.getAttribute("userRole") == null) {
+//			return "redirect:/login"; // not logged in → redirect
+//		}
+//		return "dashboard";
+//	}
+//
+//	@GetMapping("/user")
+//	public String userPage(HttpSession session) {
+//		if (session.getAttribute("userRole") == null) {
+//			return "redirect:/login";
+//		}
+//		return "user/index";
+//	}
+//
+//	@GetMapping("/products")
+//	public String productsPage(HttpSession session) {
+//		if (session.getAttribute("userRole") == null) {
+//			return "redirect:/login";
+//		}
+//		return "products/index";
+//	}
 
 }
