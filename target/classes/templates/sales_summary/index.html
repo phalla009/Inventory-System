@@ -75,30 +75,32 @@
 					</div>
 				</div>
 			</div>
-
-			<!-- Sales Table -->
-			<table class="table table-bordered table-hover">
-				<thead class="table-dark">
-					<tr>
-						<th>Sale ID</th>
-						<th>Date</th>
-						<th>Quantity</th>
-						<th>Product</th>
-						<th>Total Amount ($)</th>
-						<th>Customer</th>
-					</tr>
-				</thead>
-				<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
-					<tr th:each="sale : ${salesList}">
-						<td th:text="${sale.id}"></td>
-						<td th:text="${sale.sale_date}"></td>
-						<td th:text="${sale.quantity}"></td>
-						<td th:text="${sale.product != null ? sale.product.name : 'N/A'}"></td>
-						<td th:text="${sale.total_amount}"></td>
-						<td th:text="${sale.customer_name}"></td>
-					</tr>
-				</tbody>
-			</table>
+			<div style="max-height: 450px; overflow-y: auto;">
+				<!-- Sales Table -->
+				<table class="table table-bordered table-hover">
+					<thead class="table-dark"
+						style="position: sticky; top: 0; z-index: 2;">
+						<tr>
+							<th>Sale ID</th>
+							<th>Date</th>
+							<th>Quantity</th>
+							<th>Product</th>
+							<th>Total Amount ($)</th>
+							<th>Customer</th>
+						</tr>
+					</thead>
+					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
+						<tr th:each="sale : ${salesList}">
+							<td th:text="${sale.id}"></td>
+							<td th:text="${sale.sale_date}"></td>
+							<td th:text="${sale.quantity}"></td>
+							<td th:text="${sale.product != null ? sale.product.name : 'N/A'}"></td>
+							<td th:text="${sale.total_amount}"></td>
+							<td th:text="${sale.customer_name}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 	<script

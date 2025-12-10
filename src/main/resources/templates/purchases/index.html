@@ -64,46 +64,48 @@
 				data-bs-toggle="modal" data-bs-target="#addPurchasesModal">
 				<i class="bi bi-plus-circle me-1"></i> Add Purchases
 			</button>
-
-			<table class="table table-bordered table-hover align-middle">
-				<thead class="table-dark text-center">
-					<tr>
-						<th>ID</th>
-						<th>Supplier</th>
-						<th>Total Amount</th>
-						<th>Purchase Date</th>
-						<th>Created At</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="purchase : ${purchases}" class="text-center">
-						<td th:text="${purchase.id}"></td>
-						<td
-							th:text="${purchase.supplier != null ? purchase.supplier.name : 'N/A'}"></td>
-						<td th:text="${purchase.total_amount}"></td>
-						<td
-							th:text="${purchase.purchase_date != null ? #temporals.format(purchase.purchase_date, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-						<td
-							th:text="${purchase.created_at != null ? #temporals.format(purchase.created_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-						<td>
-							<button type="button" class="btn btn-warning btn-sm"
-								data-bs-toggle="modal" data-bs-target="#editPurchasesModal"
-								th:attr="data-id=${purchase.id}">
-								<i class="bi bi-pencil-square"></i>
-							</button> <!-- Trigger Delete Modal -->
-							<button type="button" class="btn btn-danger btn-sm"
-								data-bs-toggle="modal" data-bs-target="#deleteModal"
-								th:attr="data-id=${purchase.id}, data-name=${purchase.supplier != null ? purchase.supplier.name : 'N/A'}">
-								<i class="bi bi-trash"></i>
-							</button>
-						</td>
-					</tr>
-					<tr th:if="${#lists.isEmpty(purchases)}">
-						<td colspan="6" class="text-center">No purchases found.</td>
-					</tr>
-				</tbody>
-			</table>
+			<div style="max-height: 450px; overflow-y: auto;">
+				<table class="table table-bordered table-hover align-middle">
+					<thead class="table-dark text-center"
+						style="position: sticky; top: 0; z-index: 2;">
+						<tr>
+							<th>ID</th>
+							<th>Supplier</th>
+							<th>Total Amount</th>
+							<th>Purchase Date</th>
+							<th>Created At</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="purchase : ${purchases}" class="text-center">
+							<td th:text="${purchase.id}"></td>
+							<td
+								th:text="${purchase.supplier != null ? purchase.supplier.name : 'N/A'}"></td>
+							<td th:text="${purchase.total_amount}"></td>
+							<td
+								th:text="${purchase.purchase_date != null ? #temporals.format(purchase.purchase_date, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
+							<td
+								th:text="${purchase.created_at != null ? #temporals.format(purchase.created_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
+							<td>
+								<button type="button" class="btn btn-warning btn-sm"
+									data-bs-toggle="modal" data-bs-target="#editPurchasesModal"
+									th:attr="data-id=${purchase.id}">
+									<i class="bi bi-pencil-square"></i>
+								</button> <!-- Trigger Delete Modal -->
+								<button type="button" class="btn btn-danger btn-sm"
+									data-bs-toggle="modal" data-bs-target="#deleteModal"
+									th:attr="data-id=${purchase.id}, data-name=${purchase.supplier != null ? purchase.supplier.name : 'N/A'}">
+									<i class="bi bi-trash"></i>
+								</button>
+							</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(purchases)}">
+							<td colspan="6" class="text-center">No purchases found.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 
 		<!-- Add Supplier Modal -->
