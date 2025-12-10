@@ -40,7 +40,7 @@ public class SupplierController {
 		// Check duplicate email
 		if (supplierRepository.existsByEmail(supplier.getEmail())) {
 			redirectAttributes.addFlashAttribute("errorMessage", "❌ Email already exists!");
-			return "redirect:/suppliers/index"; // go back to form
+			return "redirect:/suppliers/add_supplier"; // go back to form
 		}
 
 		// Save if not duplicate
