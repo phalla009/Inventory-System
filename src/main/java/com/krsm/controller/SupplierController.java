@@ -36,8 +36,17 @@ public class SupplierController {
 	// ✅ Handle Add Supplier form submission
 	@PostMapping("/add")
 	public String addSupplier(@ModelAttribute Supplier supplier, RedirectAttributes redirectAttributes) {
+
+		// Check duplicate email
+		if (supplierRepository.existsByEmail(supplier.getEmail())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "❌ Email already exists!");
+			return "redirect:/suppliers/add"; // go back to form
+		}
+
+		// Save if not duplicate
 		supplierRepository.save(supplier);
 		redirectAttributes.addFlashAttribute("successMessage", "✅ Supplier added successfully!");
+
 		return "redirect:/suppliers";
 	}
 
@@ -61,14 +70,14 @@ public class SupplierController {
 	// ✅ Delete a supplier
 	@PostMapping("/delete/{id}")
 	public String deleteSupplier(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-		 try {
-		        supplierRepository.deleteById(id);
-		        redirectAttributes.addFlashAttribute("successMessage", "🗑️ Supplier deleted successfully!");
-		    } catch (DataIntegrityViolationException e) {
-		        // If supplier is linked to products
-		        redirectAttributes.addFlashAttribute("errorMessage", 
-		            "Cannot delete supplier. There are products linked to this supplier.");
-		    }
+		try {
+			supplierRepository.deleteById(id);
+			redirectAttributes.addFlashAttribute("successMessage", "🗑️ Supplier deleted successfully!");
+		} catch (DataIntegrityViolationException e) {
+			// If supplier is linked to products
+			redirectAttributes.addFlashAttribute("errorMessage",
+					"Cannot delete supplier. There are products linked to this supplier.");
+		}
 		return "redirect:/suppliers";
 	}
 }
