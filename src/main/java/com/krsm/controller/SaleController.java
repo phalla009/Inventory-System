@@ -143,14 +143,6 @@ public class SaleController {
 		return "redirect:/sales";
 	}
 
-	// 7. Show printable receipt for a sale
-	/*
-	 * @GetMapping("/print/{id}") public String printSale(@PathVariable("id") Long
-	 * id, Model model) { Sales sale = saleRepository.findById(id) .orElseThrow(()
-	 * -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
-	 * model.addAttribute("sale", sale); return "sales/receipt"; }
-	 */
-
 
 	@GetMapping("/print/batch")
 	public String printBatch(@RequestParam("ids") String ids, Model model) {
@@ -163,5 +155,6 @@ public class SaleController {
 		model.addAttribute("selectedSales", selectedSales);
 		return "sales/batch_print";
 	}
+
 
 }

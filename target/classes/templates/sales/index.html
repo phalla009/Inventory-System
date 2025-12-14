@@ -362,30 +362,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	<!-- ✅ Delete Modal Logic -->
 	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-	  const deleteModal = document.getElementById('deleteModal');
-	  const deleteForm = document.getElementById('deleteForm');
-	  const deleteProductName = document.getElementById('deleteProductName');
+	document.addEventListener('DOMContentLoaded', function () {
+	    const btnPrint = document.getElementById('btnPrintSelected');
+	    const printModalEl = document.getElementById('printSalesModal');
+	    const printModal = new bootstrap.Modal(printModalEl);
+	    const messageContainer = document.getElementById('printMessage');
 
-	  deleteModal.addEventListener('show.bs.modal', function(event) {
-	    const button = event.relatedTarget;
-	    const saleId = button.getAttribute('data-id');
-	    const saleName = button.getAttribute('data-name');
+	    btnPrint.addEventListener('click', function () {
+	        const selectedIds = [...document.querySelectorAll('.selectSale:checked')]
+	            .map(cb => cb.value);
 
-	    deleteProductName.textContent = saleName;
-	    deleteForm.action = '/sales/delete/' + saleId;
-	  });
+	        console.log("Selected IDs:", selectedIds); // ADD THIS LINE
+	        console.log("Total selected:", selectedIds.length); // ADD THIS LINE
+
+	        if (selectedIds.length === 0) {
+	            messageContainer.innerHTML = '<p class="text-danger text-center">Please select at least one sale to print!</p>';
+	            printModal.show();
+	            return;
+	        }
+
+	        messageContainer.innerHTML = '';
+	        const url = "/sales/print/batch?ids=" + selectedIds.join(",");
+	        console.log("Opening URL:", url); // ADD THIS LINE
+	        window.open(url, "_blank");
+	    });
 	});
 	</script>
 	<script>
-document.addEventListener('DOMContentLoaded', function () {
-    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-    toastElList.map(function (toastEl) {
-        var toast = new bootstrap.Toast(toastEl)
-        toast.show()
-    })
-});
-</script>
+		document.addEventListener('DOMContentLoaded', function () {
+		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+		    toastElList.map(function (toastEl) {
+		        var toast = new bootstrap.Toast(toastEl)
+		        toast.show()
+		    })
+		});
+	</script>
 
 </body>
 </html>
