@@ -389,6 +389,26 @@ document.addEventListener('DOMContentLoaded', function() {
 	});
 	</script>
 	<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteModal = document.getElementById('deleteModal');
+    const deleteForm = document.getElementById('deleteForm');
+    const deleteProductName = document.getElementById('deleteProductName');
+
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // button that triggered the modal
+        const saleId = button.getAttribute('data-id');
+        const customerName = button.getAttribute('data-name');
+
+        // Update the modal text
+        deleteProductName.textContent = customerName;
+
+        // Update the form action with the correct sale ID
+        deleteForm.setAttribute('action', '/sales/delete/' + saleId);
+    });
+});
+</script>
+	
+	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
 		    toastElList.map(function (toastEl) {
