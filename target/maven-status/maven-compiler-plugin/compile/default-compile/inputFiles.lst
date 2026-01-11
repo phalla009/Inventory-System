@@ -1,3 +1,4 @@
+C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\config\WebConfig.java
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\controller\CategoryController.java
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\controller\DashbordController.java
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\controller\LoginController.java
@@ -17,6 +18,7 @@ C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krs
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\entity\Sales.java
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\entity\Supplier.java
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\entity\Users.java
+C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\interceptor\AuthInterceptor.java
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\InventoryManagementSystemApplication.java
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\repository\CategoryRepository.java
 C:\sts-4.31.0.RELEASE\workspaces\InventoryManagementSystem\src\main\java\com\krsm\repository\ProductRepository.java

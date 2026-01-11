@@ -5,7 +5,9 @@ com\krsm\repository\PurchasesRepository.class
 com\krsm\controller\DashbordController.class
 com\krsm\controller\CategoryController.class
 com\krsm\entity\Supplier$SupplierBuilder.class
+com\krsm\config\WebConfig.class
 com\krsm\entity\Sales.class
+com\krsm\interceptor\AuthInterceptor.class
 com\krsm\entity\Users$UsersBuilder.class
 com\krsm\repository\SaleDetailRepository.class
 com\krsm\entity\Category.class
