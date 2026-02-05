@@ -16,97 +16,157 @@
 <link rel="stylesheet" href="/css/style.css">
 
 <style>
-.dashboard-card {
-	border-radius: 0.75rem;
-	padding: 1.5rem;
-	text-align: center;
-}
-
-.dashboard-card h2 {
-	font-size: 2rem;
+/* ================= GENERAL ================= */
+body {
+	font-family: 'Inter', sans-serif;
+	background-color: #121212;
+	color: #e0e0e0;
 	margin: 0;
 }
 
-.dashboard-card .change {
-	font-size: 0.875rem;
-	color: white;
-	margin-top: 0.25rem;
+h1, h2, h5 {
+	font-weight: 600;
 }
 
-.charts {
-	margin-top: 2rem;
+a, .content a {
+	color: #f39c12;
+	text-decoration: none;
 }
 
+a:hover {
+	color: #e67e22;
+}
+
+/* ================= DASHBOARD CARDS ================= */
+.dashboard-card {
+	border-radius: 1rem;
+	padding: 2rem;
+	text-align: center;
+	transition: transform 0.3s, box-shadow 0.3s;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+	background: linear-gradient(145deg, #1f1f2e, #27293d);
+	cursor: default;
+}
+
+.dashboard-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.dashboard-card h2 {
+	font-size: 2.5rem;
+	margin: 0.5rem 0 0;
+}
+
+.dashboard-card h5 {
+	font-size: 1rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #a0a0a0;
+}
+
+/* ================= CHART CARDS ================= */
+.charts .card {
+	border-radius: 1rem;
+	background: linear-gradient(145deg, #1f1f2e, #27293d);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+	padding: 1.5rem;
+	transition: transform 0.3s;
+}
+
+.charts .card:hover {
+	transform: translateY(-3px);
+}
+
+canvas {
+	background-color: #1f1f2e !important;
+	border-radius: 0.75rem;
+}
+
+/* ================= GRID SPACING ================= */
+.row-cols-md-5>.col {
+	margin-bottom: 1.5rem;
+}
+
+/* ================= RESPONSIVE ================= */
+@media ( max-width : 768px) {
+	.dashboard-card h2 {
+		font-size: 2rem;
+	}
+	.dashboard-card h5 {
+		font-size: 0.875rem;
+	}
+}
 </style>
 </head>
 
 <body>
 	<div class="d-flex bg-dark">
 
-		<!-- Sidebar -->
+		<!-- ================= SIDEBAR ================= -->
+		<!-- Sidebar stays unchanged -->
 		<div th:replace="fragments/sidebar :: sidebar"></div>
 
-		<!-- Main Content -->
-		<div class="content flex-grow-1 p-4">
+		<!-- ================= MAIN CONTENT ================= -->
+		<div class="content flex-grow-1 p-1 bg-dark">
 
-			<h1 class="mb-4">
+			<h1 class="mb-4 text-white">
 				<i class="bi bi-box-seam me-2"></i> Product Dashboard
 			</h1>
+
 
 			<!-- ================= DASHBOARD STATS ================= -->
 			<div class="row g-4 row-cols-1 row-cols-md-5">
 
 				<div class="col">
-					<div class="dashboard-card bg-dark text-white">
+					<div class="dashboard-card">
 						<h5>Total Products</h5>
 						<h2 th:text="${totalProducts}">0</h2>
 					</div>
 				</div>
 
 				<div class="col">
-					<div class="dashboard-card bg-dark text-white">
+					<div class="dashboard-card">
 						<h5>Total Quantity</h5>
 						<h2 th:text="${totalQuantity}">0</h2>
 					</div>
 				</div>
 
 				<div class="col">
-					<div class="dashboard-card bg-dark text-white">
+					<div class="dashboard-card">
 						<h5>Total Daily</h5>
 						<h2 th:text="'$' + ${totalDaily}">$0.00</h2>
 					</div>
 				</div>
 
 				<div class="col">
-					<div class="dashboard-card bg-dark text-white">
+					<div class="dashboard-card">
 						<h5>Total Monthly</h5>
 						<h2 th:text="'$' + ${totalMonthly}">$0.00</h2>
 					</div>
 				</div>
 
 				<div class="col">
-					<div class="dashboard-card bg-dark text-white">
+					<div class="dashboard-card">
 						<h5>Grand Total</h5>
 						<h2 th:text="'$' + ${grandTotal}">$0.00</h2>
-
 					</div>
 				</div>
 
 			</div>
 
-
 			<!-- ================= CHARTS ================= -->
 			<div class="charts row mt-4 g-4">
 
 				<div class="col-md-6">
-					<div class="card p-3 bg-dark">
+					<div class="card">
 						<h5>Stock Value by Category</h5>
 						<canvas id="categoryChart" height="300"></canvas>
 					</div>
 				</div>
 
 				<div class="col-md-6">
-					<div class="card p-3 bg-dark">
+					<div class="card">
 						<h5>Sales per Supplier</h5>
 						<canvas id="supplierChart" height="300"></canvas>
 					</div>
@@ -123,63 +183,60 @@
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 	<script th:inline="javascript">
-    // ================= Stock Value by Category =================
-    const ctx1 = document.getElementById('categoryChart').getContext('2d');
-
-    const categoryLabels = /*[[${categoryLabels}]]*/ [];
-    const categoryData = /*[[${categoryData}]]*/ [];
-
-    new Chart(ctx1, {
-        type: 'line',
-        data: {
-            labels: categoryLabels,
-            datasets: [{
-                label: 'Stock Value',
-                data: categoryData,
-                borderColor: 'white',
-                backgroundColor: 'rgba(16, 16, 23)',
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
+// ================= Stock Value by Category =================
+const ctx1 = document.getElementById('categoryChart').getContext('2d');
+const categoryLabels = /*[[${categoryLabels}]]*/ [];
+const categoryData = /*[[${categoryData}]]*/ [];
+new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            label: 'Stock Value',
+            data: categoryData,
+            borderColor: '#f39c12',
+            backgroundColor: 'rgba(243, 156, 18, 0.2)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#f39c12',
+            pointRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#e0e0e0' } } },
+        scales: {
+            x: { ticks: { color: '#e0e0e0' }, grid: { color: '#2c2c3c' } },
+            y: { beginAtZero: true, ticks: { color: '#e0e0e0' }, grid: { color: '#2c2c3c' } }
         }
-    });
+    }
+});
 
-    // ================= Sales per Supplier =================
-    const ctx2 = document.getElementById('supplierChart').getContext('2d');
-
-    const supplierLabels = /*[[${supplierLabels}]]*/ [];
-    const supplierData = /*[[${supplierData}]]*/ [];
-
-    new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: supplierLabels,
-            datasets: [{
-                label: 'Sales',
-                data: supplierData,
-                backgroundColor: supplierLabels.map(() => 'rgba(16, 16, 23)'),
-                borderColor: supplierLabels.map(() => 'white'),
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
+// ================= Sales per Supplier =================
+const ctx2 = document.getElementById('supplierChart').getContext('2d');
+const supplierLabels = /*[[${supplierLabels}]]*/ [];
+const supplierData = /*[[${supplierData}]]*/ [];
+new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: supplierLabels,
+        datasets: [{
+            label: 'Sales',
+            data: supplierData,
+            backgroundColor: supplierLabels.map(() => 'rgba(243, 156, 18, 0.7)'),
+            borderColor: supplierLabels.map(() => '#f39c12'),
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#e0e0e0' } } },
+        scales: {
+            x: { ticks: { color: '#e0e0e0' }, grid: { color: '#2c2c3c' } },
+            y: { beginAtZero: true, ticks: { color: '#e0e0e0' }, grid: { color: '#2c2c3c' } }
         }
-    });
+    }
+});
 </script>
 
 
