@@ -30,4 +30,9 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         repository.deleteById(id);
     }
+
+	public boolean hasProducts(Long id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

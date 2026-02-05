@@ -55,25 +55,22 @@ public class SaleController {
 	public String saveSale(@ModelAttribute("sale") Sales sale, @RequestParam("productId") Long productId,
 			RedirectAttributes redirectAttributes) {
 
-		// Fetch the full product from DB
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Product ID"));
 
-		// Check stock
 		int newQty = product.getQuantity() - sale.getQuantity();
 		if (newQty < 0) {
 			redirectAttributes.addFlashAttribute("errorMessage", "❌ Not enough stock!");
-			return "redirect:/sales/add";
+			return "redirect:/sales";
 		}
 
-		// Update stock
 		product.setQuantity(newQty);
 		productRepository.save(product);
 
-		// Set sale details
 		sale.setProduct(product);
 		sale.setCreated_at(LocalDateTime.now());
-		sale.setSubtotal(sale.getQuantity() * sale.getPrice());
+
+		// subtotal & total_amount auto-calculated in entity
 		saleRepository.save(sale);
 
 		redirectAttributes.addFlashAttribute("successMessage", "✅ Sale added successfully!");
@@ -93,39 +90,47 @@ public class SaleController {
 	// ✅ 5. Update sale with stock adjustment
 	@PostMapping("/update/{id}")
 	public String updateSale(@PathVariable("id") Long id, @ModelAttribute("sale") Sales saleDetails,
-			RedirectAttributes redirectAttributes) {
+	                         RedirectAttributes redirectAttributes) {
 
-		Sales sale = saleRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
+	    Sales sale = saleRepository.findById(id)
+	            .orElseThrow(() -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
 
-		// Fetch full product from DB
-		Product product = productRepository.findById(saleDetails.getProduct().getId())
-				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Product ID"));
+	    // Fetch full product from DB
+	    Product product = productRepository.findById(saleDetails.getProduct().getId())
+	            .orElseThrow(() -> new IllegalArgumentException("❌ Invalid Product ID"));
 
-		// Calculate stock difference
-		int qtyDiff = saleDetails.getQuantity() - sale.getQuantity();
-		int newQty = product.getQuantity() - qtyDiff;
-		if (newQty < 0) {
-			redirectAttributes.addFlashAttribute("errorMessage", "❌ Not enough stock!");
-			return "redirect:/sales/edit/" + id;
-		}
+	    // Calculate stock difference
+	    int qtyDiff = saleDetails.getQuantity() - sale.getQuantity();
+	    int newQty = product.getQuantity() - qtyDiff;
+	    if (newQty < 0) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "❌ Update failed! Not enough stock!");
+	        return "redirect:/sales";
+	    }
 
-		// Update stock
-		product.setQuantity(newQty);
-		productRepository.save(product);
+	    // Update stock
+	    product.setQuantity(newQty);
+	    productRepository.save(product);
 
-		// Update sale
-		sale.setSale_date(saleDetails.getSale_date());
-		sale.setCustomer_name(saleDetails.getCustomer_name());
-		sale.setProduct(product);
-		sale.setQuantity(saleDetails.getQuantity());
-		sale.setPrice(saleDetails.getPrice());
-		sale.setSubtotal(saleDetails.getQuantity() * saleDetails.getPrice());
-		saleRepository.save(sale);
+	    // Update sale
+	    sale.setSale_date(saleDetails.getSale_date());
+	    sale.setCustomer_name(saleDetails.getCustomer_name());
+	    sale.setProduct(product);
+	    sale.setQuantity(saleDetails.getQuantity());
+	    sale.setPrice(saleDetails.getPrice());
+	    sale.setDiscount(saleDetails.getDiscount()); // ✅ update discount
 
-		redirectAttributes.addFlashAttribute("successMessage", "✅ Sale updated successfully!");
-		return "redirect:/sales";
+	    // Recalculate subtotal and total_amount
+	    double subtotal = sale.getQuantity() * sale.getPrice();
+	    sale.setSubtotal(subtotal);
+	    double totalAmount = subtotal - (subtotal * sale.getDiscount() / 100);
+	    sale.setTotal_amount(totalAmount); // ✅ save total after discount
+
+	    saleRepository.save(sale);
+
+	    redirectAttributes.addFlashAttribute("successMessage", "✅ Sale updated successfully!");
+	    return "redirect:/sales";
 	}
+
 
 	// ✅ 6. Delete sale and restore stock
 	@PostMapping("/delete/{id}")
@@ -143,7 +148,6 @@ public class SaleController {
 		return "redirect:/sales";
 	}
 
-
 	@GetMapping("/print/batch")
 	public String printBatch(@RequestParam("ids") String ids, Model model) {
 		List<Long> saleIds = Arrays.stream(ids.split(",")).map(Long::parseLong).toList();
@@ -155,6 +159,5 @@ public class SaleController {
 		model.addAttribute("selectedSales", selectedSales);
 		return "sales/batch_print";
 	}
-
 
 }

@@ -26,6 +26,7 @@ public class Sales {
 
 	private int quantity;
 	private double price;
+	private double discount = 0.0;
 	private double subtotal;
 	private double total_amount;
 	private LocalDateTime created_at;
@@ -37,9 +38,11 @@ public class Sales {
 	@PreUpdate
 	public void calculateTotals() {
 		this.subtotal = this.quantity * this.price;
-		this.total_amount = this.subtotal;
+		double discountAmount = this.subtotal * (this.discount / 100);
+		this.total_amount = this.subtotal - discountAmount; // ✅ subtract discount
 		if (this.created_at == null) {
 			this.created_at = LocalDateTime.now();
 		}
 	}
+
 }

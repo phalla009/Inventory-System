@@ -4,6 +4,7 @@ body {
 	min-height: 100vh;
 	display: flex;
 }
+
 /* Sidebar wrapper */
 .sidebar {
 	min-height: 100vh;
@@ -112,13 +113,53 @@ h1 {
 	width: 50%;
 }
 
+/* Mobile responsiveness */
 @media ( max-width : 768px) {
 	.btn-success, .btn-secondary {
 		width: 100%;
 		margin-bottom: 10px;
 	}
+	.content {
+		width: 100%;
+		margin: 10px;
+		padding: 15px;
+	}
+	.sidebar {
+		width: 200px;
+	}
+	.table-container {
+		padding: 20px;
+		margin: 20px 10px;
+	}
 }
 
+/* Tablet responsiveness */
+@media ( min-width : 769px) and (max-width: 1024px) {
+	.content {
+		width: calc(100% - 280px); /* adjust content width based on sidebar */
+		margin: 15px;
+		padding: 20px;
+	}
+	.sidebar {
+		width: 220px; /* slightly smaller sidebar */
+	}
+	.table-container {
+		padding: 25px;
+		margin: 25px 15px;
+	}
+	.btn-success, .btn-secondary {
+		width: 70%;
+		margin-bottom: 10px;
+	}
+	h1 {
+		font-size: 28px;
+	}
+	h3 {
+		font-size: 22px;
+	}
+}
+
+/* Status colors */
 .status-active {
 	color: green;
 	font-weight: 600;

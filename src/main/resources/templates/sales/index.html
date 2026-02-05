@@ -25,7 +25,7 @@
 </style>
 <body>
 
-	<div class="d-flex">
+	<div class="d-flex bg-dark">
 		<!-- ✅ Sidebar Fragment -->
 		<div th:replace="fragments/sidebar :: sidebar"></div>
 
@@ -110,8 +110,7 @@
 			<div style="max-height: 450px; overflow-y: auto;">
 				<!-- ✅ Sales Table -->
 				<table class="table table-bordered table-hover align-middle">
-					<thead class="table-dark text-center"
-						style="position: sticky; top: 0; z-index: 2;">
+					<thead class="table-dark text-center">
 						<tr>
 							<th>Check</th>
 							<th>ID</th>
@@ -119,10 +118,12 @@
 							<th>Customer Name</th>
 							<th>Product</th>
 							<th>SubTotal ($)</th>
+							<th>Discount (%)</th>
+							<th>Total ($)</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
-					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
+					<tbody>
 						<tr th:each="sale : ${salesList}">
 							<td class="text-center"><input type="checkbox"
 								class="selectSale" th:value="${sale.id}" /></td>
@@ -133,30 +134,28 @@
 							<td th:text="${sale.product != null ? sale.product.name : 'N/A'}"></td>
 							<td
 								th:text="${#numbers.formatDecimal(sale.subtotal, 1, 2)} + ' $'"></td>
-
-							<td class="text-center" style="font-family: Arial, sans-serif;"​​>
-
-								<button type="button" class="btn btn-warning btn-sm"
-									data-bs-toggle="modal" data-bs-target="#editSalesModal"
-									th:attr="data-id=${sale.id}">
+							<td th:text="${sale.discount} + '%'"></td>
+							<td
+								th:text="${#numbers.formatDecimal(sale.subtotal - (sale.subtotal * (sale.discount / 100)), 1, 2)} + ' $'"></td>
+							<td class="text-center">
+								<button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+									data-bs-target="#editSalesModal" th:attr="data-id=${sale.id}">
 									<i class="bi bi-pencil-square"></i>
-								</button> <span style="font-family: Arial, sans-serif;">
-									<button type="button" class="btn btn-danger btn-sm"
-										data-bs-toggle="modal" data-bs-target="#deleteModal"
-										th:attr="data-id=${sale.id}, data-name=${sale.customer_name}">
-										<i class="bi bi-trash"></i>
-									</button>
-							</span>
+								</button>
+								<button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+									data-bs-target="#deleteModal"
+									th:attr="data-id=${sale.id}, data-name=${sale.customer_name}">
+									<i class="bi bi-trash"></i>
+								</button>
 							</td>
 						</tr>
-
-						<!-- Show message if salesList is empty -->
 						<tr th:if="${#lists.isEmpty(salesList)}">
-							<td colspan="7" class="text-center text-muted">No sales
+							<td colspan="9" class="text-center text-muted">No sales
 								found.</td>
 						</tr>
 					</tbody>
 				</table>
+
 			</div>
 		</div>
 	</div>
@@ -236,12 +235,12 @@
 							<div class="col">
 								<button type="button" class="btn btn-secondary w-100"
 									data-bs-dismiss="modal">
-									<i class="bi bi-x-circle me-1"></i> Cancel
+									<i class="bi bi-x-circle me-1"></i> No, keep it
 								</button>
 							</div>
 							<div class="col">
 								<button type="submit" class="btn btn-danger w-100">
-									<i class="bi bi-trash me-1"></i> Delete
+									<i class="bi bi-trash me-1"></i> Yes, Delete!
 								</button>
 							</div>
 						</div>
@@ -407,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-	
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))

@@ -45,7 +45,7 @@ public class SaleSummaryController {
 		// Select box options
 		model.addAttribute("weeks", IntStream.rangeClosed(1, 53).boxed().toList());
 		model.addAttribute("months", IntStream.rangeClosed(1, 12).boxed().toList());
-		model.addAttribute("years", IntStream.rangeClosed(2023, 2030).boxed().toList());
+		model.addAttribute("years", IntStream.rangeClosed(2025, 2050).boxed().toList());
 
 		model.addAttribute("selectedWeek", week);
 		model.addAttribute("selectedMonth", month);

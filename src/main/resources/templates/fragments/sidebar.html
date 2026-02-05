@@ -40,6 +40,35 @@
 					</ul>
 				</div>
 			</li>
+			<!-- Category  -->
+			
+			<li class="nav-item"
+				th:if="${session.userRole == 'admin' or session.userRole == 'staff'}">
+
+				<a class="nav-link text-white" data-bs-toggle="collapse"
+				href="#categoryMenu" role="button" aria-expanded="false"
+				aria-controls="categoryMenu"> <i class="bi bi-tags me-2"></i>
+					Category <i class="bi bi-caret-down-fill float-end"></i>
+			</a>
+
+				<div class="collapse ms-3" id="categoryMenu">
+					<ul class="nav flex-column">
+
+						<!-- All Categories -->
+						<li class="nav-item"><a href="/categories"
+							class="nav-link text-white"> <i class="bi bi-list-ul me-2"></i>
+								All Categories
+						</a></li>
+
+						<!-- Add Category -->
+						<li class="nav-item"><a data-bs-toggle="modal"
+							data-bs-target="#addCategoryModal" class="nav-link text-white">
+								<i class="bi bi-plus-circle me-2"></i> Add Category
+						</a></li>
+
+					</ul>
+				</div>
+			</li>
 
 			<!-- Suppliers -->
 			<li class="nav-item"

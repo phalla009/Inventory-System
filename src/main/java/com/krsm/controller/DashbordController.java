@@ -1,46 +1,80 @@
 package com.krsm.controller;
 
 import com.krsm.entity.Product;
-import com.krsm.service.ProductService;
-
-import jakarta.servlet.http.HttpSession;
+import com.krsm.entity.Sales;
+import com.krsm.repository.ProductRepository;
+import com.krsm.repository.SaleRepository;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class DashbordController {
 
-	private final ProductService productService;
+	private final ProductRepository productRepository;
+	private final SaleRepository saleRepository;
 
-	public DashbordController(ProductService productService) {
-		this.productService = productService;
+	public DashbordController(ProductRepository productRepository, SaleRepository saleRepository) {
+		this.productRepository = productRepository;
+		this.saleRepository = saleRepository;
 	}
 
-	@GetMapping({ "/dashboard" })
-	public String showDashboard(Model model, HttpSession session) {
-		List<Product> products = productService.getAllProducts();
-		// Check if user is logged in
-        if (session.getAttribute("userRole") == null) {
-            return "redirect:/login"; // not logged in → redirect to login
-        }
-		if (products == null)
-			products = new ArrayList<>();
+	@GetMapping("/dashboard")
+	public String dashboard(Model model) {
 
-		model.addAttribute("products", products);
-		model.addAttribute("totalQuantity", products.stream().mapToInt(Product::getQuantity).sum());
-		model.addAttribute("totalValue", products.stream().mapToDouble(p -> p.getPrice() * p.getQuantity()).sum());
+	    long totalProducts = productRepository.count();
+	    int totalQuantity = productRepository.findAll().stream().mapToInt(Product::getQuantity).sum();
+	    LocalDate today = LocalDate.now();
 
-		// Get role from session and pass to template
-		String userRole = (String) session.getAttribute("userRole");
-		model.addAttribute("userRole", userRole);
+	    double totalDaily = saleRepository.findAll().stream()
+	            .filter(s -> s.getSale_date().toLocalDate().isEqual(today))
+	            .mapToDouble(Sales::getSubtotal).sum();
 
-		return "dashboard";
+	    YearMonth thisMonth = YearMonth.now();
+	    double totalMonthly = saleRepository.findAll().stream()
+	            .filter(s -> YearMonth.from(s.getSale_date().toLocalDate()).equals(thisMonth))
+	            .mapToDouble(Sales::getSubtotal).sum();
+
+	    double grandTotal = saleRepository.findAll().stream().mapToDouble(Sales::getSubtotal).sum();
+
+	    model.addAttribute("totalProducts", totalProducts);
+	    model.addAttribute("totalQuantity", totalQuantity);
+	    model.addAttribute("totalDaily", totalDaily);
+	    model.addAttribute("totalMonthly", totalMonthly);
+	    model.addAttribute("grandTotal", grandTotal);
+
+	    // Stock value by category
+	    Map<String, Double> stockByCategory = productRepository.findAll().stream()
+	            .collect(Collectors.groupingBy(
+	                    p -> p.getCategory().getName(),  // ✅ Use category name
+	                    Collectors.summingDouble(p -> p.getQuantity() * p.getPrice())
+	            ));
+
+	    model.addAttribute("categoryLabels", stockByCategory.keySet().stream().toList());
+	    model.addAttribute("categoryData", stockByCategory.values().stream().toList());
+	    
+	 // Sales per Supplier
+	    Map<String, Double> salesBySupplier = saleRepository.findAll().stream()
+	            .collect(Collectors.groupingBy(
+	                    s -> s.getProduct().getSupplier().getName(), // Use supplier name
+	                    Collectors.summingDouble(Sales::getSubtotal) // Total sales per supplier
+	            ));
+
+	    List<String> supplierLabels = salesBySupplier.keySet().stream().toList();
+	    List<Double> supplierData = salesBySupplier.values().stream().toList();
+
+	    model.addAttribute("supplierLabels", supplierLabels);
+	    model.addAttribute("supplierData", supplierData);
+
+
+	    return "dashboard";
 	}
+
 }
