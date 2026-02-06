@@ -19,7 +19,7 @@
 </head>
 
 <body>
-	<div class="d-flex bg-dark">
+	<div class="d-flex">
 
 		<!-- Sidebar -->
 		<div th:replace="fragments/sidebar :: sidebar"></div>
@@ -61,6 +61,17 @@
 				data-bs-target="#addCategoryModal">
 				<i class="bi bi-plus-circle me-1"></i> Add Category
 			</button>
+			<!-- Search Categories -->
+			<div class="mb-3" style="width: 50%;">
+				<div class="input-group">
+					<span class="input-group-text" id="search-icon"
+						style="background-color: white; border-right: 0;"> <i
+						class="bi bi-search"></i>
+					</span> <input type="text" id="categorySearch" class="form-control"
+						placeholder="Search categories..."
+						style="background-color: white; border-left: 0;">
+				</div>
+			</div>
 
 			<!-- Category Table -->
 			<div style="max-height: 450px; overflow-y: auto;">
@@ -212,6 +223,35 @@
         });
     });
 </script>
+	<script>
+document.getElementById('categorySearch').addEventListener('keyup', function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr'); // select all rows
+
+    let visibleCount = 0; // count visible rows
+
+    rows.forEach(row => {
+        // skip "No categories found" row
+        if (row.querySelector('td[colspan="5"]')) return;
+
+        const categoryName = row.cells[1].textContent.toLowerCase();
+        if (categoryName.includes(filter)) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Show "No categories found" row if nothing matches
+    const noDataRow = document.querySelector('tbody tr td[colspan="5"]').parentElement;
+    if (noDataRow) {
+        noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+    }
+});
+</script>
+
+
 
 	<script>
 		document.getElementById('addCategoryModal').addEventListener('show.bs.modal', () => {

@@ -54,10 +54,16 @@
 					<button type="submit" class="btn btn-primary w-100">Filter</button>
 				</div>
 				<div class="col-md-6">
-					<label class="form-label">Customer Name</label> <input type="text"
-						name="customer" class="form-control" placeholder="Search by customer name"
-						th:value="${selectedCustomer}">
+					<label class="form-label">Customer Name</label>
+					<div class="input-group">
+						<span class="input-group-text" id="customer-icon"> <i
+							class="bi bi-search"></i>
+						</span> <input type="text" id="customerSearch" class="form-control"
+							placeholder="Search by customer name" aria-label="Customer"
+							aria-describedby="customer-icon">
+					</div>
 				</div>
+
 
 
 			</form>
@@ -121,6 +127,36 @@
 			</div>
 		</div>
 	</div>
+	<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('customerSearch');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    searchInput.addEventListener('input', function () {
+        const query = searchInput.value.toLowerCase();
+        let anyVisible = false;
+
+        tableRows.forEach(row => {
+            // Skip "No sales found" row
+            if (row.querySelector('td[colspan="7"]')) return;
+
+            const customerName = row.querySelector('td:nth-child(8)').textContent.toLowerCase();
+            if (customerName.includes(query)) {
+                row.style.display = '';
+                anyVisible = true;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Show "No sales found" row if nothing matches
+        const noDataRow = document.querySelector('tbody tr[th\\:if]');
+        if (noDataRow) {
+            noDataRow.style.display = anyVisible ? 'none' : '';
+        }
+    });
+});
+</script>
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

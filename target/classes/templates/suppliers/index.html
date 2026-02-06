@@ -65,11 +65,23 @@
 				data-bs-toggle="modal" data-bs-target="#addSupplierModal">
 				<i class="bi bi-plus-circle me-1"></i> Add Supplier
 			</button>
+			<!-- Search Suppliers -->
+			<div class="mb-3" style="width: 50%;">
+				<div class="input-group">
+					<span class="input-group-text"
+						style="background-color: white; border-right: 0;"> <i
+						class="bi bi-search"></i>
+					</span> <input type="text" id="supplierSearch" class="form-control"
+						placeholder="Search suppliers by name, email, or phone..."
+						style="background-color: white; border-left: 0;">
+				</div>
+			</div>
 
 			<div style="max-height: 450px; overflow-y: auto;">
 				<!-- ✅ Supplier Table -->
 				<table class="table table-bordered table-hover align-middle">
-					<thead class="table-dark text-center" style="position: sticky; top: 0; z-index: 2;">
+					<thead class="table-dark text-center"
+						style="position: sticky; top: 0; z-index: 2;">
 						<tr>
 							<th>ID</th>
 							<th>Name</th>
@@ -210,6 +222,38 @@
 	</script>
 
 	<!-- add new form  -->
+	<script>
+document.getElementById('supplierSearch').addEventListener('keyup', function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr');
+
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        // Skip "No suppliers found" row
+        if (row.querySelector('td[colspan="7"]')) return;
+
+        // Get text from multiple columns: Name, Email, Phone
+        const name = row.cells[1].textContent.toLowerCase();
+        const email = row.cells[3].textContent.toLowerCase();
+        const phone = row.cells[4].textContent.toLowerCase();
+
+        if (name.includes(filter) || email.includes(filter) || phone.includes(filter)) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Show "No suppliers found" row if nothing matches
+    const noDataRow = document.querySelector('tbody tr td[colspan="7"]').parentElement;
+    if (noDataRow) {
+        noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+    }
+});
+</script>
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 		    const addSupplierModal = document.getElementById('addSupplierModal');

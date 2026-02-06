@@ -69,6 +69,17 @@
 				data-bs-toggle="modal" data-bs-target="#addProductModal">
 				<i class="bi bi-plus-circle me-1"></i> Add Product
 			</button>
+			<div class="mb-3" style="width: 50%;">
+				<div class="input-group">
+					<span class="input-group-text" id="search-icon"> <i
+						class="bi bi-search"></i>
+					</span> <input type="text" id="searchInput" class="form-control"
+						placeholder="Search products by product name , category..." aria-label="Search"
+						aria-describedby="search-icon">
+				</div>
+			</div>
+
+
 			<div style="max-height: 450px; overflow-y: auto;">
 				<table class="table table-bordered table-hover align-middle">
 					<thead class="table-dark"
@@ -321,6 +332,40 @@
 		    })
 		});
 	</script>
+	<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    searchInput.addEventListener('input', function () {
+        const query = searchInput.value.toLowerCase();
+
+        let anyVisible = false; // Track if any row is visible
+
+        tableRows.forEach(row => {
+            // Skip "No products found" row
+            if (row.querySelector('td[colspan="9"]')) return;
+
+            const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const categoryName = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+
+            if (productName.includes(query) || categoryName.includes(query)) {
+                row.style.display = '';
+                anyVisible = true;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Show "No products found" row if nothing matches
+        const noDataRow = document.querySelector('tbody tr[th\\:if]');
+        if (noDataRow) {
+            noDataRow.style.display = anyVisible ? 'none' : '';
+        }
+    });
+});
+</script>
+
 
 </body>
 </html>
