@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -145,6 +146,50 @@ public class ProductController {
 
 		productService.deleteProduct(id);
 		redirectAttributes.addFlashAttribute("successMessage", "Product deleted successfully!");
+		return "redirect:/products";
+	}
+
+	@PostMapping("/delete-multiple")
+	public String deleteMultipleProducts(@RequestParam(value = "productIds", required = false) List<Long> ids,
+			RedirectAttributes redirectAttributes) {
+		if (ids == null || ids.isEmpty()) {
+			redirectAttributes.addFlashAttribute("errorMessage", "No products were selected for deletion.");
+			return "redirect:/products";
+		}
+
+		// Keep track of which products can and cannot be deleted due to constraints
+		java.util.List<Long> deletableIds = new java.util.ArrayList<>();
+		int restrictedCount = 0;
+
+		for (Long id : ids) {
+			boolean hasSales = !productService.hasSales(id);
+			boolean hasPurchases = !productService.hasPurchases(id);
+
+			if (hasSales || hasPurchases) {
+				restrictedCount++;
+			} else {
+				deletableIds.add(id);
+			}
+		}
+
+		// Execute deletion if any are clear to delete
+		if (!deletableIds.isEmpty()) {
+			productService.deleteAllById(deletableIds);
+		}
+
+		// Build user-friendly feedback alert messages
+		if (restrictedCount > 0 && !deletableIds.isEmpty()) {
+			redirectAttributes.addFlashAttribute("successMessage",
+					"Successfully deleted " + deletableIds.size() + " products.");
+			redirectAttributes.addFlashAttribute("errorMessage", "" + restrictedCount
+					+ " products could not be deleted because they are linked to sales or purchases.");
+		} else if (restrictedCount > 0) {
+			redirectAttributes.addFlashAttribute("errorMessage",
+					"Selected products cannot be deleted! They are used in existing sales or purchases.");
+		} else {
+			redirectAttributes.addFlashAttribute("successMessage", "Selected products deleted successfully!");
+		}
+
 		return "redirect:/products";
 	}
 

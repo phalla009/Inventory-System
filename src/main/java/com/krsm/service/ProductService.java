@@ -47,4 +47,9 @@ public class ProductService {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public void deleteAllById(List<Long> ids) {
+		// TODO Auto-generated method stub
+		
+	}
 }

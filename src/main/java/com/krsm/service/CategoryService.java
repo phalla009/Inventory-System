@@ -35,4 +35,9 @@ public class CategoryService {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public void deleteAllById(List<Long> deletableIds) {
+		// TODO Auto-generated method stub
+		
+	}
 }

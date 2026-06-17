@@ -13,113 +13,120 @@
 <link
 	href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap"
 	rel="stylesheet">
-<!-- Favicon / Logo -->
-<link rel="icon" type="image/png" href="/images/kr.png">
+<link class="icon" type="image/png" href="/images/kr.png">
 
 </head>
 <body>
 	<div class="d-flex">
-		<!-- Sidebar -->
 		<div th:replace="fragments/sidebar :: sidebar"></div>
 
-		<!-- Main Content -->
 		<div class="content p-4">
 			<h1 class="mb-3">
 				<i class="bi bi-box-seam me-2"></i> Products Listing
 			</h1>
 
-			<!-- Toast Container -->
 			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-				<!-- Error Toast -->
 				<div th:replace="~{fragments/toasts :: toast-container}"></div>
 			</div>
 
+			<form id="bulkDeleteForm" th:action="@{/products/delete-multiple}"
+				method="post">
 
-			<!-- 	<a href="/products/add" class="btn btn-primary mb-3"> <i
-				class="bi bi-plus-circle me-1"></i> Add Product
-			</a> -->
-			<button type="button" class="btn btn-primary mb-3"
-				data-bs-toggle="modal" data-bs-target="#addProductModal">
-				<i class="bi bi-plus-circle me-1"></i> Add Product
-			</button>
-			<div class="mb-3 d-flex gap-2" style="width: 70%;">
-				<div class="input-group">
-					<span class="input-group-text" id="search-icon"> <i
-						class="bi bi-search"></i>
-					</span> <input type="text" id="searchInput" class="form-control"
-						placeholder="Search products by product name, category..."
-						aria-label="Search" aria-describedby="search-icon">
+				<div class="mb-3 d-flex gap-2">
+					<button type="button" class="btn btn-primary"
+						data-bs-toggle="modal" data-bs-target="#addProductModal">
+						<i class="bi bi-plus-circle me-1"></i> Add Product
+					</button>
+
+					<button type="button" id="btnBulkDelete"
+						class="btn btn-danger d-none" data-bs-toggle="modal"
+						data-bs-target="#bulkDeleteModal">
+						<i class="bi bi-trash me-1"></i> Delete Selected (<span
+							id="selectCount">0</span>)
+					</button>
 				</div>
-				<select id="categoryFilter" class="form-select"
-					style="max-width: 200px;">
-					<option value="">All Categories</option>
-					<th:block th:each="product : ${products}">
-						<option th:if="${product.category != null}"
-							th:value="${product.category.name}"
-							th:text="${product.category.name}"></option>
-					</th:block>
-				</select>
-			</div>
 
+				<div class="mb-3 d-flex gap-2" style="width: 70%;">
+					<div class="input-group">
+						<span class="input-group-text" id="search-icon"> <i
+							class="bi bi-search"></i>
+						</span> <input type="text" id="searchInput" class="form-control"
+							placeholder="Search products by product name, category..."
+							aria-label="Search" aria-describedby="search-icon">
+					</div>
+					<select id="categoryFilter" class="form-select"
+						style="max-width: 200px;">
+						<option value="">All Categories</option>
+						<th:block th:each="product : ${products}">
+							<option th:if="${product.category != null}"
+								th:value="${product.category.name}"
+								th:text="${product.category.name}"></option>
+						</th:block>
+					</select>
+				</div>
 
-			<div style="max-height: 450px; overflow-y: auto;">
-				<table class="table table-bordered table-hover align-middle">
-					<thead class="table-dark"
-						style="position: sticky; top: 0; z-index: 2;">
-						<tr>
-							<th>ID</th>
-							<th>Product Name</th>
-							<th>Quantity</th>
-							<th>Price</th>
-							<th>Category</th>
-							<th>Supplier</th>
-							<th>Status</th>
-							<th>Created At</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
-						<tr th:each="product, iterStat : ${products}">
-							<td th:text="${iterStat.count}"></td>
-							<td th:text="${product.name}"></td>
-							<td th:text="${product.quantity}"></td>
-							<td th:text="${product.price} + ' $'"></td>
-							<td
-								th:text="${product.category != null ? product.category.name : 'N/A'}"></td>
-							<td
-								th:text="${product.supplier != null ? product.supplier.name : 'N/A'}"></td>
-							<td><span th:if="${product.status == 'Active'}"> <i
-									class="bi bi-check-circle text-success"></i>
-							</span> <span th:if="${product.status == 'Inactive'}"> <i
-									class="bi bi-x-circle text-danger"></i>
-							</span> <span th:text="${product.status}" class="ms-1"></span></td>
-							<td
-								th:text="${product.create_at != null ? #temporals.format(product.create_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-							<td>
-								<button type="button" class="btn btn-warning btn-sm"
-									data-bs-toggle="modal" data-bs-target="#editProductModal"
-									th:attr="data-id=${product.id}">
-									<i class="bi bi-pencil-square"></i>
-								</button>
-								<button type="button" class="btn btn-danger btn-sm"
-									data-bs-toggle="modal" data-bs-target="#deleteModal"
-									th:attr="data-id=${product.id}, data-name=${product.name}">
-									<i class="bi bi-trash"></i>
-								</button>
-							</td>
-						</tr>
-						<tr th:if="${#lists.isEmpty(products)}">
-							<td colspan="9" class="text-center">No products found.</td>
-						</tr>
-
-					</tbody>
-
-				</table>
-			</div>
+				<div style="max-height: 450px; overflow-y: auto;">
+					<table class="table table-bordered table-hover align-middle">
+						<thead class="table-dark"
+							style="position: sticky; top: 0; z-index: 2;">
+							<tr>
+								<th style="width: 40px;" class="text-center"><input
+									type="checkbox" id="selectAll" class="form-check-input">
+								</th>
+								<th>ID</th>
+								<th>Product Name</th>
+								<th>Quantity</th>
+								<th>Price</th>
+								<th>Category</th>
+								<th>Supplier</th>
+								<th>Status</th>
+								<th>Created At</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
+							<tr th:each="product, iterStat : ${products}">
+								<td class="text-center"><input type="checkbox"
+									name="productIds" th:value="${product.id}"
+									class="form-check-input row-checkbox"></td>
+								<td th:text="${iterStat.count}"></td>
+								<td th:text="${product.name}"></td>
+								<td th:text="${product.quantity}"></td>
+								<td th:text="${product.price} + ' $'"></td>
+								<td
+									th:text="${product.category != null ? product.category.name : 'N/A'}"></td>
+								<td
+									th:text="${product.supplier != null ? product.supplier.name : 'N/A'}"></td>
+								<td><span th:if="${product.status == 'Active'}"> <i
+										class="bi bi-check-circle text-success"></i>
+								</span> <span th:if="${product.status == 'Inactive'}"> <i
+										class="bi bi-x-circle text-danger"></i>
+								</span> <span th:text="${product.status}" class="ms-1"></span></td>
+								<td
+									th:text="${product.create_at != null ? #temporals.format(product.create_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
+								<td>
+									<button type="button" class="btn btn-warning btn-sm"
+										data-bs-toggle="modal" data-bs-target="#editProductModal"
+										th:attr="data-id=${product.id}">
+										<i class="bi bi-pencil-square"></i>
+									</button>
+									<button type="button" class="btn btn-danger btn-sm"
+										data-bs-toggle="modal" data-bs-target="#deleteModal"
+										th:attr="data-id=${product.id}, data-name=${product.name}">
+										<i class="bi bi-trash"></i>
+									</button>
+								</td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(products)}">
+								<td colspan="10" class="text-center">No products found.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
 		</div>
 	</div>
 
-	<!-- Add Product Modal -->
 	<div class="modal fade" id="addProductModal" tabindex="-1"
 		aria-labelledby="addProductModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg modal-dialog-centered">
@@ -129,26 +136,20 @@
 					<h5 class="modal-title text-center" id="addProductModalLabel">
 						<i class="bi bi-plus-circle"></i> Add New Product
 					</h5>
-
 				</div>
-
 				<div class="modal-body" id="addProductForm">
 					<div class="text-center py-4">
 						<div class="spinner-border text-primary"></div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
 
-	<!-- Edit Product Modal -->
 	<div class="modal fade" id="editProductModal" tabindex="-1"
 		aria-labelledby="editProductModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg modal-dialog-centered">
 			<div class="modal-content">
-
-				<!-- Modal Header -->
 				<div
 					class="modal-header text-dark justify-content-center position-relative"
 					style="background-color: #ffc107;">
@@ -156,11 +157,7 @@
 						<i class="bi bi-pencil-square"></i> Edit Product
 					</h5>
 				</div>
-
-
-				<!-- Modal Body -->
 				<div class="modal-body" id="editProductForm">
-					<!-- Spinner while loading form -->
 					<div class="text-center py-4">
 						<div class="spinner-border text-primary"></div>
 					</div>
@@ -169,7 +166,6 @@
 		</div>
 	</div>
 
-	<!-- ✅ Delete Confirmation Modal -->
 	<div class="modal fade" id="deleteModal" tabindex="-1"
 		aria-labelledby="deleteModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
@@ -206,23 +202,98 @@
 						</div>
 					</form>
 				</div>
-
 			</div>
 		</div>
 	</div>
 
-	<!-- ✅ Bootstrap JS -->
+	<div class="modal fade" id="bulkDeleteModal" tabindex="-1"
+		aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header bg-danger text-white">
+					<h5 class="modal-title" id="bulkDeleteModalLabel">
+						<i class="bi bi-exclamation-triangle"></i> Confirm Bulk Delete
+					</h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure you want to delete all selected products?</p>
+				</div>
+				<div class="modal-footer">
+					<div class="row g-2 w-100">
+						<div class="col">
+							<button type="button" class="btn btn-secondary w-100"
+								data-bs-dismiss="modal">
+								<i class="bi bi-x-circle me-1"></i> Cancel
+							</button>
+						</div>
+						<div class="col">
+							<button type="button" id="confirmBulkDeleteBtn"
+								class="btn btn-danger w-100">
+								<i class="bi bi-trash me-1"></i> Yes, Delete Selected!
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<!-- add new form  -->
+
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const selectAll = document.getElementById('selectAll');
+		const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+		const btnBulkDelete = document.getElementById('btnBulkDelete');
+		const selectCount = document.getElementById('selectCount');
+		const bulkDeleteForm = document.getElementById('bulkDeleteForm');
+		const confirmBulkDeleteBtn = document.getElementById('confirmBulkDeleteBtn');
+
+		function updateBulkDeleteButton() {
+			// Find checked checkboxes that are currently visible (not filtered out)
+			const checkedCount = Array.from(rowCheckboxes).filter(cb => cb.checked && cb.closest('tr').style.display !== 'none').length;
+			
+			if (checkedCount > 0) {
+				btnBulkDelete.classList.remove('d-none');
+				selectCount.textContent = checkedCount;
+			} else {
+				btnBulkDelete.classList.add('d-none');
+			}
+		}
+
+		// Select/Deselect All Checkboxes
+		selectAll.addEventListener('change', function() {
+			rowCheckboxes.forEach(cb => {
+				// Only select checkboxes that are visible
+				if (cb.closest('tr').style.display !== 'none') {
+					cb.checked = selectAll.checked;
+				}
+			});
+			updateBulkDeleteButton();
+		});
+
+		// Event listener for individual row checkboxes
+		rowCheckboxes.forEach(cb => {
+			cb.addEventListener('change', updateBulkDeleteButton);
+		});
+
+		// Handle submission from bulk delete confirmation modal
+		confirmBulkDeleteBtn.addEventListener('click', function() {
+			bulkDeleteForm.submit();
+		});
+	});
+	</script>
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 		    const addProductModal = document.getElementById('addProductModal');
 		    const formContainer = document.getElementById('addProductForm');
 		
 		    addProductModal.addEventListener('show.bs.modal', function() {
-		        // Fetch the form HTML from your server
-		        fetch('/products/add') // Make sure this endpoint returns the fragment 'add_new_products :: form'
+		        fetch('/products/add') 
 		            .then(response => response.text())
 		            .then(html => {
 		                formContainer.innerHTML = html;
@@ -233,13 +304,12 @@
 		            });
 		    });
 		
-		    // Clear form when modal is closed
 		    addProductModal.addEventListener('hidden.bs.modal', function() {
 		        formContainer.innerHTML = '';
 		    });
 		});
 	</script>
-	<!-- edit form -->
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 		    const editProductModal = document.getElementById('editProductModal');
@@ -249,11 +319,9 @@
 		        const button = event.relatedTarget;
 		        const productId = button.getAttribute('data-id');
 		
-		        // Show spinner while loading
 		        formContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
 		
-		        // Fetch the edit form from the server
-		        fetch(`/products/edit/${productId}`) // Endpoint must return Thymeleaf fragment 'edit_product :: form'
+		        fetch(`/products/edit/${productId}`) 
 		            .then(response => {
 		                if (!response.ok) throw new Error('Network response was not ok');
 		                return response.text();
@@ -267,16 +335,12 @@
 		            });
 		    });
 		
-		    // Optional: clear form when modal is hidden
 		    editProductModal.addEventListener('hidden.bs.modal', function() {
 		        formContainer.innerHTML = '';
 		    });
 		});
 	</script>
 
-
-
-	<!-- ✅ Auto-hide success message -->
 	<script>
 		setTimeout(() => {
 			const alert = document.querySelector('.alert');
@@ -287,7 +351,6 @@
 		}, 3000);
 	</script>
 
-	<!-- ✅ Modal Logic -->
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
 	  const deleteModal = document.getElementById('deleteModal');
@@ -314,57 +377,62 @@
 		    })
 		});
 	</script>
+
 	<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('searchInput');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const tableRows = document.querySelectorAll('tbody tr');
+	document.addEventListener('DOMContentLoaded', function () {
+	    const searchInput = document.getElementById('searchInput');
+	    const categoryFilter = document.getElementById('categoryFilter');
+	    const tableRows = document.querySelectorAll('tbody tr');
 
-    // De-duplicate category options
-    const seen = new Set();
-    categoryFilter.querySelectorAll('option').forEach(opt => {
-        if (opt.value === '') return;
-        if (seen.has(opt.value)) {
-            opt.remove();
-        } else {
-            seen.add(opt.value);
-        }
-    });
+	    const seen = new Set();
+	    categoryFilter.querySelectorAll('option').forEach(opt => {
+	        if (opt.value === '') return;
+	        if (seen.has(opt.value)) {
+	            opt.remove();
+	        } else {
+	            seen.add(opt.value);
+	        }
+	    });
 
-    function filterRows() {
-        const query = searchInput.value.toLowerCase();
-        const selectedCategory = categoryFilter.value.toLowerCase();
-        let anyVisible = false;
+	    function filterRows() {
+	        const query = searchInput.value.toLowerCase();
+	        const selectedCategory = categoryFilter.value.toLowerCase();
+	        let anyVisible = false;
 
-        tableRows.forEach(row => {
-            if (row.querySelector('td[colspan="9"]')) return;
+	        tableRows.forEach(row => {
+	            if (row.querySelector('td[colspan="10"]')) return; // Adjusted to 10 columns
 
-            const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-            const categoryName = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+	            // Adjusted children index because checkbox shifts the text cells over by 1 index
+	            const productName = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); 
+	            const categoryName = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
 
-            const matchesSearch = !query || productName.includes(query) || categoryName.includes(query);
-            const matchesCategory = !selectedCategory || categoryName === selectedCategory;
+	            const matchesSearch = !query || productName.includes(query) || categoryName.includes(query);
+	            const matchesCategory = !selectedCategory || categoryName === selectedCategory;
 
-            if (matchesSearch && matchesCategory) {
-                row.style.display = '';
-                anyVisible = true;
-            } else {
-                row.style.display = 'none';
-            }
-        });
+	            if (matchesSearch && matchesCategory) {
+	                row.style.display = '';
+	                anyVisible = true;
+	            } else {
+	                row.style.display = 'none';
+	                // Uncheck hidden elements so they don't get accidentally deleted
+	                const cb = row.querySelector('.row-checkbox');
+	                if (cb) cb.checked = false;
+	            }
+	        });
 
-        // Show/hide "No products found" row
-        const noDataRow = document.querySelector('td[colspan="9"]')?.closest('tr');
-        if (noDataRow) {
-            noDataRow.style.display = anyVisible ? 'none' : '';
-        }
-    }
+	        const noDataRow = document.querySelector('td[colspan="10"]')?.closest('tr');
+	        if (noDataRow) {
+	            noDataRow.style.display = anyVisible ? 'none' : '';
+	        }
+	        
+	        // Recalculate badge item count post-filtering
+	        const event = new Event('change');
+	        document.querySelector('.row-checkbox')?.dispatchEvent(event);
+	    }
 
-    searchInput.addEventListener('input', filterRows);
-    categoryFilter.addEventListener('change', filterRows);
-});
-</script>
-
-
+	    searchInput.addEventListener('input', filterRows);
+	    categoryFilter.addEventListener('change', filterRows);
+	});
+	</script>
 </body>
 </html>

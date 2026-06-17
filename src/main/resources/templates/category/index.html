@@ -21,105 +21,111 @@
 <body>
 	<div class="d-flex">
 
-		<!-- Sidebar -->
 		<div th:replace="fragments/sidebar :: sidebar"></div>
-		<!-- Toast Messages -->
+
 		<div class="content p-4">
-			<!-- Toast Messages -->
 			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-			<!-- Error Toast -->
 				<div th:replace="~{fragments/toasts :: toast-container}"></div>
 			</div>
-
-			<!-- Main Content -->
 
 			<h1 class="mb-3">
 				<i class="bi bi-tags me-2"></i> Categories Listing
 			</h1>
-			<!-- Add Category -->
-			<button class="btn btn-primary mb-3" data-bs-toggle="modal"
-				data-bs-target="#addCategoryModal">
-				<i class="bi bi-plus-circle me-1"></i> Add Category
-			</button>
-			<!-- Search Categories -->
-			<div class="mb-3" style="width: 50%;">
-				<div class="input-group">
-					<span class="input-group-text" id="search-icon"
-						style="background-color: white; border-right: 0;"> <i
-						class="bi bi-search"></i>
-					</span> <input type="text" id="categorySearch" class="form-control"
-						placeholder="Search categories..."
-						style="background-color: white; border-left: 0;">
+
+			<form id="bulkDeleteForm" th:action="@{/categories/delete-multiple}"
+				method="post">
+
+				<div class="mb-3 d-flex gap-2">
+					<button type="button" class="btn btn-primary"
+						data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+						<i class="bi bi-plus-circle me-1"></i> Add Category
+					</button>
+
+					<button type="button" id="btnBulkDelete"
+						class="btn btn-danger d-none" data-bs-toggle="modal"
+						data-bs-target="#bulkDeleteModal">
+						<i class="bi bi-trash me-1"></i> Delete Selected (<span
+							id="selectCount">0</span>)
+					</button>
 				</div>
-			</div>
 
-			<!-- Category Table -->
-			<div style="max-height: 450px; overflow-y: auto;">
-				<table class="table table-bordered table-hover align-middle">
-					<thead class="table-dark sticky-top">
-						<tr>
-							<th>ID</th>
-							<th>Category Name</th>
-							<th>Status</th>
-							<th>Created At</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
+				<div class="mb-3" style="width: 50%;">
+					<div class="input-group">
+						<span class="input-group-text" id="search-icon"
+							style="background-color: white; border-right: 0;"> <i
+							class="bi bi-search"></i>
+						</span> <input type="text" id="categorySearch" class="form-control"
+							placeholder="Search categories..."
+							style="background-color: white; border-left: 0;">
+					</div>
+				</div>
 
-					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
-						<tr th:each="category ,iterStat : ${categories}">
-							<td th:text="${iterStat.count}"></td>
-							<td th:text="${category.name}"></td>
+				<div style="max-height: 450px; overflow-y: auto;">
+					<table class="table table-bordered table-hover align-middle">
+						<thead class="table-dark sticky-top">
+							<tr>
+								<th style="width: 40px;" class="text-center"><input
+									type="checkbox" id="selectAll" class="form-check-input">
+								</th>
+								<th>ID</th>
+								<th>Category Name</th>
+								<th>Status</th>
+								<th>Created At</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
 
-							<td><span th:if="${category.status == 'Active'}"> <i
-									class="bi bi-check-circle text-success"></i>
-							</span> <span th:if="${category.status == 'Inactive'}"> <i
-									class="bi bi-x-circle text-danger"></i>
-							</span> <span th:text="${category.status}" class="ms-1"></span></td>
+						<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
+							<tr th:each="category ,iterStat : ${categories}">
+								<td class="text-center"><input type="checkbox"
+									name="categoryIds" th:value="${category.id}"
+									class="form-check-input row-checkbox"></td>
+								<td th:text="${iterStat.count}"></td>
+								<td th:text="${category.name}"></td>
 
-							<td
-								th:text="${#temporals.format(category.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+								<td><span th:if="${category.status == 'Active'}"> <i
+										class="bi bi-check-circle text-success"></i>
+								</span> <span th:if="${category.status == 'Inactive'}"> <i
+										class="bi bi-x-circle text-danger"></i>
+								</span> <span th:text="${category.status}" class="ms-1"></span></td>
 
-							<td>
-								<button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-									data-bs-target="#editCategoryModal"
-									th:attr="data-id=${category.id}">
-									<i class="bi bi-pencil-square"></i>
-								</button>
+								<td
+									th:text="${#temporals.format(category.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
 
-								<button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-									data-bs-target="#deleteModal"
-									th:attr="data-id=${category.id}, data-name=${category.name}">
-									<i class="bi bi-trash"></i>
-								</button>
-							</td>
-						</tr>
-						<tr th:if="${#lists.isEmpty(categories)}">
-							<td colspan="5" class="text-center">No categories found.</td>
-						</tr>
+								<td>
+									<button type="button" class="btn btn-warning btn-sm"
+										data-bs-toggle="modal" data-bs-target="#editCategoryModal"
+										th:attr="data-id=${category.id}">
+										<i class="bi bi-pencil-square"></i>
+									</button>
 
-					</tbody>
-				</table>
-			</div>
+									<button type="button" class="btn btn-danger btn-sm"
+										data-bs-toggle="modal" data-bs-target="#deleteModal"
+										th:attr="data-id=${category.id}, data-name=${category.name}">
+										<i class="bi bi-trash"></i>
+									</button>
+								</td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(categories)}">
+								<td colspan="6" class="text-center">No categories found.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
 		</div>
 	</div>
 
 
-	<!-- ================= MODALS ================= -->
-
-	<!-- Add Category Modal -->
 	<div class="modal fade" id="addCategoryModal" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-
 				<div
 					class="modal-header bg-primary text-white justify-content-center">
 					<h5 class="modal-title text-center">
 						<i class="bi bi-plus-circle"></i> Add Category
 					</h5>
 				</div>
-
-
 				<div class="modal-body" id="addCategoryForm">
 					<div class="text-center py-4">
 						<div class="spinner-border text-primary"></div>
@@ -129,7 +135,6 @@
 		</div>
 	</div>
 
-	<!-- Edit Category Modal -->
 	<div class="modal fade" id="editCategoryModal" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -138,7 +143,6 @@
 						<i class="bi bi-pencil-square"></i> Edit Category
 					</h5>
 				</div>
-
 				<div class="modal-body" id="editCategoryForm">
 					<div class="text-center py-4">
 						<div class="spinner-border text-primary"></div>
@@ -148,7 +152,6 @@
 		</div>
 	</div>
 
-	<!-- Delete Modal -->
 	<div class="modal fade" id="deleteModal" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -157,12 +160,9 @@
 						<i class="bi bi-exclamation-triangle"></i> Confirm Delete
 					</h5>
 				</div>
-
 				<div class="modal-body">
-					Are you sure you want to delete: <strong id="deleteCategoryName"></strong>
-					?
+					Are you sure you want to delete: <strong id="deleteCategoryName"></strong>?
 				</div>
-
 				<div class="modal-footer">
 					<form id="deleteForm" method="post" class="w-100">
 						<input type="hidden" name="_method" value="delete">
@@ -181,57 +181,132 @@
 						</div>
 					</form>
 				</div>
-
-
 			</div>
 		</div>
 	</div>
 
-	<!-- ================= SCRIPTS ================= -->
+	<div class="modal fade" id="bulkDeleteModal" tabindex="-1"
+		aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header bg-danger text-white">
+					<h5 class="modal-title" id="bulkDeleteModalLabel">
+						<i class="bi bi-exclamation-triangle"></i> Confirm Bulk Delete
+					</h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure you want to delete all selected categories?</p>
+				</div>
+				<div class="modal-footer">
+					<div class="row g-2 w-100">
+						<div class="col">
+							<button type="button" class="btn btn-secondary w-100"
+								data-bs-dismiss="modal">
+								<i class="bi bi-x-circle me-1"></i> Cancel
+							</button>
+						</div>
+						<div class="col">
+							<button type="button" id="confirmBulkDeleteBtn"
+								class="btn btn-danger w-100">
+								<i class="bi bi-trash me-1"></i> Yes, Delete Selected!
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<!-- ✅ Auto-hide success message -->
+
 	<script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Select all visible toast elements
         const toasts = document.querySelectorAll('.toast.show');
-
         toasts.forEach(toastEl => {
-            const bsToast = new bootstrap.Toast(toastEl, { delay: 3000 }); // 3 seconds
-            bsToast.show(); // show toast
+            const bsToast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            bsToast.show();
         });
     });
-</script>
+	</script>
+
 	<script>
-document.getElementById('categorySearch').addEventListener('keyup', function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('tbody tr'); // select all rows
+	document.addEventListener('DOMContentLoaded', function() {
+		const selectAll = document.getElementById('selectAll');
+		const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+		const btnBulkDelete = document.getElementById('btnBulkDelete');
+		const selectCount = document.getElementById('selectCount');
+		const bulkDeleteForm = document.getElementById('bulkDeleteForm');
+		const confirmBulkDeleteBtn = document.getElementById('confirmBulkDeleteBtn');
 
-    let visibleCount = 0; // count visible rows
+		function updateBulkDeleteButton() {
+			// Count checked items that are currently visible (not hidden by filter queries)
+			const checkedCount = Array.from(rowCheckboxes).filter(cb => cb.checked && cb.closest('tr').style.display !== 'none').length;
+			
+			if (checkedCount > 0) {
+				btnBulkDelete.classList.remove('d-none');
+				selectCount.textContent = checkedCount;
+			} else {
+				btnBulkDelete.classList.add('d-none');
+			}
+		}
 
-    rows.forEach(row => {
-        // skip "No categories found" row
-        if (row.querySelector('td[colspan="5"]')) return;
+		// Master Toggle Box Action
+		selectAll.addEventListener('change', function() {
+			rowCheckboxes.forEach(cb => {
+				if (cb.closest('tr').style.display !== 'none') {
+					cb.checked = selectAll.checked;
+				}
+			});
+			updateBulkDeleteButton();
+		});
 
-        const categoryName = row.cells[1].textContent.toLowerCase();
-        if (categoryName.includes(filter)) {
-            row.style.display = '';
-            visibleCount++;
-        } else {
-            row.style.display = 'none';
-        }
-    });
+		// Child Elements Toggle Action
+		rowCheckboxes.forEach(cb => {
+			cb.addEventListener('change', updateBulkDeleteButton);
+		});
 
-    // Show "No categories found" row if nothing matches
-    const noDataRow = document.querySelector('tbody tr td[colspan="5"]').parentElement;
-    if (noDataRow) {
-        noDataRow.style.display = visibleCount === 0 ? '' : 'none';
-    }
-});
-</script>
+		// Trigger Bulk Delete Post Request execution
+		confirmBulkDeleteBtn.addEventListener('click', function() {
+			bulkDeleteForm.submit();
+		});
+	});
+	</script>
 
+	<script>
+	document.getElementById('categorySearch').addEventListener('keyup', function() {
+		const filter = this.value.toLowerCase();
+		const rows = document.querySelectorAll('tbody tr');
+		let visibleCount = 0;
 
+		rows.forEach(row => {
+			if (row.querySelector('td[colspan="6"]')) return; // Adjusted for 6 columns
+
+			// Column 2 contains the category names now due to column shift
+			const categoryName = row.cells[2].textContent.toLowerCase(); 
+			if (categoryName.includes(filter)) {
+				row.style.display = '';
+				visibleCount++;
+			} else {
+				row.style.display = 'none';
+				// Deselect hidden checkboxes automatically
+				const cb = row.querySelector('.row-checkbox');
+				if (cb) cb.checked = false;
+			}
+		});
+
+		const noDataRow = document.querySelector('tbody tr td[colspan="6"]')?.parentElement;
+		if (noDataRow) {
+			noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+		}
+		
+		// Fire a mock state change event to sync up the top bar dynamic counting indicator
+		const event = new Event('change');
+		document.querySelector('.row-checkbox')?.dispatchEvent(event);
+	});
+	</script>
 
 	<script>
 		document.getElementById('addCategoryModal').addEventListener('show.bs.modal', () => {
@@ -249,14 +324,13 @@ document.getElementById('categorySearch').addEventListener('keyup', function() {
 		
 		document.getElementById('deleteModal').addEventListener('show.bs.modal', function(e) {
 		    const button = e.relatedTarget;
-		    const categoryId = button.getAttribute('data-id');       // get category id
-		    const categoryName = button.getAttribute('data-name');   // get category name
+		    const categoryId = button.getAttribute('data-id');       
+		    const categoryName = button.getAttribute('data-name');   
 		
 		    document.getElementById('deleteCategoryName').textContent = categoryName;
 		    document.getElementById('deleteForm').setAttribute('action', '/categories/delete/' + categoryId);
 		});
-
-</script>
+	</script>
 
 </body>
 </html>
