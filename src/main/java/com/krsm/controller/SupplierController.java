@@ -39,13 +39,13 @@ public class SupplierController {
 
 		// Check duplicate email
 		if (supplierRepository.existsByEmail(supplier.getEmail())) {
-			redirectAttributes.addFlashAttribute("errorMessage", "❌ Email already exists!");
+			redirectAttributes.addFlashAttribute("errorMessage", "Email already exists!");
 			return "redirect:/suppliers"; // go back to form
 		}
 
 		// Save if not duplicate
 		supplierRepository.save(supplier);
-		redirectAttributes.addFlashAttribute("successMessage", "✅ Supplier added successfully!");
+		redirectAttributes.addFlashAttribute("successMessage", "Supplier added successfully!");
 
 		return "redirect:/suppliers";
 	}
@@ -65,13 +65,13 @@ public class SupplierController {
 
 		// Check duplicate email for other suppliers
 		if (supplierRepository.existsByEmailAndIdNot(supplier.getEmail(), id)) {
-			redirectAttributes.addFlashAttribute("errorMessage", "❌ Email already exists!");
+			redirectAttributes.addFlashAttribute("errorMessage", "Email already exists!");
 			return "redirect:/suppliers"; // go back to edit form
 		}
 
 		supplier.setId(id);
 		supplierRepository.save(supplier);
-		redirectAttributes.addFlashAttribute("successMessage", "✏️ Supplier updated successfully!");
+		redirectAttributes.addFlashAttribute("successMessage", "Supplier updated successfully!");
 		return "redirect:/suppliers";
 	}
 
@@ -80,7 +80,7 @@ public class SupplierController {
 	public String deleteSupplier(@PathVariable Long id, RedirectAttributes redirectAttributes) {
 		try {
 			supplierRepository.deleteById(id);
-			redirectAttributes.addFlashAttribute("successMessage", "🗑️ Supplier deleted successfully!");
+			redirectAttributes.addFlashAttribute("successMessage", "Supplier deleted successfully!");
 		} catch (DataIntegrityViolationException e) {
 			// If supplier is linked to products
 			redirectAttributes.addFlashAttribute("errorMessage",

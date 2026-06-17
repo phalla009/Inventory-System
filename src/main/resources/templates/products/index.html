@@ -31,34 +31,7 @@
 			<!-- Toast Container -->
 			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
 				<!-- Error Toast -->
-				<div th:if="${errorMessage}"
-					class="toast align-items-center text-bg-danger border-0 show"
-					role="alert" aria-live="assertive" aria-atomic="true"
-					data-bs-delay="3000">
-					<div class="d-flex">
-						<div class="toast-body" th:text="${errorMessage}">
-							<!-- Error message will appear here -->
-						</div>
-						<button type="button"
-							class="btn-close btn-close-white me-2 m-auto"
-							data-bs-dismiss="toast" aria-label="Close"></button>
-					</div>
-				</div>
-
-				<!-- Success Toast -->
-				<div th:if="${successMessage}"
-					class="toast align-items-center text-bg-success border-0 show"
-					role="alert" aria-live="assertive" aria-atomic="true"
-					data-bs-delay="3000">
-					<div class="d-flex">
-						<div class="toast-body" th:text="${successMessage}">
-							<!-- Success message will appear here -->
-						</div>
-						<button type="button"
-							class="btn-close btn-close-white me-2 m-auto"
-							data-bs-dismiss="toast" aria-label="Close"></button>
-					</div>
-				</div>
+				<div th:replace="~{fragments/toasts :: toast-container}"></div>
 			</div>
 
 
@@ -69,14 +42,23 @@
 				data-bs-toggle="modal" data-bs-target="#addProductModal">
 				<i class="bi bi-plus-circle me-1"></i> Add Product
 			</button>
-			<div class="mb-3" style="width: 50%;">
+			<div class="mb-3 d-flex gap-2" style="width: 70%;">
 				<div class="input-group">
 					<span class="input-group-text" id="search-icon"> <i
 						class="bi bi-search"></i>
 					</span> <input type="text" id="searchInput" class="form-control"
-						placeholder="Search products by product name , category..." aria-label="Search"
-						aria-describedby="search-icon">
+						placeholder="Search products by product name, category..."
+						aria-label="Search" aria-describedby="search-icon">
 				</div>
+				<select id="categoryFilter" class="form-select"
+					style="max-width: 200px;">
+					<option value="">All Categories</option>
+					<th:block th:each="product : ${products}">
+						<option th:if="${product.category != null}"
+							th:value="${product.category.name}"
+							th:text="${product.category.name}"></option>
+					</th:block>
+				</select>
 			</div>
 
 
@@ -97,8 +79,8 @@
 						</tr>
 					</thead>
 					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
-						<tr th:each="product : ${products}">
-							<td th:text="${product.id}"></td>
+						<tr th:each="product, iterStat : ${products}">
+							<td th:text="${iterStat.count}"></td>
 							<td th:text="${product.name}"></td>
 							<td th:text="${product.quantity}"></td>
 							<td th:text="${product.price} + ' $'"></td>
@@ -335,21 +317,35 @@
 	<script>
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
     const tableRows = document.querySelectorAll('tbody tr');
 
-    searchInput.addEventListener('input', function () {
-        const query = searchInput.value.toLowerCase();
+    // De-duplicate category options
+    const seen = new Set();
+    categoryFilter.querySelectorAll('option').forEach(opt => {
+        if (opt.value === '') return;
+        if (seen.has(opt.value)) {
+            opt.remove();
+        } else {
+            seen.add(opt.value);
+        }
+    });
 
-        let anyVisible = false; // Track if any row is visible
+    function filterRows() {
+        const query = searchInput.value.toLowerCase();
+        const selectedCategory = categoryFilter.value.toLowerCase();
+        let anyVisible = false;
 
         tableRows.forEach(row => {
-            // Skip "No products found" row
             if (row.querySelector('td[colspan="9"]')) return;
 
             const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
             const categoryName = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
 
-            if (productName.includes(query) || categoryName.includes(query)) {
+            const matchesSearch = !query || productName.includes(query) || categoryName.includes(query);
+            const matchesCategory = !selectedCategory || categoryName === selectedCategory;
+
+            if (matchesSearch && matchesCategory) {
                 row.style.display = '';
                 anyVisible = true;
             } else {
@@ -357,12 +353,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Show "No products found" row if nothing matches
-        const noDataRow = document.querySelector('tbody tr[th\\:if]');
+        // Show/hide "No products found" row
+        const noDataRow = document.querySelector('td[colspan="9"]')?.closest('tr');
         if (noDataRow) {
             noDataRow.style.display = anyVisible ? 'none' : '';
         }
-    });
+    }
+
+    searchInput.addEventListener('input', filterRows);
+    categoryFilter.addEventListener('change', filterRows);
 });
 </script>
 

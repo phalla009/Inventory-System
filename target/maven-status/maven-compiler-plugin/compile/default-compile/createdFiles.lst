@@ -32,6 +32,7 @@ com\krsm\repository\ProductRepository.class
 com\krsm\controller\PurchaseSummaryController.class
 com\krsm\controller\SaleController.class
 com\krsm\service\ProductService.class
+com\krsm\controller\CustomErrorController.class
 com\krsm\entity\SaleDetail$SaleDetailBuilder.class
 com\krsm\entity\SaleDetail.class
 com\krsm\controller\LoginController.class

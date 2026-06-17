@@ -30,34 +30,7 @@
 			<!-- Toast Container -->
 			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
 				<!-- Error Toast -->
-				<div th:if="${errorMessage}"
-					class="toast align-items-center text-bg-danger border-0 show"
-					role="alert" aria-live="assertive" aria-atomic="true"
-					data-bs-delay="3000">
-					<div class="d-flex">
-						<div class="toast-body" th:text="${errorMessage}">
-							<!-- Error message will appear here -->
-						</div>
-						<button type="button"
-							class="btn-close btn-close-white me-2 m-auto"
-							data-bs-dismiss="toast" aria-label="Close"></button>
-					</div>
-				</div>
-
-				<!-- Success Toast -->
-				<div th:if="${successMessage}"
-					class="toast align-items-center text-bg-success border-0 show"
-					role="alert" aria-live="assertive" aria-atomic="true"
-					data-bs-delay="3000">
-					<div class="d-flex">
-						<div class="toast-body" th:text="${successMessage}">
-							<!-- Success message will appear here -->
-						</div>
-						<button type="button"
-							class="btn-close btn-close-white me-2 m-auto"
-							data-bs-dismiss="toast" aria-label="Close"></button>
-					</div>
-				</div>
+				<div th:replace="~{fragments/toasts :: toast-container}"></div>
 			</div>
 
 			<!-- Add User Button -->
@@ -72,17 +45,19 @@
 					<tr>
 						<th>ID</th>
 						<th>UserName</th>
+						<th>Password</th>
 						<th>Role</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="user : ${users}" ​ class="text-center">
-						<td th:text="${user.id}"></td>
+
+					<tr th:each="user,iterStat: ${users}" ​ class="text-center">
+						<td th:text="${iterStat.count}"></td>
 						<td style="display: flex; align-items: center;"><i
 							class="fas fa-user me-2"></i> <span th:text="${user.username}"></span>
 						</td>
-
+						<td th:text="${'•'.repeat(user.password.length())}"></td>
 						<td th:text="${user.role}"></td>
 						<td>
 							<!-- Edit -->

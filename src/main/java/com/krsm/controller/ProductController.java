@@ -118,7 +118,7 @@ public class ProductController {
 		}
 
 		productService.saveProduct(product);
-		redirectAttributes.addFlashAttribute("successMessage", "✅ Product updated successfully!");
+		redirectAttributes.addFlashAttribute("successMessage", "Product updated successfully!");
 		return "redirect:/products";
 	}
 
@@ -128,7 +128,7 @@ public class ProductController {
 		Optional<Product> optionalProduct = productRepository.findById(id);
 
 		if (optionalProduct.isEmpty()) {
-			redirectAttributes.addFlashAttribute("errorMessage", "⚠️ Product not found!");
+			redirectAttributes.addFlashAttribute("errorMessage", "Product not found!");
 			return "redirect:/products";
 		}
 
@@ -139,12 +139,12 @@ public class ProductController {
 
 		if (hasSales || hasPurchases) {
 			redirectAttributes.addFlashAttribute("errorMessage",
-					"❌ Cannot delete product! It is used in existing sales or purchases.");
+					"Cannot delete product! It is used in existing sales or purchases.");
 			return "redirect:/products";
 		}
 
 		productService.deleteProduct(id);
-		redirectAttributes.addFlashAttribute("successMessage", "🗑️ Product deleted successfully!");
+		redirectAttributes.addFlashAttribute("successMessage", "Product deleted successfully!");
 		return "redirect:/products";
 	}
 

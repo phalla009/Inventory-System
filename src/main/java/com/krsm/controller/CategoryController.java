@@ -36,7 +36,7 @@ public class CategoryController {
     @PostMapping("/add")
     public String addCategory(@ModelAttribute Category category, RedirectAttributes redirectAttributes) {
         service.saveCategory(category);
-        redirectAttributes.addFlashAttribute("successMessage", "✅ Category added successfully!");
+        redirectAttributes.addFlashAttribute("successMessage", "Category added successfully!");
         return "redirect:/categories";
     }
 
@@ -54,7 +54,7 @@ public class CategoryController {
                                  RedirectAttributes redirectAttributes) {
         category.setId(id);
         service.saveCategory(category);
-        redirectAttributes.addFlashAttribute("successMessage", "✅ Category updated successfully!");
+        redirectAttributes.addFlashAttribute("successMessage", "Category updated successfully!");
         return "redirect:/categories";
     }
 
@@ -64,7 +64,7 @@ public class CategoryController {
         Optional<Category> optionalCategory = service.getCategoryById(id);
 
         if (optionalCategory.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "⚠️ Category not found!");
+            redirectAttributes.addFlashAttribute("errorMessage", "Category not found!");
             return "redirect:/categories";
         }
 
@@ -77,7 +77,7 @@ public class CategoryController {
         }
 
         service.deleteCategory(id);
-        redirectAttributes.addFlashAttribute("successMessage", "🗑️ Category deleted successfully!");
+        redirectAttributes.addFlashAttribute("successMessage", "Category deleted successfully!");
         return "redirect:/categories";
     }
 }

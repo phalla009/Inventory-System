@@ -56,11 +56,11 @@ public class SaleController {
 			RedirectAttributes redirectAttributes) {
 
 		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Product ID"));
+				.orElseThrow(() -> new IllegalArgumentException("Invalid Product ID"));
 
 		int newQty = product.getQuantity() - sale.getQuantity();
 		if (newQty < 0) {
-			redirectAttributes.addFlashAttribute("errorMessage", "❌ Not enough stock!");
+			redirectAttributes.addFlashAttribute("errorMessage", "Not enough stock!");
 			return "redirect:/sales";
 		}
 
@@ -73,7 +73,7 @@ public class SaleController {
 		// subtotal & total_amount auto-calculated in entity
 		saleRepository.save(sale);
 
-		redirectAttributes.addFlashAttribute("successMessage", "✅ Sale added successfully!");
+		redirectAttributes.addFlashAttribute("successMessage", "Sale added successfully!");
 		return "redirect:/sales";
 	}
 
@@ -81,7 +81,7 @@ public class SaleController {
 	@GetMapping("/edit/{id}")
 	public String showEditForm(@PathVariable("id") Long id, Model model) {
 		Sales sale = saleRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
+				.orElseThrow(() -> new IllegalArgumentException("Invalid Sale ID: " + id));
 		model.addAttribute("sale", sale);
 		model.addAttribute("productsList", productRepository.findAll());
 		return "sales/edit_sale";
@@ -93,17 +93,17 @@ public class SaleController {
 	                         RedirectAttributes redirectAttributes) {
 
 	    Sales sale = saleRepository.findById(id)
-	            .orElseThrow(() -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
+	            .orElseThrow(() -> new IllegalArgumentException("Invalid Sale ID: " + id));
 
 	    // Fetch full product from DB
 	    Product product = productRepository.findById(saleDetails.getProduct().getId())
-	            .orElseThrow(() -> new IllegalArgumentException("❌ Invalid Product ID"));
+	            .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID"));
 
 	    // Calculate stock difference
 	    int qtyDiff = saleDetails.getQuantity() - sale.getQuantity();
 	    int newQty = product.getQuantity() - qtyDiff;
 	    if (newQty < 0) {
-	        redirectAttributes.addFlashAttribute("errorMessage", "❌ Update failed! Not enough stock!");
+	        redirectAttributes.addFlashAttribute("errorMessage", "Update failed! Not enough stock!");
 	        return "redirect:/sales";
 	    }
 
@@ -127,7 +127,7 @@ public class SaleController {
 
 	    saleRepository.save(sale);
 
-	    redirectAttributes.addFlashAttribute("successMessage", "✅ Sale updated successfully!");
+	    redirectAttributes.addFlashAttribute("successMessage", "Sale updated successfully!");
 	    return "redirect:/sales";
 	}
 
@@ -136,7 +136,7 @@ public class SaleController {
 	@PostMapping("/delete/{id}")
 	public String deleteSale(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
 		Sales sale = saleRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("❌ Invalid Sale ID: " + id));
+				.orElseThrow(() -> new IllegalArgumentException("Invalid Sale ID: " + id));
 
 		// Restore stock
 		Product product = sale.getProduct();
@@ -144,7 +144,7 @@ public class SaleController {
 		productRepository.save(product);
 
 		saleRepository.delete(sale);
-		redirectAttributes.addFlashAttribute("successMessage", "🗑️ Sale deleted successfully!");
+		redirectAttributes.addFlashAttribute("successMessage", "Sale deleted successfully!");
 		return "redirect:/sales";
 	}
 

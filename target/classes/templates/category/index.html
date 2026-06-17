@@ -25,37 +25,17 @@
 		<div th:replace="fragments/sidebar :: sidebar"></div>
 		<!-- Toast Messages -->
 		<div class="content p-4">
-
+			<!-- Toast Messages -->
 			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-				<div th:if="${successMessage}" class="toast text-bg-success show"
-					role="alert" aria-live="assertive" aria-atomic="true">
-					<div class="toast-body" th:text="${successMessage}"></div>
-				</div>
-
-				<div th:if="${errorMessage}" class="toast text-bg-danger show"
-					role="alert" aria-live="assertive" aria-atomic="true">
-					<div class="toast-body" th:text="${errorMessage}"></div>
-				</div>
+			<!-- Error Toast -->
+				<div th:replace="~{fragments/toasts :: toast-container}"></div>
 			</div>
-
 
 			<!-- Main Content -->
 
 			<h1 class="mb-3">
 				<i class="bi bi-tags me-2"></i> Categories Listing
 			</h1>
-
-			<!-- Toast Messages -->
-			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-				<div th:if="${successMessage}" class="toast text-bg-success show">
-					<div class="toast-body" th:text="${successMessage}"></div>
-				</div>
-
-				<div th:if="${errorMessage}" class="toast text-bg-danger show">
-					<div class="toast-body" th:text="${errorMessage}"></div>
-				</div>
-			</div>
-
 			<!-- Add Category -->
 			<button class="btn btn-primary mb-3" data-bs-toggle="modal"
 				data-bs-target="#addCategoryModal">
@@ -87,8 +67,8 @@
 					</thead>
 
 					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
-						<tr th:each="category : ${categories}">
-							<td th:text="${category.id}"></td>
+						<tr th:each="category ,iterStat : ${categories}">
+							<td th:text="${iterStat.count}"></td>
 							<td th:text="${category.name}"></td>
 
 							<td><span th:if="${category.status == 'Active'}"> <i
