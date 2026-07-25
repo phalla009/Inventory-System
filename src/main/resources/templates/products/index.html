@@ -1,249 +1,532 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Products-Listing</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-	rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
-<link
-	href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap"
-	rel="stylesheet">
-<link class="icon" type="image/png" href="/images/kr.png">
+	<meta charset="UTF-8">
+	<title>Products-Listing</title>
+	<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet">
+	<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+			rel="stylesheet">
+	<link rel="stylesheet" href="/css/style.css">
+	<link
+			href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap"
+			rel="stylesheet">
+	<link rel="icon" type="image/png" href="/images/kr.png">
+	<style type="text/css">
+		/* ---- Action buttons ---- */
+		.btn-action {
+			width: 34px;
+			height: 34px;
+			padding: 0;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 4px;
+			font-size: .95rem;
+			transition: transform .12s ease, box-shadow .12s ease;
+		}
 
+		.btn-action:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
+		}
+
+		.action-cell {
+			display: flex;
+			gap: .4rem;
+			flex-wrap: nowrap;
+			justify-content: center;
+		}
+
+		/* ---- Table look & feel ---- */
+		.product-table thead th {
+			font-weight: 600;
+			font-size: .82rem;
+			text-transform: uppercase;
+			letter-spacing: .03em;
+			vertical-align: middle;
+			padding: .75rem .85rem;
+		}
+
+		.product-table tbody td {
+			padding: .65rem .85rem;
+			vertical-align: middle;
+			font-size: .93rem;
+		}
+
+		.product-table tbody tr {
+			transition: background-color .12s ease;
+		}
+
+		.product-table tbody tr:hover {
+			background-color: #f4f7fb;
+		}
+
+		.product-table {
+			border-radius: 10px;
+			overflow: hidden;
+		}
+
+		/* ---- Product name column ---- */
+		.product-name {
+			font-weight: 600;
+			color: #212529;
+		}
+
+		/* ---- Quantity & badges ---- */
+		.qty-value {
+			font-weight: 600;
+		}
+
+		.badge-soft {
+			font-size: .72rem;
+			font-weight: 600;
+			padding: .32em .55em;
+			border-radius: 6px;
+		}
+
+		/* ---- Price ---- */
+		.price-value {
+			font-weight: 600;
+			color: #0d6efd;
+		}
+
+		/* ---- Status icons ---- */
+		.status-icon {
+			width: 30px;
+			height: 30px;
+			border-radius: 50%;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1rem;
+		}
+
+		.status-active {
+			background-color: rgba(25, 135, 84, .12);
+			color: #198754;
+		}
+
+		.status-inactive {
+			background-color: rgba(220, 53, 69, .12);
+			color: #dc3545;
+		}
+
+		.status-outofstock {
+			background-color: rgba(255, 193, 7, .15);
+			color: #b88500;
+		}
+
+		/* ---- Table wrapper ---- */
+		.table-scroll-wrap {
+			max-height: 450px;
+			overflow-y: auto;
+			border-radius: 10px;
+			border: 1px solid #dee2e6;
+		}
+
+		.table-scroll-wrap .table {
+			margin-bottom: 0;
+		}
+
+		/* ================= 17" LAPTOP (~1600px - 1920px, 100% browser zoom) ================= */
+		@media (min-width: 1600px) {
+			.content {
+				padding: 2rem 3rem !important;
+			}
+
+			.mb-3[style*="width: 70%"] {
+				width: 50% !important;
+			}
+
+			.table-scroll-wrap {
+				max-height: 650px;
+			}
+
+			.product-table thead th {
+				font-size: .9rem;
+				padding: .9rem 1rem;
+			}
+
+			.product-table tbody td {
+				font-size: 1rem;
+				padding: .8rem 1rem;
+			}
+
+			.badge-soft {
+				font-size: .8rem;
+			}
+
+			.status-icon {
+				width: 34px;
+				height: 34px;
+				font-size: 1.1rem;
+			}
+
+			.btn-action {
+				width: 38px;
+				height: 38px;
+				font-size: 1.05rem;
+			}
+		}
+	</style>
 </head>
 <body>
-	<div class="d-flex">
-		<div th:replace="fragments/sidebar :: sidebar"></div>
+<div class="d-flex">
+	<div th:replace="fragments/sidebar :: sidebar"></div>
 
-		<div class="content p-4">
-			<h1 class="mb-3">
-				<i class="bi bi-box-seam me-2"></i> Products Listing
-			</h1>
+	<div class="content p-4">
+		<h1 class="mb-3">
+			<i class="bi bi-box-seam me-2"></i> Products Listing
+		</h1>
 
-			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-				<div th:replace="~{fragments/toasts :: toast-container}"></div>
-			</div>
+		<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+			<div th:replace="~{fragments/toasts :: toast-container}"></div>
+		</div>
 
-			<form id="bulkDeleteForm" th:action="@{/products/delete-multiple}"
-				method="post">
-
-				<div class="mb-3 d-flex gap-2">
-					<button type="button" class="btn btn-primary"
+		<form id="bulkDeleteForm" th:action="@{/products/delete-multiple}"
+			  method="post">
+			<input type="hidden" name="_method" value="delete">
+			<div class="mb-3 d-flex gap-2">
+				<button type="button" class="btn btn-primary"
 						data-bs-toggle="modal" data-bs-target="#addProductModal">
-						<i class="bi bi-plus-circle me-1"></i> Add Product
-					</button>
+					<i class="bi bi-plus-circle me-1"></i> Add Product
+				</button>
 
-					<button type="button" id="btnBulkDelete"
+				<button type="button" id="btnBulkDelete"
 						class="btn btn-danger d-none" data-bs-toggle="modal"
 						data-bs-target="#bulkDeleteModal">
-						<i class="bi bi-trash me-1"></i> Delete Selected (<span
-							id="selectCount">0</span>)
-					</button>
-				</div>
+					<i class="bi bi-trash me-1"></i> Delete Selected (<span
+						id="selectCount">0</span>)
+				</button>
+			</div>
 
-				<div class="mb-3 d-flex gap-2" style="width: 70%;">
-					<div class="input-group">
+			<div class="mb-3 d-flex gap-2" style="width: 70%;">
+				<div class="input-group">
 						<span class="input-group-text" id="search-icon"> <i
-							class="bi bi-search"></i>
+								class="bi bi-search"></i>
 						</span> <input type="text" id="searchInput" class="form-control"
-							placeholder="Search products by product name, category..."
-							aria-label="Search" aria-describedby="search-icon">
-					</div>
-					<select id="categoryFilter" class="form-select"
+									   placeholder="Search products by product name, category..."
+									   aria-label="Search" aria-describedby="search-icon">
+				</div>
+				<select id="categoryFilter" class="form-select"
 						style="max-width: 200px;">
-						<option value="">All Categories</option>
-						<th:block th:each="product : ${products}">
-							<option th:if="${product.category != null}"
+					<option value="">All Categories</option>
+					<th:block th:each="product : ${products}">
+						<option th:if="${product.category != null}"
 								th:value="${product.category.name}"
 								th:text="${product.category.name}"></option>
-						</th:block>
-					</select>
-				</div>
+					</th:block>
+				</select>
+			</div>
 
-				<div style="max-height: 450px; overflow-y: auto;">
-					<table class="table table-bordered table-hover align-middle">
-						<thead class="table-dark"
-							style="position: sticky; top: 0; z-index: 2;">
-							<tr>
-								<th style="width: 40px;" class="text-center"><input
-									type="checkbox" id="selectAll" class="form-check-input">
-								</th>
-								<th>ID</th>
-								<th>Product Name</th>
-								<th>Quantity</th>
-								<th>Price</th>
-								<th>Category</th>
-								<th>Supplier</th>
-								<th>Status</th>
-								<th>Created At</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
-							<tr th:each="product, iterStat : ${products}">
-								<td class="text-center"><input type="checkbox"
-									name="productIds" th:value="${product.id}"
-									class="form-check-input row-checkbox"></td>
-								<td th:text="${iterStat.count}"></td>
-								<td th:text="${product.name}"></td>
-								<td th:text="${product.quantity}"></td>
-								<td th:text="${product.price} + ' $'"></td>
-								<td
-									th:text="${product.category != null ? product.category.name : 'N/A'}"></td>
-								<td
-									th:text="${product.supplier != null ? product.supplier.name : 'N/A'}"></td>
-								<td><span th:if="${product.status == 'Active'}"> <i
-										class="bi bi-check-circle text-success"></i>
-								</span> <span th:if="${product.status == 'Inactive'}"> <i
-										class="bi bi-x-circle text-danger"></i>
-								</span> <span th:text="${product.status}" class="ms-1"></span></td>
-								<td
-									th:text="${product.create_at != null ? #temporals.format(product.create_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-								<td>
-									<button type="button" class="btn btn-warning btn-sm"
-										data-bs-toggle="modal" data-bs-target="#editProductModal"
-										th:attr="data-id=${product.id}">
-										<i class="bi bi-pencil-square"></i>
-									</button>
-									<button type="button" class="btn btn-danger btn-sm"
-										data-bs-toggle="modal" data-bs-target="#deleteModal"
-										th:attr="data-id=${product.id}, data-name=${product.name}">
-										<i class="bi bi-trash"></i>
-									</button>
-								</td>
-							</tr>
-							<tr th:if="${#lists.isEmpty(products)}">
-								<td colspan="10" class="text-center">No products found.</td>
-							</tr>
-						</tbody>
-					</table>
+			<div class="table-scroll-wrap">
+				<table class="table table-hover align-middle product-table mb-0">
+					<thead class="table-dark"
+						   style="position: sticky; top: 0; z-index: 2;">
+					<tr>
+						<th style="width: 40px;" class="text-center"><input
+								type="checkbox" id="selectAll" class="form-check-input">
+						</th>
+						<th>ID</th>
+						<th>Product Name</th>
+						<th>Quantity</th>
+						<th>Price</th>
+						<th>Category</th>
+						<th>Supplier</th>
+						<th class="text-center">Status</th>
+						<th class="text-center">Actions</th>
+					</tr>
+					</thead>
+					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
+					<tr th:each="product, iterStat : ${products}">
+						<td class="text-center"><input type="checkbox"
+													   name="productIds" th:value="${product.id}"
+													   class="form-check-input row-checkbox"></td>
+						<td th:text="${iterStat.count}"></td>
+						<td class="product-name" th:text="${product.name}"></td>
+						<td><span class="qty-value" th:text="${product.quantity}"></span>
+							<span
+									th:if="${product.quantity != null and product.quantity <= 5 and product.quantity > 0}"
+									class="badge bg-danger badge-soft ms-1">Low</span> <span
+									th:if="${product.quantity != null and product.quantity == 0}"
+									class="badge bg-secondary badge-soft ms-1">Out</span></td>
+						<td><span class="price-value"
+								  th:text="${product.price} + ' $'"></span></td>
+						<td
+								th:text="${product.category != null ? product.category.name : 'N/A'}"></td>
+						<td
+								th:text="${product.supplier != null ? product.supplier.name : 'N/A'}"></td>
+						<td class="text-center"><span
+								th:if="${product.status == 'Active'}" title="Active"
+								class="status-icon status-active"> <i
+								class="bi bi-check-lg"></i>
+								</span> <span th:if="${product.status == 'Inactive'}" title="Inactive"
+											  class="status-icon status-inactive"> <i
+								class="bi bi-x-lg"></i>
+								</span> <span th:if="${product.status == 'Out of Stock'}"
+											  title="Out of Stock" class="status-icon status-outofstock">
+										<i class="bi bi-exclamation-lg"></i>
+								</span></td>
+
+						<td class="text-nowrap action-cell">
+							<button type="button" class="btn btn-success btn-sm btn-action"
+									data-bs-toggle="modal" data-bs-target="#stockAdjustModal"
+									th:attr="data-id=${product.id}, data-name=${product.name}, data-qty=${product.quantity}"
+									title="Adjust Stock">
+								<i class="bi bi-arrow-down-up"></i>
+							</button>
+							<button type="button"
+									class="btn btn-info btn-sm btn-action text-white"
+									data-bs-toggle="modal" data-bs-target="#stockHistoryModal"
+									th:attr="data-id=${product.id}, data-name=${product.name}"
+									title="Stock History">
+								<i class="bi bi-clock-history"></i>
+							</button>
+							<button type="button" class="btn btn-warning btn-sm btn-action"
+									data-bs-toggle="modal" data-bs-target="#editProductModal"
+									th:attr="data-id=${product.id}" title="Edit Product">
+								<i class="bi bi-pencil-square"></i>
+							</button>
+							<button type="button" class="btn btn-danger btn-sm btn-action"
+									data-bs-toggle="modal" data-bs-target="#deleteModal"
+									th:attr="data-id=${product.id}, data-name=${product.name}"
+									title="Delete Product">
+								<i class="bi bi-trash"></i>
+							</button>
+						</td>
+					</tr>
+					<tr th:if="${#lists.isEmpty(products)}">
+						<td colspan="9" class="text-center py-4 text-muted"><i
+								class="bi bi-inbox fs-4 d-block mb-1"></i> No products found.</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="addProductModal" tabindex="-1"
+	 aria-labelledby="addProductModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+			<div
+					class="modal-header bg-primary text-white justify-content-center position-relative">
+				<h5 class="modal-title text-center" id="addProductModalLabel">
+					<i class="bi bi-plus-circle"></i> Add New Product
+				</h5>
+			</div>
+			<div class="modal-body" id="addProductForm">
+				<div class="text-center py-4">
+					<div class="spinner-border text-primary"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="editProductModal" tabindex="-1"
+	 aria-labelledby="editProductModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+			<div
+					class="modal-header text-dark justify-content-center position-relative"
+					style="background-color: #ffc107;">
+				<h5 class="modal-title text-center" id="editProductModalLabel">
+					<i class="bi bi-pencil-square"></i> Edit Product
+				</h5>
+			</div>
+			<div class="modal-body" id="editProductForm">
+				<div class="text-center py-4">
+					<div class="spinner-border text-primary"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Stock Adjust Modal (Stock In / Stock Out) -->
+<div class="modal fade" id="stockAdjustModal" tabindex="-1"
+	 aria-labelledby="stockAdjustModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<form id="stockAdjustForm" method="post"
+				  th:action="@{/products/stock-adjust}">
+				<div class="modal-header bg-success text-white">
+					<h5 class="modal-title" id="stockAdjustModalLabel">
+						<i class="bi bi-arrow-down-up"></i> Adjust Stock
+					</h5>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" name="productId" id="stockAdjustProductId">
+
+					<p class="mb-1">
+						Product: <strong id="stockAdjustProductName"></strong>
+					</p>
+					<p class="mb-3">
+						Current Quantity: <strong id="stockAdjustCurrentQty">0</strong>
+					</p>
+
+					<div class="mb-3">
+						<label class="form-label d-block">Movement Type</label>
+						<div class="btn-group w-100" role="group">
+							<input type="radio" class="btn-check" name="movementType"
+								   id="stockInRadio" value="IN" autocomplete="off" checked>
+							<label class="btn btn-outline-success" for="stockInRadio">
+								<i class="bi bi-box-arrow-in-down"></i> Stock In
+							</label> <input type="radio" class="btn-check" name="movementType"
+											id="stockOutRadio" value="OUT" autocomplete="off"> <label
+								class="btn btn-outline-danger" for="stockOutRadio"> <i
+								class="bi bi-box-arrow-up"></i> Stock Out
+						</label>
+						</div>
+					</div>
+
+					<div class="mb-3">
+						<label for="stockAdjustQty" class="form-label">Quantity</label> <input
+							type="number" min="1" step="1" name="quantity"
+							id="stockAdjustQty" class="form-control" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="stockAdjustReason" class="form-label">Reason
+							/ Note</label> <select id="stockAdjustReason" name="reason"
+												   class="form-select mb-2">
+						<option value="Restock">Restock</option>
+						<option value="Sale">Sale</option>
+						<option value="Damaged">Damaged / Lost</option>
+						<option value="Return">Customer Return</option>
+						<option value="Correction">Inventory Correction</option>
+						<option value="Other">Other</option>
+					</select>
+						<textarea name="note" class="form-control" rows="2"
+								  placeholder="Optional note..."></textarea>
+					</div>
+				</div>
+				<!-- Buttons -->
+				<div class="modal-footer border-0 p-3">
+					<div class="row w-100 g-2">
+						<div class="col-6 text-start">
+							<a href="/products" class="btn btn-secondary w-100"> <i
+									class="bi bi-x-circle me-2"></i> Cancel
+							</a>
+						</div>
+						<div class="col-6 text-end">
+							<button type="submit" class="btn btn-success w-100">
+								<i class="bi bi-check-circle me-1"></i> Confirm
+							</button>
+						</div>
+					</div>
 				</div>
 			</form>
 		</div>
 	</div>
+</div>
 
-	<div class="modal fade" id="addProductModal" tabindex="-1"
-		aria-labelledby="addProductModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg modal-dialog-centered">
-			<div class="modal-content">
-				<div
-					class="modal-header bg-primary text-white justify-content-center position-relative">
-					<h5 class="modal-title text-center" id="addProductModalLabel">
-						<i class="bi bi-plus-circle"></i> Add New Product
-					</h5>
-				</div>
-				<div class="modal-body" id="addProductForm">
-					<div class="text-center py-4">
-						<div class="spinner-border text-primary"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade" id="editProductModal" tabindex="-1"
-		aria-labelledby="editProductModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg modal-dialog-centered">
-			<div class="modal-content">
-				<div
-					class="modal-header text-dark justify-content-center position-relative"
-					style="background-color: #ffc107;">
-					<h5 class="modal-title text-center" id="editProductModalLabel">
-						<i class="bi bi-pencil-square"></i> Edit Product
-					</h5>
-				</div>
-				<div class="modal-body" id="editProductForm">
-					<div class="text-center py-4">
-						<div class="spinner-border text-primary"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade" id="deleteModal" tabindex="-1"
-		aria-labelledby="deleteModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header bg-danger text-white">
-					<h5 class="modal-title" id="deleteModalLabel">
-						<i class="bi bi-exclamation-triangle"></i> Confirm Delete
-					</h5>
-					<button type="button" class="btn-close btn-close-white"
+<!-- Stock History Modal -->
+<div class="modal fade" id="stockHistoryModal" tabindex="-1"
+	 aria-labelledby="stockHistoryModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header bg-info text-white">
+				<h5 class="modal-title" id="stockHistoryModalLabel">
+					<i class="bi bi-clock-history"></i> Stock History <span
+						id="stockHistoryProductName" class="fw-normal"></span>
+				</h5>
+				<button type="button" class="btn-close btn-close-white"
 						data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<p>Are you sure you want to delete this product?</p>
-					<p>
-						<strong id="deleteProductName"></strong>
-					</p>
-				</div>
-				<div class="modal-footer">
-					<form id="deleteForm" th:action="@{'/products/delete/'}"
-						method="post" class="w-100">
-						<input type="hidden" name="_method" value="delete">
-						<div class="row g-2">
-							<div class="col">
-								<button type="button" class="btn btn-secondary w-100"
-									data-bs-dismiss="modal">
-									<i class="bi bi-x-circle me-1"></i> No, keep it
-								</button>
-							</div>
-							<div class="col">
-								<button type="submit" class="btn btn-danger w-100">
-									<i class="bi bi-trash me-1"></i> Yes, Delete!
-								</button>
-							</div>
-						</div>
-					</form>
+			</div>
+			<div class="modal-body" id="stockHistoryBody"
+				 style="max-height: 400px; overflow-y: auto;">
+				<div class="text-center py-4">
+					<div class="spinner-border text-info"></div>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="modal fade" id="bulkDeleteModal" tabindex="-1"
-		aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header bg-danger text-white">
-					<h5 class="modal-title" id="bulkDeleteModalLabel">
-						<i class="bi bi-exclamation-triangle"></i> Confirm Bulk Delete
-					</h5>
-					<button type="button" class="btn-close btn-close-white"
+<div class="modal fade" id="deleteModal" tabindex="-1"
+	 aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header bg-danger text-white">
+				<h5 class="modal-title" id="deleteModalLabel">
+					<i class="bi bi-exclamation-triangle"></i> Confirm Delete
+				</h5>
+				<button type="button" class="btn-close btn-close-white"
 						data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<p>Are you sure you want to delete all selected products?</p>
-				</div>
-				<div class="modal-footer">
-					<div class="row g-2 w-100">
+			</div>
+			<div class="modal-body">
+				<p>Are you sure you want to delete this product?</p>
+				<p>
+					<strong id="deleteProductName"></strong>
+				</p>
+			</div>
+			<div class="modal-footer">
+				<form id="deleteForm" th:action="@{'/products/delete/'}"
+					  method="post" class="w-100">
+					<input type="hidden" name="_method" value="delete">
+					<div class="row g-2">
 						<div class="col">
 							<button type="button" class="btn btn-secondary w-100"
-								data-bs-dismiss="modal">
-								<i class="bi bi-x-circle me-1"></i> Cancel
+									data-bs-dismiss="modal">
+								<i class="bi bi-x-circle me-1"></i> No, keep it
 							</button>
 						</div>
 						<div class="col">
-							<button type="button" id="confirmBulkDeleteBtn"
-								class="btn btn-danger w-100">
-								<i class="bi bi-trash me-1"></i> Yes, Delete Selected!
+							<button type="submit" class="btn btn-danger w-100">
+								<i class="bi bi-trash me-1"></i> Yes, Delete!
 							</button>
 						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="bulkDeleteModal" tabindex="-1"
+	 aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header bg-danger text-white">
+				<h5 class="modal-title" id="bulkDeleteModalLabel">
+					<i class="bi bi-exclamation-triangle"></i> Confirm Bulk Delete
+				</h5>
+				<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>Are you sure you want to delete all selected products?</p>
+			</div>
+			<div class="modal-footer">
+				<div class="row g-2 w-100">
+					<div class="col">
+						<button type="button" class="btn btn-secondary w-100"
+								data-bs-dismiss="modal">
+							<i class="bi bi-x-circle me-1"></i> Cancel
+						</button>
+					</div>
+					<div class="col">
+						<button type="button" id="confirmBulkDeleteBtn"
+								class="btn btn-danger w-100">
+							<i class="bi bi-trash me-1"></i> Yes, Delete Selected!
+						</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<script
+<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-	<script>
+<script>
 	document.addEventListener('DOMContentLoaded', function() {
 		const selectAll = document.getElementById('selectAll');
 		const rowCheckboxes = document.querySelectorAll('.row-checkbox');
@@ -255,7 +538,7 @@
 		function updateBulkDeleteButton() {
 			// Find checked checkboxes that are currently visible (not filtered out)
 			const checkedCount = Array.from(rowCheckboxes).filter(cb => cb.checked && cb.closest('tr').style.display !== 'none').length;
-			
+
 			if (checkedCount > 0) {
 				btnBulkDelete.classList.remove('d-none');
 				selectCount.textContent = checkedCount;
@@ -285,154 +568,217 @@
 			bulkDeleteForm.submit();
 		});
 	});
-	</script>
+</script>
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-		    const addProductModal = document.getElementById('addProductModal');
-		    const formContainer = document.getElementById('addProductForm');
-		
-		    addProductModal.addEventListener('show.bs.modal', function() {
-		        fetch('/products/add') 
-		            .then(response => response.text())
-		            .then(html => {
-		                formContainer.innerHTML = html;
-		            })
-		            .catch(error => {
-		                formContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
-		                console.error(error);
-		            });
-		    });
-		
-		    addProductModal.addEventListener('hidden.bs.modal', function() {
-		        formContainer.innerHTML = '';
-		    });
-		});
-	</script>
-
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-		    const editProductModal = document.getElementById('editProductModal');
-		    const formContainer = document.getElementById('editProductForm');
-		
-		    editProductModal.addEventListener('show.bs.modal', function(event) {
-		        const button = event.relatedTarget;
-		        const productId = button.getAttribute('data-id');
-		
-		        formContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
-		
-		        fetch(`/products/edit/${productId}`) 
-		            .then(response => {
-		                if (!response.ok) throw new Error('Network response was not ok');
-		                return response.text();
-		            })
-		            .then(html => {
-		                formContainer.innerHTML = html;
-		            })
-		            .catch(error => {
-		                formContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
-		                console.error('Error fetching edit form:', error);
-		            });
-		    });
-		
-		    editProductModal.addEventListener('hidden.bs.modal', function() {
-		        formContainer.innerHTML = '';
-		    });
-		});
-	</script>
-
-	<script>
-		setTimeout(() => {
-			const alert = document.querySelector('.alert');
-			if (alert) {
-				const bsAlert = new bootstrap.Alert(alert);
-				bsAlert.close();
-			}
-		}, 3000);
-	</script>
-
-	<script>
+<script>
 	document.addEventListener('DOMContentLoaded', function() {
-	  const deleteModal = document.getElementById('deleteModal');
-	  const deleteForm = document.getElementById('deleteForm');
-	  const deleteProductName = document.getElementById('deleteProductName');
+		const addProductModal = document.getElementById('addProductModal');
+		const formContainer = document.getElementById('addProductForm');
 
-	  deleteModal.addEventListener('show.bs.modal', function(event) {
-	    const button = event.relatedTarget;
-	    const productId = button.getAttribute('data-id');
-	    const productName = button.getAttribute('data-name');
-
-	    deleteProductName.textContent = productName;
-	    deleteForm.action = '/products/delete/' + productId;
-	  });
-	});
-	</script>
-
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-		    toastElList.map(function (toastEl) {
-		        var toast = new bootstrap.Toast(toastEl)
-		        toast.show()
-		    })
+		addProductModal.addEventListener('show.bs.modal', function() {
+			fetch('/products/add')
+					.then(response => response.text())
+					.then(html => {
+						formContainer.innerHTML = html;
+					})
+					.catch(error => {
+						formContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
+						console.error(error);
+					});
 		});
-	</script>
 
-	<script>
-	document.addEventListener('DOMContentLoaded', function () {
-	    const searchInput = document.getElementById('searchInput');
-	    const categoryFilter = document.getElementById('categoryFilter');
-	    const tableRows = document.querySelectorAll('tbody tr');
-
-	    const seen = new Set();
-	    categoryFilter.querySelectorAll('option').forEach(opt => {
-	        if (opt.value === '') return;
-	        if (seen.has(opt.value)) {
-	            opt.remove();
-	        } else {
-	            seen.add(opt.value);
-	        }
-	    });
-
-	    function filterRows() {
-	        const query = searchInput.value.toLowerCase();
-	        const selectedCategory = categoryFilter.value.toLowerCase();
-	        let anyVisible = false;
-
-	        tableRows.forEach(row => {
-	            if (row.querySelector('td[colspan="10"]')) return; // Adjusted to 10 columns
-
-	            // Adjusted children index because checkbox shifts the text cells over by 1 index
-	            const productName = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); 
-	            const categoryName = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
-
-	            const matchesSearch = !query || productName.includes(query) || categoryName.includes(query);
-	            const matchesCategory = !selectedCategory || categoryName === selectedCategory;
-
-	            if (matchesSearch && matchesCategory) {
-	                row.style.display = '';
-	                anyVisible = true;
-	            } else {
-	                row.style.display = 'none';
-	                // Uncheck hidden elements so they don't get accidentally deleted
-	                const cb = row.querySelector('.row-checkbox');
-	                if (cb) cb.checked = false;
-	            }
-	        });
-
-	        const noDataRow = document.querySelector('td[colspan="10"]')?.closest('tr');
-	        if (noDataRow) {
-	            noDataRow.style.display = anyVisible ? 'none' : '';
-	        }
-	        
-	        // Recalculate badge item count post-filtering
-	        const event = new Event('change');
-	        document.querySelector('.row-checkbox')?.dispatchEvent(event);
-	    }
-
-	    searchInput.addEventListener('input', filterRows);
-	    categoryFilter.addEventListener('change', filterRows);
+		addProductModal.addEventListener('hidden.bs.modal', function() {
+			formContainer.innerHTML = '';
+		});
 	});
-	</script>
+</script>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const editProductModal = document.getElementById('editProductModal');
+		const formContainer = document.getElementById('editProductForm');
+
+		editProductModal.addEventListener('show.bs.modal', function(event) {
+			const button = event.relatedTarget;
+			const productId = button.getAttribute('data-id');
+
+			formContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+
+			fetch(`/products/edit/${productId}`)
+					.then(response => {
+						if (!response.ok) throw new Error('Network response was not ok');
+						return response.text();
+					})
+					.then(html => {
+						formContainer.innerHTML = html;
+					})
+					.catch(error => {
+						formContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
+						console.error('Error fetching edit form:', error);
+					});
+		});
+
+		editProductModal.addEventListener('hidden.bs.modal', function() {
+			formContainer.innerHTML = '';
+		});
+	});
+</script>
+
+<script>
+	setTimeout(() => {
+		const alert = document.querySelector('.alert');
+		if (alert) {
+			const bsAlert = new bootstrap.Alert(alert);
+			bsAlert.close();
+		}
+	}, 3000);
+</script>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const deleteModal = document.getElementById('deleteModal');
+		const deleteForm = document.getElementById('deleteForm');
+		const deleteProductName = document.getElementById('deleteProductName');
+
+		deleteModal.addEventListener('show.bs.modal', function(event) {
+			const button = event.relatedTarget;
+			const productId = button.getAttribute('data-id');
+			const productName = button.getAttribute('data-name');
+
+			deleteProductName.textContent = productName;
+			deleteForm.action = '/products/delete/' + productId;
+		});
+	});
+</script>
+
+<!-- Stock Adjust modal wiring -->
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const stockAdjustModal = document.getElementById('stockAdjustModal');
+		const stockAdjustProductId = document.getElementById('stockAdjustProductId');
+		const stockAdjustProductName = document.getElementById('stockAdjustProductName');
+		const stockAdjustCurrentQty = document.getElementById('stockAdjustCurrentQty');
+		const stockAdjustQty = document.getElementById('stockAdjustQty');
+		const stockAdjustForm = document.getElementById('stockAdjustForm');
+
+		stockAdjustModal.addEventListener('show.bs.modal', function(event) {
+			const button = event.relatedTarget;
+			const productId = button.getAttribute('data-id');
+			const productName = button.getAttribute('data-name');
+			const qty = button.getAttribute('data-qty') || '0';
+
+			stockAdjustProductId.value = productId;
+			stockAdjustProductName.textContent = productName;
+			stockAdjustCurrentQty.textContent = qty;
+			stockAdjustQty.value = '';
+		});
+
+		stockAdjustModal.addEventListener('hidden.bs.modal', function() {
+			stockAdjustForm.reset();
+		});
+	});
+</script>
+
+<!-- Stock History modal wiring -->
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const stockHistoryModal = document.getElementById('stockHistoryModal');
+		const stockHistoryBody = document.getElementById('stockHistoryBody');
+		const stockHistoryProductName = document.getElementById('stockHistoryProductName');
+
+		stockHistoryModal.addEventListener('show.bs.modal', function(event) {
+			const button = event.relatedTarget;
+			const productId = button.getAttribute('data-id');
+			const productName = button.getAttribute('data-name');
+
+			stockHistoryProductName.textContent = '- ' + productName;
+			stockHistoryBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
+
+			fetch(`/products/stock-history/${productId}`)
+					.then(response => {
+						if (!response.ok) throw new Error('Network response was not ok');
+						return response.text();
+					})
+					.then(html => {
+						stockHistoryBody.innerHTML = html;
+					})
+					.catch(error => {
+						stockHistoryBody.innerHTML = '<p class="text-danger text-center">Failed to load stock history.</p>';
+						console.error('Error fetching stock history:', error);
+					});
+		});
+
+		stockHistoryModal.addEventListener('hidden.bs.modal', function() {
+			stockHistoryBody.innerHTML = '';
+		});
+	});
+</script>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+		toastElList.map(function (toastEl) {
+			var toast = new bootstrap.Toast(toastEl)
+			toast.show()
+		})
+	});
+</script>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const searchInput = document.getElementById('searchInput');
+		const categoryFilter = document.getElementById('categoryFilter');
+		const tableRows = document.querySelectorAll('tbody tr');
+
+		const seen = new Set();
+		categoryFilter.querySelectorAll('option').forEach(opt => {
+			if (opt.value === '') return;
+			if (seen.has(opt.value)) {
+				opt.remove();
+			} else {
+				seen.add(opt.value);
+			}
+		});
+
+		function filterRows() {
+			const query = searchInput.value.toLowerCase();
+			const selectedCategory = categoryFilter.value.toLowerCase();
+			let anyVisible = false;
+
+			tableRows.forEach(row => {
+				if (row.querySelector('td[colspan="9"]')) return;
+
+				// Adjusted children index because checkbox shifts the text cells over by 1 index
+				const productName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+				const categoryName = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+
+				const matchesSearch = !query || productName.includes(query) || categoryName.includes(query);
+				const matchesCategory = !selectedCategory || categoryName === selectedCategory;
+
+				if (matchesSearch && matchesCategory) {
+					row.style.display = '';
+					anyVisible = true;
+				} else {
+					row.style.display = 'none';
+					// Uncheck hidden elements so they don't get accidentally deleted
+					const cb = row.querySelector('.row-checkbox');
+					if (cb) cb.checked = false;
+				}
+			});
+
+			const noDataRow = document.querySelector('td[colspan="9"]')?.closest('tr');
+			if (noDataRow) {
+				noDataRow.style.display = anyVisible ? 'none' : '';
+			}
+
+			// Recalculate badge item count post-filtering
+			const event = new Event('change');
+			document.querySelector('.row-checkbox')?.dispatchEvent(event);
+		}
+
+		searchInput.addEventListener('input', filterRows);
+		categoryFilter.addEventListener('change', filterRows);
+	});
+</script>
 </body>
 </html>

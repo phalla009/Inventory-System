@@ -21,27 +21,24 @@ public class LoginController {
 	@GetMapping({ "/", "/login" })
 	public String loginForm(Model model, @RequestParam(value = "error", required = false) String error) {
 
-		model.addAttribute("roles", userService.getAllRoles());
-
 		if (error != null) {
-			model.addAttribute("errorMessage", "Invalid username, password, or role!");
+			model.addAttribute("errorMessage", "Invalid username or password!");
 		}
 
 		return "login/index";
 	}
 
 	@PostMapping({ "/", "/login" })
-	public String login(@RequestParam String username, @RequestParam String password, @RequestParam String role,
+	public String login(@RequestParam String username, @RequestParam String password,
 			HttpSession session, Model model) {
 
-		Users user = userService.authenticate(username, password, role);
+		Users user = userService.authenticate(username, password);
 
 		if (user != null) {
 			session.setAttribute("userRole", user.getRole());
 			return "redirect:/dashboard";
 		} else {
-			model.addAttribute("roles", userService.getAllRoles());
-			model.addAttribute("errorMessage", "Invalid username, password, or role!");
+			model.addAttribute("errorMessage", "Invalid username or password!");
 			return "login/index";
 		}
 	}

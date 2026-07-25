@@ -5,18 +5,28 @@ body {
 	display: flex;
 }
 
+body {
+	font-family: 'Plus Jakarta Sans', sans-serif !important;
+	margin: 0;
+	padding: 0;
+}
+
+body>.d-flex {
+	width: 100%;
+}
+
 /* Sidebar wrapper */
 .sidebar {
 	min-height: 100vh;
 	height: 100vh;
-	width: 260px;
-	background: linear-gradient(145deg, #1f1f2e, #27293d);
+	width: 260px; /* កំណត់ Width Standard សម្រាប់ Desktop */
+	flex-shrink: 0; /* ការពារកុំឱ្យ Flexbox ព្រួញ/បង្រួញ Sidebar */
+	background: #131625;
 	color: white;
 	display: flex;
 	flex-direction: column;
 }
-/* .bi { color: #f39c12; } */
-/* Scrollable wrapper for main nav */
+
 .sidebar .scroll-wrapper {
 	flex-grow: 1;
 	overflow-y: auto;
@@ -35,9 +45,16 @@ body {
 
 /* Nav link full width */
 .sidebar a.nav-link {
-	display: block;
-	width: 100%;
-	box-sizing: border-box;
+	color: white;
+	text-decoration: none;
+	transition: all 0.3s;
+	border-radius: 5px;
+	padding: 8px 12px;
+	font-size: 1rem;
+}
+
+.sidebar .collapse .nav-link {
+	padding-left: 30px;
 }
 
 /* Submenu indentation */
@@ -56,26 +73,16 @@ body {
 	box-sizing: border-box;
 }
 
-.sidebar a.nav-link {
-	color: white;
-	text-decoration: none;
-	transition: all 0.3s;
-	border-radius: 5px;
-	padding: 10px 15px;
-}
-
 .sidebar a.nav-link:hover {
 	background-color: #495057;
 	color: #ffc107;
 }
 
-.sidebar .collapse .nav-link {
-	padding-left: 30px;
-}
-
 .content {
 	margin: 20px 15px;
-	width: 1240px;
+	flex: 1 1 auto;
+	min-width: 0;
+	/* allows content to shrink below its intrinsic size instead of overflowing */
 	background-color: #ffffff;
 	padding: 20px;
 	border-radius: 8px;
@@ -120,7 +127,6 @@ h1 {
 		margin-bottom: 10px;
 	}
 	.content {
-		width: 100%;
 		margin: 10px;
 		padding: 15px;
 	}
@@ -136,7 +142,6 @@ h1 {
 /* Tablet responsiveness */
 @media ( min-width : 769px) and (max-width: 1024px) {
 	.content {
-		width: calc(100% - 280px); /* adjust content width based on sidebar */
 		margin: 15px;
 		padding: 20px;
 	}
@@ -156,6 +161,31 @@ h1 {
 	}
 	h3 {
 		font-size: 22px;
+	}
+}
+
+/* 17" laptop responsiveness (~1600px - 1920px, 100% browser zoom) */
+@media ( min-width : 1600px) {
+	.sidebar {
+		width: 300px;
+	}
+	.content {
+		margin: 30px;
+		padding: 30px;
+	}
+	.table-container {
+		max-width: 1300px;
+		padding: 40px;
+		margin: 40px auto;
+	}
+	h1 {
+		font-size: 32px;
+	}
+	h3 {
+		font-size: 24px;
+	}
+	.btn-success, .btn-secondary {
+		width: 40%;
 	}
 }
 
@@ -191,7 +221,9 @@ h1 {
 	box-shadow: 0 4px 8px rgba(0, 86, 179, 0.3);
 	transition: all 0.2s ease-in-out;
 }
-
+.btn-primary{
+	border-radius: 24px;
+}
 /* Smooth hover for Add New User button */
 .btn.btn-primary.mb-3:hover i {
 	transform: rotate(10deg);

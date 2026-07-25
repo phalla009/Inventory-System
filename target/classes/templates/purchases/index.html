@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Purchases-Listing</title>
+
+<!-- Bootstrap & Icons CSS -->
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -10,8 +12,108 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
 	rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
-<!-- Favicon / Logo -->
+
+<!-- Khmer Font & Favicon -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap"
+	rel="stylesheet">
 <link rel="icon" type="image/png" href="/images/kr.png">
+
+<style type="text/css">
+/* Action buttons (Styled like Category & Sales) */
+.btn-action {
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	font-size: .95rem;
+	transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.btn-action:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
+}
+
+.action-cell {
+	display: flex;
+	gap: .4rem;
+	flex-wrap: nowrap;
+	justify-content: center;
+}
+
+/* Table formatting */
+.purchases-table thead th {
+	font-weight: 600;
+	font-size: .82rem;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+	vertical-align: middle;
+	padding: .75rem .85rem;
+}
+
+.purchases-table tbody td {
+	padding: .65rem .85rem;
+	vertical-align: middle;
+	font-size: .93rem;
+}
+
+.purchases-table tbody tr {
+	transition: background-color .12s ease;
+}
+
+.purchases-table tbody tr:hover {
+	background-color: #f4f7fb;
+}
+
+.purchases-table {
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.supplier-name {
+	font-weight: 600;
+	color: #212529;
+}
+
+/* Table wrapper */
+.table-scroll-wrap {
+	max-height: 450px;
+	overflow-y: auto;
+	border-radius: 10px;
+	border: 1px solid #dee2e6;
+}
+
+.table-scroll-wrap .table {
+	margin-bottom: 0;
+}
+
+/* Standardized 17" Laptop screen optimization */
+@media ( min-width : 1600px) {
+	.content {
+		padding: 2rem 3rem !important;
+	}
+	.table-scroll-wrap {
+		max-height: 650px;
+	}
+	.purchases-table thead th {
+		font-size: .9rem;
+		padding: .9rem 1rem;
+	}
+	.purchases-table tbody td {
+		font-size: 1rem;
+		padding: .8rem 1rem;
+	}
+	.btn-action {
+		width: 38px;
+		height: 38px;
+		font-size: 1.05rem;
+	}
+}
+</style>
 </head>
 <body>
 	<div class="d-flex">
@@ -19,265 +121,232 @@
 		<div th:replace="fragments/sidebar :: sidebar"></div>
 
 		<!-- Main Content -->
-		<div class="content p-4">
+		<div class="content p-4 flex-grow-1">
 			<h1 class="mb-3">
 				<i class="bi bi-cart-check me-2"></i>Purchases Listing
 			</h1>
 
 			<!-- Toast Container -->
 			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-				<!-- Error Toast -->
 				<div th:replace="~{fragments/toasts :: toast-container}"></div>
 			</div>
 
-			<!-- <a href="/purchases/add" class="btn btn-primary mb-3"> <i
-				class="bi bi-plus-circle me-1"></i> Add Purchase
-			</a> -->
-			<button type="button" class="btn btn-primary mb-3"
-				data-bs-toggle="modal" data-bs-target="#addPurchasesModal">
-				<i class="bi bi-plus-circle me-1"></i> Add Purchases
-			</button>
-			<div style="max-height: 450px; overflow-y: auto;">
-				<table class="table table-bordered table-hover align-middle">
-					<thead class="table-dark text-center"
-						style="position: sticky; top: 0; z-index: 2;">
+			<!-- Action Buttons Container -->
+			<div class="mb-3 d-flex gap-2">
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+					data-bs-target="#addPurchasesModal">
+					<i class="bi bi-plus-circle me-1"></i> Add Purchase
+				</button>
+			</div>
+
+			<!-- Table Wrapper -->
+			<div class="table-scroll-wrap">
+				<table class="table table-hover align-middle purchases-table mb-0">
+					<thead class="table-dark sticky-top">
 						<tr>
-							<th>ID</th>
+							<th class="text-center" style="width: 60px;">ID</th>
 							<th>Supplier</th>
-							<th>Total Amount</th>
+							<th>Total Amount ($)</th>
 							<th>Purchase Date</th>
 							<th>Created At</th>
-							<th>Actions</th>
+							<th class="text-center">Actions</th>
 						</tr>
 					</thead>
-					<tbody>
-
-						<tr th:each="purchase ,iterStat : ${purchases}"
-							class="text-center">
-							<td th:text="${iterStat.count}"></td>
-							<td
+					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
+						<tr th:each="purchase, iterStat : ${purchases}">
+							<td class="text-center" th:text="${iterStat.count}"></td>
+							<td class="supplier-name"
 								th:text="${purchase.supplier != null ? purchase.supplier.name : 'N/A'}"></td>
-							<td th:text="${purchase.total_amount}"></td>
+							<td class="fw-bold text-success"
+								th:text="${#numbers.formatDecimal(purchase.total_amount, 1, 2)} + ' $'"></td>
 							<td
 								th:text="${purchase.purchase_date != null ? #temporals.format(purchase.purchase_date, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-							<td
+							<td class="text-muted"
 								th:text="${purchase.created_at != null ? #temporals.format(purchase.created_at, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-							<td>
-								<button type="button" class="btn btn-warning btn-sm"
+							<td class="action-cell">
+								<button type="button" class="btn btn-warning btn-sm btn-action"
 									data-bs-toggle="modal" data-bs-target="#editPurchasesModal"
-									th:attr="data-id=${purchase.id}">
+									th:attr="data-id=${purchase.id}" title="Edit Purchase">
 									<i class="bi bi-pencil-square"></i>
-								</button> <!-- Trigger Delete Modal -->
-								<button type="button" class="btn btn-danger btn-sm"
+								</button>
+								<button type="button" class="btn btn-danger btn-sm btn-action"
 									data-bs-toggle="modal" data-bs-target="#deleteModal"
-									th:attr="data-id=${purchase.id}, data-name=${purchase.supplier != null ? purchase.supplier.name : 'N/A'}">
+									th:attr="data-id=${purchase.id}, data-name=${purchase.supplier != null ? purchase.supplier.name : 'N/A'}"
+									title="Delete Purchase">
 									<i class="bi bi-trash"></i>
 								</button>
 							</td>
 						</tr>
 						<tr th:if="${#lists.isEmpty(purchases)}">
-							<td colspan="6" class="text-center">No purchases found.</td>
+							<td colspan="6" class="text-center py-4 text-muted"><i
+								class="bi bi-inbox fs-4 d-block mb-1"></i> No purchases found.</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 		</div>
+	</div>
 
-		<!-- Add Supplier Modal -->
-		<div class="modal fade" id="addPurchasesModal" tabindex="-1"
-			aria-labelledby="addPurchasesModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg modal-dialog-centered">
-				<div class="modal-content">
-					<div
-						class="modal-header bg-primary text-white justify-content-center position-relative">
-						<h5 class="modal-title text-center" id="addPurchasesModalLabel">
-							<i class="bi bi-plus-circle"></i> Add New Purchases
-						</h5>
-
+	<!-- Add Purchase Modal -->
+	<div class="modal fade" id="addPurchasesModal" tabindex="-1"
+		aria-labelledby="addPurchasesModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<div
+					class="modal-header bg-primary text-white justify-content-center position-relative">
+					<h5 class="modal-title text-center" id="addPurchasesModalLabel">
+						<i class="bi bi-plus-circle"></i> Add New Purchase
+					</h5>
+				</div>
+				<div class="modal-body" id="addPurchasesForm">
+					<div class="text-center py-4">
+						<div class="spinner-border text-primary"></div>
 					</div>
-
-					<div class="modal-body" id="addPurchasesForm">
-						<div class="text-center py-4">
-							<div class="spinner-border text-primary"></div>
-						</div>
-					</div>
-
 				</div>
 			</div>
 		</div>
-		<!-- Edit Supplier Modal -->
-		<div class="modal fade" id="editPurchasesModal" tabindex="-1"
-			aria-labelledby="editPurchasesModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg modal-dialog-centered">
-				<div class="modal-content">
+	</div>
 
-					<!-- Modal Header -->
-					<div
-						class="modal-header text-dark justify-content-center position-relative"
-						style="background-color: #ffc107;">
-						<h5 class="modal-title text-center" id="editPurchasesModalLabel">
-							<i class="bi bi-pencil-square"></i> Edit Supplier
-						</h5>
+	<!-- Edit Purchase Modal -->
+	<div class="modal fade" id="editPurchasesModal" tabindex="-1"
+		aria-labelledby="editPurchasesModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<div
+					class="modal-header text-dark justify-content-center position-relative"
+					style="background-color: #ffc107;">
+					<h5 class="modal-title text-center" id="editPurchasesModalLabel">
+						<i class="bi bi-pencil-square"></i> Edit Purchase
+					</h5>
+				</div>
+				<div class="modal-body" id="editPurchasesForm">
+					<div class="text-center py-4">
+						<div class="spinner-border text-primary"></div>
 					</div>
-
-
-					<!-- Modal Body -->
-					<div class="modal-body" id="editPurchasesForm">
-						<!-- Spinner while loading form -->
-						<div class="text-center py-4">
-							<div class="spinner-border text-primary"></div>
-						</div>
-					</div>
-
 				</div>
 			</div>
 		</div>
+	</div>
 
-		<!-- Delete Confirmation Modal -->
-		<div class="modal fade" id="deleteModal" tabindex="-1"
-			aria-labelledby="deleteModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header bg-danger text-white">
-						<h5 class="modal-title" id="deleteModalLabel">
-							<i class="bi bi-exclamation-triangle"></i> Confirm Delete
-						</h5>
-						<button type="button" class="btn-close btn-close-white"
-							data-bs-dismiss="modal" aria-label="Close"></button>
-					</div>
-
-					<div class="modal-body text-center">
-						<p>Are you sure you want to delete this purchase?</p>
-						<p>
-							<strong id="deletePurchaseName"></strong>
-						</p>
-					</div>
-
-					<div class="modal-footer">
-						<form id="deleteForm" th:action="@{'/purchases/delete/'}"
-							method="post" class="w-100">
-							<input type="hidden" name="_method" value="delete">
-							<div class="row g-2">
-								<div class="col">
-									<button type="button" class="btn btn-secondary w-100"
-										data-bs-dismiss="modal">
-										<i class="bi bi-x-circle me-1"></i> No, keep it
-									</button>
-								</div>
-								<div class="col">
-									<button type="submit" class="btn btn-danger w-100">
-										<i class="bi bi-trash me-1"></i> Yes, Delete!
-									</button>
-								</div>
+	<!-- Delete Confirmation Modal -->
+	<div class="modal fade" id="deleteModal" tabindex="-1"
+		aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header bg-danger text-white">
+					<h5 class="modal-title" id="deleteModalLabel">
+						<i class="bi bi-exclamation-triangle"></i> Confirm Delete
+					</h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body text-center">
+					<p>Are you sure you want to delete this purchase?</p>
+					<p>
+						<strong id="deletePurchaseName"></strong>
+					</p>
+				</div>
+				<div class="modal-footer">
+					<form id="deleteForm" th:action="@{'/purchases/delete/'}"
+						method="post" class="w-100">
+						<input type="hidden" name="_method" value="delete">
+						<div class="row g-2">
+							<div class="col">
+								<button type="button" class="btn btn-secondary w-100"
+									data-bs-dismiss="modal">
+									<i class="bi bi-x-circle me-1"></i> No, keep it
+								</button>
 							</div>
-						</form>
-					</div>
+							<div class="col">
+								<button type="submit" class="btn btn-danger w-100">
+									<i class="bi bi-trash me-1"></i> Yes, Delete!
+								</button>
+							</div>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
+	</div>
 
+	<!-- Bootstrap JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-		<!-- ✅ Bootstrap JS -->
-		<script
-			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
-		</script>
-		<!-- add new form  -->
-		<script>
-			document.addEventListener('DOMContentLoaded', function() {
-			    const addPurchasesModal = document.getElementById('addPurchasesModal');
-			    const formContainer = document.getElementById('addPurchasesForm');
-			
-			    addPurchasesModal.addEventListener('show.bs.modal', function() {
-			        // Fetch the form HTML from your server
-			        fetch('/purchases/add') // Make sure this endpoint returns the fragment 'add_new_products :: form'
-			            .then(response => response.text())
-			            .then(html => {
-			                formContainer.innerHTML = html;
-			            })
-			            .catch(error => {
-			                formContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
-			                console.error(error);
-			            });
-			    });
-			
-			    // Clear form when modal is closed
-			    addPurchasesModal.addEventListener('hidden.bs.modal', function() {
-			        formContainer.innerHTML = '';
-			    });
-			});
-		</script>
-		<!-- edit form -->
-		<script>
-			document.addEventListener('DOMContentLoaded', function() {
-			    const editPurchasesModal = document.getElementById('editPurchasesModal');
-			    const formContainer = document.getElementById('editPurchasesForm');
-		
-			    editPurchasesModal.addEventListener('show.bs.modal', function(event) {
-			        const button = event.relatedTarget;
-			        const purchasesId = button.getAttribute('data-id'); // use consistent variable name
-		
-			        // Show spinner while loading
-			        formContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
-		
-			        // Fetch the edit form from the server
-			        fetch(`/purchases/edit/${purchasesId}`) 
-			            .then(response => {
-			                if (!response.ok) throw new Error('Network response was not ok');
-			                return response.text();
-			            })
-			            .then(html => {
-			                formContainer.innerHTML = html;
-			            })
-			            .catch(error => {
-			                formContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
-			                console.error('Error fetching edit form:', error);
-			            });
-			    });
-		
-			    // Optional: clear form when modal is hidden
-			    editPurchasesModal.addEventListener('hidden.bs.modal', function() {
-			        formContainer.innerHTML = '';
-			    });
-			});
-		</script>
+	<!-- Page Scripts -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Add Purchase Modal Fetch
+			const addPurchasesModal = document.getElementById('addPurchasesModal');
+			const addFormContainer = document.getElementById('addPurchasesForm');
 
-		<!-- ✅ Auto-hide success message -->
-		<script>
-			setTimeout(() => {
-				const alert = document.querySelector('.alert');
-				if (alert) {
-					const bsAlert = new bootstrap.Alert(alert);
-					bsAlert.close();
-				}
-			}, 3000);
-		</script>
+			if (addPurchasesModal) {
+				addPurchasesModal.addEventListener('show.bs.modal', function() {
+					fetch('/purchases/add')
+						.then(response => response.text())
+						.then(html => { addFormContainer.innerHTML = html; })
+						.catch(error => {
+							addFormContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
+							console.error(error);
+						});
+				});
 
-		<!-- Modal Logic -->
-		<script>
-			document.addEventListener('DOMContentLoaded', function() {
-				const deleteModal = document.getElementById('deleteModal');
-				const deleteForm = document.getElementById('deleteForm');
-				const deletePurchaseName = document
-						.getElementById('deletePurchaseName');
-	
+				addPurchasesModal.addEventListener('hidden.bs.modal', function() {
+					addFormContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+				});
+			}
+
+			// Edit Purchase Modal Fetch
+			const editPurchasesModal = document.getElementById('editPurchasesModal');
+			const editFormContainer = document.getElementById('editPurchasesForm');
+
+			if (editPurchasesModal) {
+				editPurchasesModal.addEventListener('show.bs.modal', function(event) {
+					const button = event.relatedTarget;
+					const purchasesId = button.getAttribute('data-id');
+
+					editFormContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+
+					fetch(`/purchases/edit/${purchasesId}`)
+						.then(response => {
+							if (!response.ok) throw new Error('Network response failed');
+							return response.text();
+						})
+						.then(html => { editFormContainer.innerHTML = html; })
+						.catch(error => {
+							editFormContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
+							console.error(error);
+						});
+				});
+
+				editPurchasesModal.addEventListener('hidden.bs.modal', function() {
+					editFormContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+				});
+			}
+
+			// Delete Modal Action Builder
+			const deleteModal = document.getElementById('deleteModal');
+			const deleteForm = document.getElementById('deleteForm');
+			const deletePurchaseName = document.getElementById('deletePurchaseName');
+
+			if (deleteModal) {
 				deleteModal.addEventListener('show.bs.modal', function(event) {
 					const button = event.relatedTarget;
 					const purchaseId = button.getAttribute('data-id');
 					const purchaseName = button.getAttribute('data-name');
-	
+
 					deletePurchaseName.textContent = purchaseName;
 					deleteForm.action = '/purchases/delete/' + purchaseId;
 				});
+			}
+
+			// Toast Auto-Show
+			const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+			toastElList.map(function (toastEl) {
+				const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+				toast.show();
 			});
-		</script>
-		<script>
-			document.addEventListener('DOMContentLoaded', function () {
-			    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-			    toastElList.map(function (toastEl) {
-			        var toast = new bootstrap.Toast(toastEl)
-			        toast.show()
-			    })
-			});
-		</script>
+		});
+	</script>
 </body>
 </html>

@@ -40,13 +40,11 @@ public class UserService {
 		return usersRepository.findById(id).orElse(null);
 	}
 
-	// Get all distinct roles (for login dropdown)
-	public List<String> getAllRoles() {
-		return usersRepository.findDistinctRoles(); // custom query in repository
-	}
-
-	// Authenticate user by username, password, and role
-	public Users authenticate(String username, String password, String role) {
-		return usersRepository.findByUsernameAndPasswordAndRole(username, password, role).orElse(null);
+	// Authenticate user by username and password only.
+	// Role is NOT selected by the user anymore — it is read from the
+	// matched user record afterwards (e.g. user.getRole()) and used
+	// to control permissions/redirects.
+	public Users authenticate(String username, String password) {
+		return usersRepository.findByUsernameAndPassword(username, password).orElse(null);
 	}
 }

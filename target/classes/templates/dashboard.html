@@ -2,11 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Product Dashboard</title>
 
 <!-- Favicon -->
 <link rel="icon" type="image/png" href="/images/kr.png">
 
+<!-- Google Fonts & Icons -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+	rel="stylesheet">
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -16,164 +21,253 @@
 <link rel="stylesheet" href="/css/style.css">
 
 <style>
-/* ================= GENERAL ================= */
+:root {
+	--bg-dark: #0b0d17;
+	--card-bg: #131625;
+	--card-border: #1e2238;
+	--text-main: #f1f5f9;
+	--text-muted: #8b949e;
+	--accent-purple: #6366f1;
+	--accent-blue: #3b82f6;
+	--badge-green: #10b981;
+	--badge-red: #ef4444;
+}
+
+/* ជួយលុប Background ស ចេញពី Body, Content និង Sidebar */
+html, body, .content, div[th\:replace] {
+	background-color: var(--bg-dark) !important;
+	color: var(--text-main) !important;
+}
+
 body {
-	font-family: 'Inter', sans-serif;
-	background-color: #121212;
-	color: #e0e0e0;
+	font-family: 'Plus Jakarta Sans', sans-serif !important;
+	margin: 0;
+	padding: 0;
+}
+
+/* Card Elements */
+.dash-card {
+	background-color: var(--card-bg) !important;
+	border: 1px solid var(--card-border) !important;
+	border-radius: 20px;
+	padding: 1rem;
+	transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.dash-card:hover {
+	border-color: #2e3556 !important;
+}
+
+.card-header-custom {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.card-title-custom {
+	color: var(--text-muted) !important;
+	font-size: 0.875xrem;
+	font-weight: 500;
 	margin: 0;
 }
 
-h1, h2, h5 {
-	font-weight: 600;
-}
-
-a, .content a {
-	color: #f39c12;
+.icon-btn-sm {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--card-border);
+	color: var(--text-muted);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	text-decoration: none;
+	font-size: 0.85rem;
 }
 
-a:hover {
-	color: #e67e22;
+.icon-btn-sm:hover {
+	color: #fff;
+	background: rgba(255, 255, 255, 0.1);
 }
 
-/* ================= DASHBOARD CARDS ================= */
-.dashboard-card {
-	border-radius: 1rem;
-	padding: 2rem;
-	text-align: center;
-	transition: transform 0.3s, box-shadow 0.3s;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-	background: linear-gradient(145deg, #1f1f2e, #27293d);
-	cursor: default;
+.card-value {
+	font-size: 2.2rem;
+	font-weight: 700;
+	margin: 0.2rem 0;
+	color: #fff !important;
 }
 
-.dashboard-card:hover {
-	transform: translateY(-5px);
-	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+.trend-badge {
+	font-size: 0.75rem;
+	font-weight: 600;
+	padding: 0.25rem 0.5rem;
+	border-radius: 20px;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
 }
 
-.dashboard-card h2 {
-	font-size: 2.5rem;
-	margin: 0.5rem 0 0;
+.trend-up {
+	color: var(--badge-green);
 }
 
-.dashboard-card h5 {
-	font-size: 1rem;
-	text-transform: uppercase;
-	letter-spacing: 1px;
-	color: #a0a0a0;
+.trend-down {
+	color: var(--badge-red);
 }
 
-/* ================= CHART CARDS ================= */
-.charts .card {
-	border-radius: 1rem;
-	background: linear-gradient(145deg, #1f1f2e, #27293d);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-	padding: 1.5rem;
-	transition: transform 0.3s;
+/* Action Buttons */
+.btn-ai-assistant {
+	background: linear-gradient(135deg, #6366f1, #a855f7);
+	color: white;
+	border: none;
+	border-radius: 30px;
+	padding: 0.5rem 1.25rem;
+	font-weight: 600;
+	font-size: 0.875rem;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
-.charts .card:hover {
-	transform: translateY(-3px);
+.btn-ai-assistant:hover {
+	color: white;
+	opacity: 0.95;
 }
 
-canvas {
-	background-color: #1f1f2e !important;
-	border-radius: 0.75rem;
+.btn-dark-pill {
+	background-color: var(--card-bg);
+	border: 1px solid var(--card-border);
+	color: var(--text-main);
+	border-radius: 20px;
+	padding: 0.4rem 1rem;
+	font-size: 0.85rem;
 }
 
-/* ================= GRID SPACING ================= */
-.row-cols-md-5>.col {
-	margin-bottom: 1.5rem;
-}
-
-/* ================= RESPONSIVE ================= */
-@media ( max-width : 768px) {
-	.dashboard-card h2 {
-		font-size: 2rem;
-	}
-	.dashboard-card h5 {
-		font-size: 0.875rem;
-	}
+/* Custom Chart Containers */
+.chart-container {
+	position: relative;
+	width: 100%;
 }
 </style>
 </head>
 
 <body>
-	<div class="d-flex bg-dark">
+	<div class="d-flex min-vh-100"
+		style="background-color: var(--bg-dark);">
 
 		<!-- ================= SIDEBAR ================= -->
-		<!-- Sidebar stays unchanged -->
 		<div th:replace="fragments/sidebar :: sidebar"></div>
 
 		<!-- ================= MAIN CONTENT ================= -->
-		<div class="content flex-grow-1 p-1 bg-dark">
+		<div class="content flex-grow-1 px-4 py-4"
+			style="background-color: var(--bg-dark);">
 
-			<h1 class="mb-4 text-white">
-				<i class="bi bi-box-seam me-2"></i> Product Dashboard
-			</h1>
+			<!-- Title & Controls Bar -->
+			<div
+				class="d-flex justify-content-center align-items-center mb-4 text-center">
+				<h2 class="fw-bold m-0 text-white">
+					<i class="bi bi-box-seam me-2"></i> Dashboard
+				</h2>
+			</div>
 
+			<!-- Dashboard Grid Layout -->
+			<div class="row g-4">
 
-			<!-- ================= DASHBOARD STATS ================= -->
-			<div class="row g-4 row-cols-1 row-cols-md-5">
+				<!-- LEFT COLUMN: Key KPI Cards & Main Chart -->
+				<div class="col-12 col-xl-6">
+					<!-- 2x2 Metric Cards Grid -->
+					<div class="row g-3 mb-4">
+						<!-- Total Products -->
+						<div class="col-12 col-sm-6">
+							<div class="dash-card">
+								<div class="card-header-custom">
+									<span class="card-title-custom">Total Products</span> <a
+										href="#" class="icon-btn-sm"><i class="bi bi-box-seam"></i></a>
+								</div>
+								<div class="card-value" th:text="${totalProducts}">0</div>
+								<div class="trend-badge trend-up">
+									<i class="bi bi-graph-up-arrow"></i> +18% <span
+										class="text-muted fw-normal ms-1">to previous year</span>
+								</div>
+							</div>
+						</div>
 
-				<div class="col">
-					<div class="dashboard-card">
-						<h5>Total Products</h5>
-						<h2 th:text="${totalProducts}">0</h2>
+						<!-- Total Quantity -->
+						<div class="col-12 col-sm-6">
+							<div class="dash-card">
+								<div class="card-header-custom">
+									<span class="card-title-custom">Total Quantity</span> <a
+										href="#" class="icon-btn-sm"><i class="bi bi-layers"></i></a>
+								</div>
+								<div class="card-value" th:text="${totalQuantity}">0</div>
+								<div class="trend-badge trend-down">
+									<i class="bi bi-graph-down-arrow"></i> -25% <span
+										class="text-muted fw-normal ms-1">to previous year</span>
+								</div>
+							</div>
+						</div>
+
+						<!-- Total Daily -->
+						<div class="col-12 col-sm-6">
+							<div class="dash-card">
+								<div class="card-header-custom">
+									<span class="card-title-custom">Total Daily</span> <a href="#"
+										class="icon-btn-sm"><i class="bi bi-currency-dollar"></i></a>
+								</div>
+								<div class="card-value" th:text="'$' + ${totalDaily}">$0.00</div>
+								<div class="trend-badge trend-up">
+									<i class="bi bi-graph-up-arrow"></i> +15% <span
+										class="text-muted fw-normal ms-1">to previous year</span>
+								</div>
+							</div>
+						</div>
+
+						<!-- Grand Total -->
+						<div class="col-12 col-sm-6">
+							<div class="dash-card">
+								<div class="card-header-custom">
+									<span class="card-title-custom">Grand Total</span> <a href="#"
+										class="icon-btn-sm"><i class="bi bi-wallet2"></i></a>
+								</div>
+								<div class="card-value" th:text="'$' + ${grandTotal}">$0.00</div>
+								<small class="text-muted">based on a weighted average</small>
+							</div>
+						</div>
+					</div>
+
+					<!-- Stock Value Chart Card -->
+					<div class="dash-card">
+						<div class="card-header-custom">
+							<span class="card-title-custom fw-semibold text-white fs-6">Stock
+								Value by Category</span> <a href="#" class="icon-btn-sm"><i
+								class="bi bi-arrow-right"></i></a>
+						</div>
+						<div class="chart-container mt-3">
+							<canvas id="categoryChart"></canvas>
+						</div>
 					</div>
 				</div>
 
-				<div class="col">
-					<div class="dashboard-card">
-						<h5>Total Quantity</h5>
-						<h2 th:text="${totalQuantity}">0</h2>
-					</div>
-				</div>
-
-				<div class="col">
-					<div class="dashboard-card">
-						<h5>Total Daily</h5>
-						<h2 th:text="'$' + ${totalDaily}">$0.00</h2>
-					</div>
-				</div>
-
-				<div class="col">
-					<div class="dashboard-card">
-						<h5>Total Monthly</h5>
-						<h2 th:text="'$' + ${totalMonthly}">$0.00</h2>
-					</div>
-				</div>
-
-				<div class="col">
-					<div class="dashboard-card">
-						<h5>Grand Total</h5>
-						<h2 th:text="'$' + ${grandTotal}">$0.00</h2>
+				<!-- RIGHT COLUMN: Bar Analytics Chart -->
+				<div class="col-12 col-xl-6">
+					<div
+						class="dash-card d-flex flex-column justify-content-between h-100">
+						<div>
+							<div class="card-header-custom">
+								<span class="card-title-custom fw-semibold text-white fs-6">Sales
+									per Supplier</span> <a href="#" class="icon-btn-sm"><i
+									class="bi bi-arrow-right"></i></a>
+							</div>
+							<div class="chart-container mt-4" style="height: 480px;">
+								<canvas id="supplierChart"></canvas>
+							</div>
+						</div>
 					</div>
 				</div>
 
 			</div>
-
-			<!-- ================= CHARTS ================= -->
-			<div class="charts row mt-4 g-4">
-
-				<div class="col-md-6">
-					<div class="card text-white">
-						<h5>Stock Value by Category</h5>
-						<canvas id="categoryChart" height="300"></canvas>
-					</div>
-				</div>
-
-				<div class="col-md-6">
-					<div class="card text-white">
-						<h5>Sales per Supplier</h5>
-						<canvas id="supplierChart" height="300"></canvas>
-					</div>
-				</div>
-
-			</div>
-
 		</div>
 	</div>
 
@@ -183,63 +277,79 @@ canvas {
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 	<script th:inline="javascript">
-// ================= Stock Value by Category =================
-const ctx1 = document.getElementById('categoryChart').getContext('2d');
-const categoryLabels = /*[[${categoryLabels}]]*/ [];
-const categoryData = /*[[${categoryData}]]*/ [];
-new Chart(ctx1, {
-    type: 'line',
-    data: {
-        labels: categoryLabels,
-        datasets: [{
-            label: 'Stock Value',
-            data: categoryData,
-            borderColor: '#f39c12',
-            backgroundColor: 'rgba(243, 156, 18, 0.2)',
-            tension: 0.4,
-            fill: true,
-            pointBackgroundColor: '#f39c12',
-            pointRadius: 5
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: '#e0e0e0' } } },
-        scales: {
-            x: { ticks: { color: '#e0e0e0' }, grid: { color: '#2c2c3c' } },
-            y: { beginAtZero: true, ticks: { color: '#e0e0e0' }, grid: { color: '#2c2c3c' } }
-        }
-    }
-});
+        Chart.defaults.color = '#8b949e';
+        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
 
-// ================= Sales per Supplier =================
-const ctx2 = document.getElementById('supplierChart').getContext('2d');
-const supplierLabels = /*[[${supplierLabels}]]*/ [];
-const supplierData = /*[[${supplierData}]]*/ [];
-new Chart(ctx2, {
-    type: 'bar',
-    data: {
-        labels: supplierLabels,
-        datasets: [{
-            label: 'Sales',
-            data: supplierData,
-            backgroundColor: supplierLabels.map(() => 'rgba(243, 156, 18, 0.7)'),
-            borderColor: supplierLabels.map(() => '#f39c12'),
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: '#e0e0e0' } } },
-        scales: {
-            x: { ticks: { color: '#e0e0e0' }, grid: { color: '#2c2c3c' } },
-            y: { beginAtZero: true, ticks: { color: '#e0e0e0' }, grid: { color: '#2c2c3c' } }
-        }
-    }
-});
-</script>
+        // ================= Line Chart: Stock Value by Category =================
+        const ctx1 = document.getElementById('categoryChart').getContext('2d');
+        const categoryLabels = /*[[${categoryLabels}]]*/ ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const categoryData = /*[[${categoryData}]]*/ [10, 25, 18, 30, 22, 40, 35, 45, 30, 28, 20, 15];
 
+        const gradientLine = ctx1.createLinearGradient(0, 0, 0, 300);
+        gradientLine.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+        gradientLine.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
 
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    label: 'Stock Value',
+                    data: categoryData,
+                    borderColor: '#6366f1',
+                    borderWidth: 3,
+                    backgroundColor: gradientLine,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#818cf8',
+                    pointBorderColor: '#0b0d17',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false, drawBorder: false }, ticks: { color: '#8b949e' } },
+                    y: { grid: { color: '#1e2238', drawBorder: false }, ticks: { color: '#8b949e' } }
+                }
+            }
+        });
 
+        // ================= Bar Chart: Sales per Supplier =================
+        const ctx2 = document.getElementById('supplierChart').getContext('2d');
+        const supplierLabels = /*[[${supplierLabels}]]*/ ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+        const supplierData = /*[[${supplierData}]]*/ [50, 70, 60, 90, 80, 190, 110, 100, 120, 110, 130, 100];
+
+        const gradientBar = ctx2.createLinearGradient(0, 0, 0, 400);
+        gradientBar.addColorStop(0, '#818cf8');
+        gradientBar.addColorStop(1, '#3b82f6');
+
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: supplierLabels,
+                datasets: [{
+                    label: 'Sales',
+                    data: supplierData,
+                    backgroundColor: supplierData.map((val, i) => i === 5 ? gradientBar : '#1e2238'),
+                    hoverBackgroundColor: '#6366f1',
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false, drawBorder: false }, ticks: { color: '#8b949e' } },
+                    y: { grid: { color: '#1e2238', drawBorder: false }, ticks: { color: '#8b949e' } }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Sales Management</title>
 
-<!-- ✅ Bootstrap CSS -->
+<!-- Bootstrap & Icons CSS -->
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -12,23 +12,120 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
 	rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
-<!-- Favicon / Logo -->
+
+<!-- Khmer Font & Favicon -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap"
+	rel="stylesheet">
 <link rel="icon" type="image/png" href="/images/kr.png">
-</head>
-<!-- CSS for Delete button to isolate styles -->
-<style>
+
+<style type="text/css">
+/* Action buttons (Styled like Category) */
+.btn-action {
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	font-size: .95rem;
+	transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.btn-action:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
+}
+
+.action-cell {
+	display: flex;
+	gap: .4rem;
+	flex-wrap: nowrap;
+	justify-content: center;
+}
+
+/* Table formatting */
+.sales-table thead th {
+	font-weight: 600;
+	font-size: .82rem;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+	vertical-align: middle;
+	padding: .75rem .85rem;
+}
+
+.sales-table tbody td {
+	padding: .65rem .85rem;
+	vertical-align: middle;
+	font-size: .93rem;
+}
+
+.sales-table tbody tr {
+	transition: background-color .12s ease;
+}
+
+.sales-table tbody tr:hover {
+	background-color: #f4f7fb;
+}
+
+.sales-table {
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.customer-name {
+	font-weight: 600;
+	color: #212529;
+}
+
+/* Table wrapper */
+.table-scroll-wrap {
+	max-height: 450px;
+	overflow-y: auto;
+	border-radius: 10px;
+	border: 1px solid #dee2e6;
+}
+
+.table-scroll-wrap .table {
+	margin-bottom: 0;
+}
+
+/* Standardized 17" Laptop screen optimization */
+@media ( min-width : 1600px) {
+	.content {
+		padding: 2rem 3rem !important;
+	}
+	.table-scroll-wrap {
+		max-height: 650px;
+	}
+	.sales-table thead th {
+		font-size: .9rem;
+		padding: .9rem 1rem;
+	}
+	.sales-table tbody td {
+		font-size: 1rem;
+		padding: .8rem 1rem;
+	}
+	.btn-action {
+		width: 38px;
+		height: 38px;
+		font-size: 1.05rem;
+	}
+}
+
 @media print {
 	.receipt {
 		page-break-after: always;
 	}
 }
 </style>
+</head>
 <body>
 
 	<div class="d-flex">
-		<!-- ✅ Sidebar Fragment -->
+		<!-- Sidebar Fragment -->
 		<div th:replace="fragments/sidebar :: sidebar"></div>
-
 
 		<!-- Print Message Modal -->
 		<div class="modal fade" id="printSalesModal" tabindex="-1"
@@ -48,7 +145,7 @@
 			</div>
 		</div>
 
-		<!-- ✅ Main Content -->
+		<!-- Main Content -->
 		<div class="content p-4 flex-grow-1">
 			<h1 class="mb-3">
 				<i class="bi bi-cash-stack me-2"></i>Sales Listing
@@ -56,34 +153,28 @@
 
 			<!-- Toast Container -->
 			<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-				<!-- Error Toast with Icon -->
 				<div th:replace="~{fragments/toasts :: toast-container}"></div>
 			</div>
-			<!-- ✅ Add Button -->
-			<!-- <a th:href="@{/sales/add}" class="btn btn-primary mb-3"> <i
-				class="bi bi-plus-circle me-1"></i> Add Sale
-			</a> -->
-			<button type="button" class="btn btn-primary mb-3"
-				data-bs-toggle="modal" data-bs-target="#addSalesModal">
-				<i class="bi bi-plus-circle me-1"></i> Add Sale
-			</button>
-			<button type="button" id="btnPrintSelected"
-				class="btn btn-success mb-3" style="width: 85px;">
-				<i class="bi bi-printer me-1"></i> Print
-			</button>
 
+			<!-- Action Buttons Container -->
+			<div class="mb-3 d-flex gap-2">
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+					data-bs-target="#addSalesModal">
+					<i class="bi bi-plus-circle me-1"></i> Add Sale
+				</button>
+				<button type="button" id="btnPrintSelected" class="btn btn-success" style="width: 200px; border-radius:24px">
+					<i class="bi bi-printer me-1"></i> Print Selected
+				</button>
+			</div>
 
-			<!-- Print -->
-			<!-- 	<a th:href="@{'/sales/print/' + ${sale.id}}" target="_blank"
-				class="btn btn-primary btn-sm"> <i class="bi bi-printer"></i>
-			</a>
- -->
-			<div style="max-height: 450px; overflow-y: auto;">
-				<!-- ✅ Sales Table -->
-				<table class="table table-bordered table-hover align-middle">
-					<thead class="table-dark text-center">
+			<!-- Table Wrapper -->
+			<div class="table-scroll-wrap">
+				<table class="table table-hover align-middle sales-table mb-0">
+					<thead class="table-dark sticky-top">
 						<tr>
-							<th>Check</th>
+							<th style="width: 40px;" class="text-center"><input
+								type="checkbox" id="selectAll" class="form-check-input">
+							</th>
 							<th>ID</th>
 							<th>Sale Date</th>
 							<th>Customer Name</th>
@@ -91,46 +182,49 @@
 							<th>SubTotal ($)</th>
 							<th>Discount (%)</th>
 							<th>Total ($)</th>
-							<th>Actions</th>
+							<th class="text-center">Actions</th>
 						</tr>
 					</thead>
-					<tbody>
-						<tr th:each="sale : ${salesList}">
+					<tbody style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
+						<tr th:each="sale, iterStat : ${salesList}">
 							<td class="text-center"><input type="checkbox"
-								class="selectSale" th:value="${sale.id}" /></td>
-							<td th:text="${sale.id}"></td>
+								class="form-check-input selectSale" th:value="${sale.id}" /></td>
+							<td th:text="${iterStat.count}"></td>
 							<td
 								th:text="${sale.sale_date != null ? #temporals.format(sale.sale_date, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-							<td th:text="${sale.customer_name}"></td>
+							<td class="customer-name" th:text="${sale.customer_name}"></td>
 							<td th:text="${sale.product != null ? sale.product.name : 'N/A'}"></td>
 							<td
 								th:text="${#numbers.formatDecimal(sale.subtotal, 1, 2)} + ' $'"></td>
 							<td th:text="${sale.discount} + '%'"></td>
-							<td
+							<td class="fw-bold text-success"
 								th:text="${#numbers.formatDecimal(sale.subtotal - (sale.subtotal * (sale.discount / 100)), 1, 2)} + ' $'"></td>
-							<td class="text-center">
-								<button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-									data-bs-target="#editSalesModal" th:attr="data-id=${sale.id}">
+							<td class="action-cell">
+								<button type="button" class="btn btn-warning btn-sm btn-action"
+									data-bs-toggle="modal" data-bs-target="#editSalesModal"
+									th:attr="data-id=${sale.id}" title="Edit Sale">
 									<i class="bi bi-pencil-square"></i>
 								</button>
-								<button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-									data-bs-target="#deleteModal"
-									th:attr="data-id=${sale.id}, data-name=${sale.customer_name}">
+								<button type="button" class="btn btn-danger btn-sm btn-action"
+									data-bs-toggle="modal" data-bs-target="#deleteModal"
+									th:attr="data-id=${sale.id}, data-name=${sale.customer_name}"
+									title="Delete Sale">
 									<i class="bi bi-trash"></i>
 								</button>
 							</td>
 						</tr>
 						<tr th:if="${#lists.isEmpty(salesList)}">
-							<td colspan="9" class="text-center text-muted">No sales
+							<td colspan="9" class="text-center py-4 text-muted"><i
+								class="bi bi-inbox fs-4 d-block mb-1"></i> No sales records
 								found.</td>
 						</tr>
 					</tbody>
 				</table>
-
 			</div>
 		</div>
 	</div>
-	<!-- Add Supplier Modal -->
+
+	<!-- Add Sales Modal -->
 	<div class="modal fade" id="addSalesModal" tabindex="-1"
 		aria-labelledby="addSalesModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg modal-dialog-centered">
@@ -140,25 +234,21 @@
 					<h5 class="modal-title text-center" id="addSalesModalLabel">
 						<i class="bi bi-plus-circle"></i> Add New Sales
 					</h5>
-
 				</div>
-
 				<div class="modal-body" id="addSalesForm">
 					<div class="text-center py-4">
 						<div class="spinner-border text-primary"></div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
-	<!-- Edit Supplier Modal -->
+
+	<!-- Edit Sales Modal -->
 	<div class="modal fade" id="editSalesModal" tabindex="-1"
 		aria-labelledby="editSalesModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg modal-dialog-centered">
 			<div class="modal-content">
-
-				<!-- Modal Header -->
 				<div
 					class="modal-header text-dark justify-content-center position-relative"
 					style="background-color: #ffc107;">
@@ -166,21 +256,16 @@
 						<i class="bi bi-pencil-square"></i> Edit Sales
 					</h5>
 				</div>
-
-
-				<!-- Modal Body -->
 				<div class="modal-body" id="editSalesForm">
-					<!-- Spinner while loading form -->
 					<div class="text-center py-4">
 						<div class="spinner-border text-primary"></div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
 
-	<!-- ✅ Delete Confirmation Modal -->
+	<!-- Delete Confirmation Modal -->
 	<div class="modal fade" id="deleteModal" tabindex="-1"
 		aria-labelledby="deleteModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
@@ -221,172 +306,104 @@
 		</div>
 	</div>
 
-	<!-- ✅ Bootstrap JS -->
+	<!-- Bootstrap JS -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script>
-	document.addEventListener('DOMContentLoaded', function () {
-	    const btnPrint = document.getElementById('btnPrintSelected');
-	    const printModalEl = document.getElementById('printSalesModal');
-	    const printModal = new bootstrap.Modal(printModalEl);
-	    const messageContainer = document.getElementById('printMessage');
 
-	    btnPrint.addEventListener('click', function () {
-	        const selectedIds = [...document.querySelectorAll('.selectSale:checked')]
-	            .map(cb => cb.value);
-
-	        if (selectedIds.length === 0) {
-	            // Show the message in the modal
-	            messageContainer.innerHTML = '<p class="text-danger text-center">Please select at least one sale to print!</p>';
-	            printModal.show();
-	            return;
-	        }
-
-	        // Clear previous message and proceed
-	        messageContainer.innerHTML = '';
-	        window.open("/sales/print/batch?ids=" + selectedIds.join(","), "_blank");
-	    });
-	});
-
-</script>
-
-
+	<!-- Script Management -->
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-		    const selectAll = document.getElementById('selectAll');
-		    const checkboxes = document.querySelectorAll('.selectSale');
-		
-		    selectAll.addEventListener('change', function () {
-		        checkboxes.forEach(cb => cb.checked = selectAll.checked);
-		    });
-		});
-	</script>
+			// Print Selected Items Handler
+			const btnPrint = document.getElementById('btnPrintSelected');
+			const printModalEl = document.getElementById('printSalesModal');
+			const printModal = new bootstrap.Modal(printModalEl);
+			const messageContainer = document.getElementById('printMessage');
 
-	<!-- add new form  -->
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-		    const addSalesModal = document.getElementById('addSalesModal');
-		    const formContainer = document.getElementById('addSalesForm');
-		
-		    addSalesModal.addEventListener('show.bs.modal', function() {
-		        // Fetch the form HTML from your server
-		        fetch('/sales/add') // Make sure this endpoint returns the fragment 'add_new_products :: form'
-		            .then(response => response.text())
-		            .then(html => {
-		                formContainer.innerHTML = html;
-		            })
-		            .catch(error => {
-		                formContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
-		                console.error(error);
-		            });
-		    });
-		
-		    // Clear form when modal is closed
-		    addSalesModal.addEventListener('hidden.bs.modal', function() {
-		        formContainer.innerHTML = '';
-		    });
-		});
-	</script>
-	<!-- edit form -->
-	<!-- edit form -->
-	<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const editSalesModal = document.getElementById('editSalesModal');
-    const editFormContainer = document.getElementById('editSalesForm');
+			if (btnPrint) {
+				btnPrint.addEventListener('click', function () {
+					const selectedIds = [...document.querySelectorAll('.selectSale:checked')].map(cb => cb.value);
 
-    editSalesModal.addEventListener('show.bs.modal', function(event) {
-        // Get the button that triggered the modal
-        const button = event.relatedTarget;
-        const saleId = button.getAttribute('data-id'); // assume button has data-id attribute
+					if (selectedIds.length === 0) {
+						messageContainer.innerHTML = '<p class="text-danger text-center">Please select at least one sale to print!</p>';
+						printModal.show();
+						return;
+					}
 
-        // Fetch the form HTML for this specific sale
-        fetch(`/sales/edit/${saleId}`) // endpoint should return Thymeleaf fragment 'edit_sales :: form'
-            .then(response => response.text())
-            .then(html => {
-                editFormContainer.innerHTML = html;
-            })
-            .catch(error => {
-                editFormContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
-                console.error(error);
-            });
-    });
-
-    // Clear form when modal is closed
-    editSalesModal.addEventListener('hidden.bs.modal', function() {
-        editFormContainer.innerHTML = '';
-    });
-});
-</script>
-
-
-	<!-- ✅ Auto-hide success message -->
-	<script>
-		setTimeout(() => {
-			const alert = document.querySelector('.alert');
-			if (alert) {
-				const bsAlert = new bootstrap.Alert(alert);
-				bsAlert.close();
+					messageContainer.innerHTML = '';
+					window.open("/sales/print/batch?ids=" + selectedIds.join(","), "_blank");
+				});
 			}
-		}, 3000);
-	</script>
 
-	<!-- ✅ Delete Modal Logic -->
-	<script>
-	document.addEventListener('DOMContentLoaded', function () {
-	    const btnPrint = document.getElementById('btnPrintSelected');
-	    const printModalEl = document.getElementById('printSalesModal');
-	    const printModal = new bootstrap.Modal(printModalEl);
-	    const messageContainer = document.getElementById('printMessage');
+			// Select All Checkbox Handler
+			const selectAll = document.getElementById('selectAll');
+			const checkboxes = document.querySelectorAll('.selectSale');
 
-	    btnPrint.addEventListener('click', function () {
-	        const selectedIds = [...document.querySelectorAll('.selectSale:checked')]
-	            .map(cb => cb.value);
+			if (selectAll) {
+				selectAll.addEventListener('change', function () {
+					checkboxes.forEach(cb => cb.checked = selectAll.checked);
+				});
+			}
 
-	        console.log("Selected IDs:", selectedIds); // ADD THIS LINE
-	        console.log("Total selected:", selectedIds.length); // ADD THIS LINE
+			// Dynamic Modal Loader for Add Sale
+			const addSalesModal = document.getElementById('addSalesModal');
+			const addFormContainer = document.getElementById('addSalesForm');
 
-	        if (selectedIds.length === 0) {
-	            messageContainer.innerHTML = '<p class="text-danger text-center">Please select at least one sale to print!</p>';
-	            printModal.show();
-	            return;
-	        }
+			if (addSalesModal) {
+				addSalesModal.addEventListener('show.bs.modal', function() {
+					fetch('/sales/add')
+						.then(response => response.text())
+						.then(html => { addFormContainer.innerHTML = html; })
+						.catch(error => { addFormContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>'; });
+				});
 
-	        messageContainer.innerHTML = '';
-	        const url = "/sales/print/batch?ids=" + selectedIds.join(",");
-	        console.log("Opening URL:", url); // ADD THIS LINE
-	        window.open(url, "_blank");
-	    });
-	});
-	</script>
-	<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const deleteModal = document.getElementById('deleteModal');
-    const deleteForm = document.getElementById('deleteForm');
-    const deleteProductName = document.getElementById('deleteProductName');
+				addSalesModal.addEventListener('hidden.bs.modal', function() {
+					addFormContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+				});
+			}
 
-    deleteModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget; // button that triggered the modal
-        const saleId = button.getAttribute('data-id');
-        const customerName = button.getAttribute('data-name');
+			// Dynamic Modal Loader for Edit Sale
+			const editSalesModal = document.getElementById('editSalesModal');
+			const editFormContainer = document.getElementById('editSalesForm');
 
-        // Update the modal text
-        deleteProductName.textContent = customerName;
+			if (editSalesModal) {
+				editSalesModal.addEventListener('show.bs.modal', function(event) {
+					const button = event.relatedTarget;
+					const saleId = button.getAttribute('data-id');
 
-        // Update the form action with the correct sale ID
-        deleteForm.setAttribute('action', '/sales/delete/' + saleId);
-    });
-});
-</script>
+					fetch(`/sales/edit/${saleId}`)
+						.then(response => response.text())
+						.then(html => { editFormContainer.innerHTML = html; })
+						.catch(error => { editFormContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>'; });
+				});
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-		    toastElList.map(function (toastEl) {
-		        var toast = new bootstrap.Toast(toastEl)
-		        toast.show()
-		    })
+				editSalesModal.addEventListener('hidden.bs.modal', function() {
+					editFormContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+				});
+			}
+
+			// Delete Modal Action Builder
+			const deleteModal = document.getElementById('deleteModal');
+			const deleteForm = document.getElementById('deleteForm');
+			const deleteProductName = document.getElementById('deleteProductName');
+
+			if (deleteModal) {
+				deleteModal.addEventListener('show.bs.modal', function (event) {
+					const button = event.relatedTarget;
+					const saleId = button.getAttribute('data-id');
+					const customerName = button.getAttribute('data-name');
+
+					deleteProductName.textContent = customerName;
+					deleteForm.setAttribute('action', '/sales/delete/' + saleId);
+				});
+			}
+
+			// Toast Auto-Show
+			const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+			toastElList.map(function (toastEl) {
+				const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+				toast.show();
+			});
 		});
 	</script>
-
 </body>
 </html>

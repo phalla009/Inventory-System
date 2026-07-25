@@ -1,0 +1,138 @@
+<style>
+.stock-history-table thead th {
+	font-weight: 600;
+	font-size: .75rem;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+	color: #6c757d;
+	border-bottom: 2px solid #dee2e6;
+	padding: .6rem .75rem;
+	background-color: #f8f9fa;
+}
+
+.stock-history-table tbody td {
+	padding: .65rem .75rem;
+	vertical-align: middle;
+	font-size: .88rem;
+	border-bottom: 1px solid #eef0f2;
+}
+
+.stock-history-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.stock-history-table tbody tr:hover {
+	background-color: #f8f9fb;
+}
+
+.movement-badge {
+	font-size: .72rem;
+	font-weight: 600;
+	padding: .35em .6em;
+	border-radius: 24px;
+	display: inline-flex;
+	align-items: center;
+	gap: .3em;
+}
+
+.movement-in {
+	background-color: rgba(25, 135, 84, .12);
+	color: #198754;
+}
+
+.movement-out {
+	background-color: rgba(220, 53, 69, .12);
+	color: #dc3545;
+}
+
+.qty-change {
+	font-weight: 700;
+	font-size: .9rem;
+}
+
+.qty-change.qty-in {
+	color: #198754;
+}
+
+.qty-change.qty-out {
+	color: #dc3545;
+}
+
+.balance-pill {
+	background-color: #eef2f7;
+	color: #212529;
+	font-weight: 600;
+	font-size: .8rem;
+	padding: .3em .65em;
+	border-radius: 20px;
+	display: inline-block;
+	min-width: 2.5rem;
+	text-align: center;
+}
+
+.reason-tag {
+	font-size: .78rem;
+	color: #495057;
+}
+
+.note-text {
+	font-size: .8rem;
+	color: #6c757d;
+	font-style: italic;
+}
+
+.stock-history-empty {
+	padding: 2.5rem 1rem;
+	color: #adb5bd;
+}
+
+.stock-history-empty i {
+	font-size: 2rem;
+	display: block;
+	margin-bottom: .5rem;
+	color: #ced4da;
+}
+</style>
+
+<div class="table-responsive" th:if="${not #lists.isEmpty(movements)}">
+	<table class="table stock-history-table mb-0">
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Type</th>
+				<th class="text-end">Qty</th>
+				<th class="text-end">Balance</th>
+				<th>Reason</th>
+				<th>Note</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="m : ${movements}">
+				<td th:text="${#temporals.format(m.date, 'dd MMM yyyy, HH:mm')}"></td>
+				<td>
+					<span th:if="${m.type == 'IN'}" class="movement-badge movement-in">
+						<i class="bi bi-box-arrow-in-down"></i> IN
+					</span>
+					<span th:if="${m.type == 'OUT'}" class="movement-badge movement-out">
+						<i class="bi bi-box-arrow-up"></i> OUT
+					</span>
+				</td>
+				<td class="text-end">
+					<span class="qty-change"
+						th:classappend="${m.type == 'IN'} ? 'qty-in' : 'qty-out'"
+						th:text="${(m.type == 'IN' ? '+' : '-')} + ${m.quantity}"></span>
+				</td>
+				<td class="text-end">
+					<span class="balance-pill" th:text="${m.resultingQuantity}"></span>
+				</td>
+				<td class="reason-tag" th:text="${m.reason}"></td>
+				<td class="note-text" th:text="${m.note != null and !m.note.isEmpty() ? m.note : '—'}"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div th:if="${#lists.isEmpty(movements)}" class="text-center stock-history-empty">
+	<i class="bi bi-inbox"></i>
+	No stock movements recorded for this product.
+</div>

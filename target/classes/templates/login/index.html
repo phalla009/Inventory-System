@@ -194,24 +194,12 @@ body {
 					</div>
 
 					<!-- Password -->
-					<div class="mb-3">
+					<div class="mb-4">
 						<label for="password" class="form-label">Password</label>
 						<div class="input-group">
 							<span class="input-group-text"><i class="bi bi-lock"></i></span> 
 							<input type="password" id="password" name="password"
 								class="form-control" placeholder="Enter password" required>
-						</div>
-					</div>
-
-					<!-- Role -->
-					<div class="mb-4">
-						<label for="role" class="form-label">Select Role</label>
-						<div class="input-group">
-							<span class="input-group-text"><i class="bi bi-person-badge"></i></span> 
-							<select id="role" name="role" class="form-select" required>
-								<option value="" disabled selected>Select your role</option>
-								<option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
-							</select>
 						</div>
 					</div>
 
@@ -226,7 +214,7 @@ body {
 
 			<!-- Integrated Copyright Notice -->
 			<div class="copyright-text">
-				&copy; 2025 HeangPhalla. All rights reserved.
+				&copy; 2025 KRS. All rights reserved.
 			</div>
 		</div>
 

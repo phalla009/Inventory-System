@@ -15,6 +15,122 @@
 <link rel="stylesheet" href="/css/style.css">
 <!-- Favicon / Logo -->
 <link rel="icon" type="image/png" href="/images/kr.png">
+<style type="text/css">
+/* ---- Action buttons ---- */
+.btn-action {
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4spx;
+	font-size: .95rem;
+	transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.btn-action:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
+}
+
+.action-cell {
+	display: flex;
+	gap: .4rem;
+	flex-wrap: nowrap;
+	justify-content: center;
+}
+
+/* ---- Table look & feel ---- */
+.user-table thead th {
+	font-weight: 600;
+	font-size: .82rem;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+	vertical-align: middle;
+	padding: .75rem .85rem;
+}
+
+.user-table tbody td {
+	padding: .65rem .85rem;
+	vertical-align: middle;
+	font-size: .93rem;
+}
+
+.user-table tbody tr {
+	transition: background-color .12s ease;
+}
+
+.user-table tbody tr:hover {
+	background-color: #f4f7fb;
+}
+
+.user-table {
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+/* ---- Username with avatar ---- */
+.user-cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: .5rem;
+}
+
+.user-avatar {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	background-color: rgba(13, 110, 253, .12);
+	color: #0d6efd;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: .85rem;
+}
+
+.username-text {
+	font-weight: 600;
+	color: #212529;
+}
+
+/* ---- Password dots ---- */
+.password-dots {
+	letter-spacing: .18em;
+	color: #6c757d;
+}
+
+/* ---- Role pill ---- */
+.role-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: .3rem;
+	padding: .3em .7em;
+	border-radius: 999px;
+	font-size: .78rem;
+	font-weight: 600;
+	background-color: rgba(111, 66, 193, .12);
+	color: #6f42c1;
+}
+
+.role-pill.admin {
+	background-color: rgba(220, 53, 69, .12);
+	color: #dc3545;
+}
+
+/* ---- Table wrapper ---- */
+.table-scroll-wrap {
+	max-height: 450px;
+	overflow-y: auto;
+	border-radius: 10px;
+	border: 1px solid #dee2e6;
+}
+
+.table-scroll-wrap .table {
+	margin-bottom: 0;
+}
+</style>
 </head>
 <body>
 	<div class="d-flex">
@@ -40,43 +156,58 @@
 			</button>
 
 			<!-- Users Table -->
-			<table class="table table-bordered text-center">
-				<thead class="table-dark">
-					<tr>
-						<th>ID</th>
-						<th>UserName</th>
-						<th>Password</th>
-						<th>Role</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
+			<div class="table-scroll-wrap">
+				<table
+					class="table table-hover align-middle text-center user-table mb-0">
+					<thead class="table-dark">
+						<tr>
+							<th>ID</th>
+							<th>UserName</th>
+							<th>Password</th>
+							<th>Role</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
 
-					<tr th:each="user,iterStat: ${users}" ​ class="text-center">
-						<td th:text="${iterStat.count}"></td>
-						<td style="display: flex; align-items: center;"><i
-							class="fas fa-user me-2"></i> <span th:text="${user.username}"></span>
-						</td>
-						<td th:text="${'•'.repeat(user.password.length())}"></td>
-						<td th:text="${user.role}"></td>
-						<td>
-							<!-- Edit -->
-							<button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-								data-bs-target="#editUserModal" th:attr="data-id=${user.id}">
-								<i class="bi bi-pencil-square"></i>
-							</button> <!-- Delete -->
-							<button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-								data-bs-target="#deleteModal"
-								th:attr="data-id=${user.id}, data-name=${user.username}">
-								<i class="bi bi-trash"></i>
-							</button>
-						</td>
-					</tr>
-					<tr th:if="${#lists.isEmpty(users)}">
-						<td colspan="4">No users found.</td>
-					</tr>
-				</tbody>
-			</table>
+						<tr th:each="user,iterStat: ${users}" class="text-center">
+							<td th:text="${iterStat.count}"></td>
+							<td>
+								<div class="user-cell">
+									<span class="user-avatar"><i class="fas fa-user"></i></span> <span
+										class="username-text" th:text="${user.username}"></span>
+								</div>
+							</td>
+							<td><span class="password-dots"
+								th:text="${'•'.repeat(user.password.length())}"></span></td>
+							<td><span class="role-pill"
+								th:classappend="${user.role == 'Admin'} ? 'admin' : ''"
+								th:text="${user.role}"></span></td>
+							<td>
+								<div class="action-cell">
+									<!-- Edit -->
+									<button class="btn btn-warning btn-sm btn-action"
+										data-bs-toggle="modal" data-bs-target="#editUserModal"
+										th:attr="data-id=${user.id}" title="Edit User">
+										<i class="bi bi-pencil-square"></i>
+									</button>
+									<!-- Delete -->
+									<button class="btn btn-danger btn-sm btn-action"
+										data-bs-toggle="modal" data-bs-target="#deleteModal"
+										th:attr="data-id=${user.id}, data-name=${user.username}"
+										title="Delete User">
+										<i class="bi bi-trash"></i>
+									</button>
+								</div>
+							</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(users)}">
+							<td colspan="5" class="text-center py-4 text-muted"><i
+								class="bi bi-inbox fs-4 d-block mb-1"></i> No users found.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 

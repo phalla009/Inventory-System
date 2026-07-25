@@ -50,6 +50,7 @@ public class ProductService {
 
 	public void deleteAllById(List<Long> ids) {
 		// TODO Auto-generated method stub
-		
+		repo.deleteAllById(ids);
+
 	}
 }

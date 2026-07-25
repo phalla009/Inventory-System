@@ -23,8 +23,9 @@ public class CategoryService {
         return repository.findById(id);
     }
 
-    public void saveCategory(Category category) {
+    public Category saveCategory(Category category) {
         repository.save(category);
+        return category;
     }
 
     public void deleteCategory(Long id) {
@@ -38,6 +39,8 @@ public class CategoryService {
 
 	public void deleteAllById(List<Long> deletableIds) {
 		// TODO Auto-generated method stub
+		repository.deleteAllById(deletableIds);
 		
 	}
+	
 }

@@ -12,88 +12,86 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="/css/style.css">
+<!-- Khmer Font Support -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">
 <!-- Favicon / Logo -->
 <link rel="icon" type="image/png" href="/images/kr.png">
 </head>
-<body>
+<body style="font-family: 'Noto Sans Khmer', Arial, sans-serif;">
 
-	<form th:action="@{/purchases/add}" th:object="${purchase}"
-		method="post">
+	<form th:action="@{/purchases/add}" th:object="${purchase}" method="post">
+		
+		<div class="row g-3">
+			<!-- Column 1: Supplier -->
+			<div class="col-md-6">
+				<label class="form-label fw-bold">Supplier</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-people"></i></span> 
+					<select th:field="*{supplier}" class="form-select" required>
+						<option value="" disabled selected>Select supplier</option>
+						<option th:each="sup : ${suppliers}" th:value="${sup.id}"
+							th:text="${sup.name}"></option>
+					</select>
+				</div>
+			</div>
 
-		<!-- Supplier -->
-		<div class="mb-3">
-			<label class="form-label">Supplier</label>
-			<div class="input-group">
-				<span class="input-group-text"><i class="bi bi-people"></i></span> <select
-					th:field="*{supplier}" class="form-select" required>
-					<option value="" disabled selected>Select supplier</option>
-					<option th:each="sup : ${suppliers}" th:value="${sup.id}"
-						th:text="${sup.name}"></option>
-				</select>
+			<!-- Column 2: Product -->
+			<div class="col-md-6">
+				<label class="form-label fw-bold">Product</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-box-seam"></i></span>
+					<select class="form-select" required>
+						<option value="" disabled selected>Select product</option>
+						<option th:each="prod : ${products}" th:value="${prod.id}"
+							th:text="${prod.name}"></option>
+					</select>
+				</div>
+			</div>
+
+			<!-- Column 1: Quantity -->
+			<div class="col-md-6">
+				<label class="form-label fw-bold">Quantity</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-calculator"></i></span>
+					<input type="number" min="1" th:field="*{quantity}"
+						class="form-control" placeholder="Enter quantity" required>
+				</div>
+			</div>
+
+			<!-- Column 2: Price -->
+			<div class="col-md-6">
+				<label class="form-label fw-bold">Price ($)</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-currency-dollar"></i></span> 
+					<input type="number" min="0" step="0.01" th:field="*{price}" class="form-control"
+						placeholder="Enter price per unit" required>
+				</div>
+			</div>
+
+			<!-- Column 1 (Full Width on 2-col layout or Span 12): Purchase Date -->
+			<div class="col-12">
+				<label class="form-label fw-bold">Purchase Date</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-calendar"></i></span>
+					<input type="datetime-local" th:field="*{purchase_date}"
+						class="form-control" required>
+				</div>
 			</div>
 		</div>
 
-		<!-- Product -->
-		<div class="mb-3">
-			<label class="form-label">Product</label>
-			<div class="input-group">
-				<span class="input-group-text"><i class="bi bi-box-seam"></i></span>
-				<select class="form-select" required>
-					<option value="" disabled selected>Select product</option>
-					<option th:each="prod : ${products}" th:value="${prod.id}"
-						th:text="${prod.name}"></option>
-				</select>
-			</div>
-		</div>
-
-		<!-- Quantity -->
-		<div class="mb-3">
-			<label class="form-label">Quantity</label>
-			<div class="input-group">
-				<span class="input-group-text"><i class="bi bi-calculator"></i></span>
-				<input type="number" min="1" th:field="*{quantity}"
-					class="form-control" placeholder="Enter quantity" required>
-			</div>
-		</div>
-
-		<!-- Price -->
-		<div class="mb-3">
-			<label class="form-label">Price ($)</label>
-			<div class="input-group">
-				<span class="input-group-text"><i
-					class="bi bi-currency-dollar"></i></span> <input type="number" min="0"
-					step="0.01" th:field="*{price}" class="form-control"
-					placeholder="Enter price per unit" required>
-			</div>
-		</div>
-
-		<!-- Purchase Date -->
-		<div class="mb-3">
-			<label class="form-label">Purchase Date</label>
-			<div class="input-group">
-				<span class="input-group-text"><i class="bi bi-calendar"></i></span>
-				<input type="datetime-local" th:field="*{purchase_date}"
-					class="form-control" required>
-			</div>
-		</div>
-
-		<!-- Buttons -->
-		<div class="d-flex justify-content-center gap-3 mt-4">
-
-			<a href="/purchases" class="btn btn-secondary"> <i
-				class="bi bi-x-circle me-1"></i> Cancel
-			</a>
-			<button type="submit" class="btn btn-success">
+		<!-- Buttons Action Container -->
+		<div class="d-flex justify-content-end gap-2 mt-4 pt-2 border-top">
+			<button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+				<i class="bi bi-x-circle me-1"></i> Cancel
+			</button>
+			<button type="submit" class="btn btn-success px-4">
 				<i class="bi bi-save me-1"></i> Save
 			</button>
 		</div>
 
 	</form>
 
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
-		
-	</script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

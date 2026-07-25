@@ -1,7 +1,7 @@
 <div th:fragment="form">
 	<form th:action="@{/user/edit/{id}(id=${user.id})}" th:object="${user}"
 		method="post">
-
+		<input type="hidden" name="_method" value="put">
 		<!-- Username -->
 		<div class="mb-3">
 			<label class="form-label">Username</label>
@@ -36,7 +36,7 @@
 		</div>
 
 		<!-- Buttons -->
-		<div class="d-flex justify-content-end gap-2 mt-4 flex-row">
+		<div class="d-flex justify-content-between gap-2 mt-4 flex-row">
 
 			<button type="button" class="btn btn-secondary"
 				data-bs-dismiss="modal">

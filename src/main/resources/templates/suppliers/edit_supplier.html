@@ -19,7 +19,7 @@
 
 	<form th:action="@{'/suppliers/edit/' + ${supplier.id}}"
 		th:object="${supplier}" method="post">
-
+		<input type="hidden" name="_method" value="put">
 		<!-- Name -->
 		<div class="mb-3">
 			<label class="form-label">Name</label>

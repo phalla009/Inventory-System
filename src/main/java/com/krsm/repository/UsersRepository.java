@@ -10,7 +10,9 @@ import com.krsm.entity.Users;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
 
-	Optional<Users> findByUsernameAndPasswordAndRole(String username, String password, String role);
+	// Used for login: match by username + password only.
+	// Role is looked up from the returned entity, not supplied by the user.
+	Optional<Users> findByUsernameAndPassword(String username, String password);
 
 	@Query("SELECT DISTINCT u.role FROM Users u")
 	List<String> findDistinctRoles();
