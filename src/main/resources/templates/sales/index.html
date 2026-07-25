@@ -71,7 +71,6 @@
 
 .sales-table {
 	border-radius: 10px;
-	overflow: hidden;
 }
 
 .customer-name {
@@ -81,7 +80,7 @@
 
 /* Table wrapper */
 .table-scroll-wrap {
-	max-height: 450px;
+	max-height: 500px;
 	overflow-y: auto;
 	border-radius: 10px;
 	border: 1px solid #dee2e6;
@@ -89,6 +88,17 @@
 
 .table-scroll-wrap .table {
 	margin-bottom: 0;
+}
+
+/* Custom Pagination Styling */
+.custom-pagination-group .btn:disabled {
+	background-color: #e9ecef !important;
+	color: #6c757d !important;
+	opacity: 0.85;
+}
+
+.custom-pagination-group .btn:not(:disabled):hover {
+	background-color: #f1f3f5;
 }
 
 /* Standardized 17" Laptop screen optimization */
@@ -162,9 +172,22 @@
 					data-bs-target="#addSalesModal">
 					<i class="bi bi-plus-circle me-1"></i> Add Sale
 				</button>
-				<button type="button" id="btnPrintSelected" class="btn btn-success" style="width: 200px; border-radius:24px">
+				<button type="button" id="btnPrintSelected" class="btn btn-success"
+					style="width: 200px; border-radius: 24px">
 					<i class="bi bi-printer me-1"></i> Print Selected
 				</button>
+			</div>
+
+			<!-- Search Input -->
+			<div class="mb-3" style="width: 50%;">
+				<div class="input-group">
+					<span class="input-group-text"
+						style="background-color: white; border-right: 0;"> <i
+						class="bi bi-search"></i>
+					</span> <input type="text" id="salesSearch" class="form-control"
+						placeholder="Search sales by customer or product..."
+						style="background-color: white; border-left: 0;">
+				</div>
 			</div>
 
 			<!-- Table Wrapper -->
@@ -220,6 +243,45 @@
 						</tr>
 					</tbody>
 				</table>
+			</div>
+
+			<!-- Pagination & Entries Controls -->
+			<div
+				class="d-flex justify-content-between align-items-center mt-3 px-1"
+				style="font-size: 0.9rem;">
+				<!-- Left: Page Size Selector -->
+				<div class="d-flex align-items-center gap-2 text-secondary">
+					<label for="pageSizeSelect"
+						class="form-label mb-0 fw-semibold text-dark">Show</label> <select
+						id="pageSizeSelect" class="form-select form-select-sm shadow-none"
+						style="width: auto; padding-right: 1.8rem; border-color: #dee2e6; border-radius: 6px;">
+						<option value="10" selected>10</option>
+						<option value="25">25</option>
+						<option value="50">50</option>
+						<option value="all">All</option>
+					</select> <span>entries per page</span>
+				</div>
+
+				<!-- Right: Info Text & Clean Button Group -->
+				<div class="d-flex align-items-center gap-3">
+					<span id="pageInfo" class="text-secondary">Showing 0 to 0 of
+						0 entries</span>
+
+					<div class="btn-group btn-group-sm custom-pagination-group"
+						role="group" aria-label="Page Navigation">
+						<button type="button" class="btn btn-light border text-secondary"
+							id="prevPageBtn" disabled
+							style="background-color: #f8f9fa; border-top-left-radius: 6px; border-bottom-left-radius: 6px;">
+							<i class="bi bi-chevron-left me-1"></i> Previous
+						</button>
+						<button type="button"
+							class="btn btn-light border text-primary fw-medium"
+							id="nextPageBtn" disabled
+							style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">
+							Next <i class="bi bi-chevron-right ms-1"></i>
+						</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -313,6 +375,112 @@
 	<!-- Script Management -->
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
+			// Search & Pagination Controls
+			const salesSearch = document.getElementById('salesSearch');
+			const pageSizeSelect = document.getElementById('pageSizeSelect');
+			const prevPageBtn = document.getElementById('prevPageBtn');
+			const nextPageBtn = document.getElementById('nextPageBtn');
+			const pageInfo = document.getElementById('pageInfo');
+			const selectAll = document.getElementById('selectAll');
+			const tableRows = Array.from(document.querySelectorAll('tbody tr')).filter(row => !row.querySelector('td[colspan="9"]'));
+
+			let currentPage = 1;
+			let pageSize = parseInt(pageSizeSelect.value, 10);
+
+			function updateTableDisplay() {
+				const filter = salesSearch ? salesSearch.value.toLowerCase() : '';
+
+				// Filter rows matching Customer Name (col index 3) or Product Name (col index 4)
+				const matchingRows = tableRows.filter(row => {
+					const customerName = row.cells[3]?.textContent.toLowerCase() || '';
+					const productName = row.cells[4]?.textContent.toLowerCase() || '';
+					return customerName.includes(filter) || productName.includes(filter);
+				});
+
+				const totalEntries = matchingRows.length;
+				const totalPages = pageSize === -1 ? 1 : Math.ceil(totalEntries / pageSize) || 1;
+
+				if (currentPage > totalPages) currentPage = totalPages;
+				if (currentPage < 1) currentPage = 1;
+
+				// Hide all data rows and reset checkboxes on hidden rows
+				tableRows.forEach(row => {
+					row.style.display = 'none';
+					const cb = row.querySelector('.selectSale');
+					if (cb) cb.checked = false;
+				});
+
+				// Slice rows for current pagination page
+				let startIndex = 0;
+				let endIndex = totalEntries;
+
+				if (pageSize !== -1 && totalEntries > 0) {
+					startIndex = (currentPage - 1) * pageSize;
+					endIndex = Math.min(startIndex + pageSize, totalEntries);
+				}
+
+				for (let i = startIndex; i < endIndex; i++) {
+					if (matchingRows[i]) matchingRows[i].style.display = '';
+				}
+
+				// Handle "No sales records found" display
+				const noDataRow = document.querySelector('tbody tr td[colspan="9"]')?.parentElement;
+				if (noDataRow) {
+					noDataRow.style.display = totalEntries === 0 ? '' : 'none';
+				}
+
+				// Update pagination text & buttons
+				if (totalEntries === 0) {
+					pageInfo.textContent = 'Showing 0 to 0 of 0 entries';
+				} else {
+					const startDisplay = pageSize === -1 ? 1 : startIndex + 1;
+					pageInfo.textContent = `Showing ${startDisplay} to ${endIndex} of ${totalEntries} entries`;
+				}
+
+				prevPageBtn.disabled = currentPage <= 1;
+				nextPageBtn.disabled = currentPage >= totalPages || totalEntries === 0;
+
+				if (selectAll) selectAll.checked = false;
+			}
+
+			// Event listeners for pagination and search
+			if (salesSearch) {
+				salesSearch.addEventListener('keyup', () => {
+					currentPage = 1;
+					updateTableDisplay();
+				});
+			}
+
+			pageSizeSelect.addEventListener('change', function() {
+				pageSize = this.value === 'all' ? -1 : parseInt(this.value, 10);
+				currentPage = 1;
+				updateTableDisplay();
+			});
+
+			prevPageBtn.addEventListener('click', () => {
+				if (currentPage > 1) {
+					currentPage--;
+					updateTableDisplay();
+				}
+			});
+
+			nextPageBtn.addEventListener('click', () => {
+				currentPage++;
+				updateTableDisplay();
+			});
+
+			// Select All Checkbox Handler (applies only to visible rows)
+			if (selectAll) {
+				selectAll.addEventListener('change', function () {
+					tableRows.forEach(row => {
+						if (row.style.display !== 'none') {
+							const cb = row.querySelector('.selectSale');
+							if (cb) cb.checked = selectAll.checked;
+						}
+					});
+				});
+			}
+
 			// Print Selected Items Handler
 			const btnPrint = document.getElementById('btnPrintSelected');
 			const printModalEl = document.getElementById('printSalesModal');
@@ -324,23 +492,13 @@
 					const selectedIds = [...document.querySelectorAll('.selectSale:checked')].map(cb => cb.value);
 
 					if (selectedIds.length === 0) {
-						messageContainer.innerHTML = '<p class="text-danger text-center">Please select at least one sale to print!</p>';
+						messageContainer.innerHTML = '<p class="text-danger text-center mb-0">Please select at least one sale to print!</p>';
 						printModal.show();
 						return;
 					}
 
 					messageContainer.innerHTML = '';
 					window.open("/sales/print/batch?ids=" + selectedIds.join(","), "_blank");
-				});
-			}
-
-			// Select All Checkbox Handler
-			const selectAll = document.getElementById('selectAll');
-			const checkboxes = document.querySelectorAll('.selectSale');
-
-			if (selectAll) {
-				selectAll.addEventListener('change', function () {
-					checkboxes.forEach(cb => cb.checked = selectAll.checked);
 				});
 			}
 
@@ -403,6 +561,9 @@
 				const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
 				toast.show();
 			});
+
+			// Initial Render
+			updateTableDisplay();
 		});
 	</script>
 </body>

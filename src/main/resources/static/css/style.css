@@ -19,8 +19,8 @@ body>.d-flex {
 .sidebar {
 	min-height: 100vh;
 	height: 100vh;
-	width: 260px; /* កំណត់ Width Standard សម្រាប់ Desktop */
-	flex-shrink: 0; /* ការពារកុំឱ្យ Flexbox ព្រួញ/បង្រួញ Sidebar */
+	width: 260px; 
+	flex-shrink: 0; 
 	background: #131625;
 	color: white;
 	display: flex;
@@ -79,12 +79,12 @@ body>.d-flex {
 }
 
 .content {
-	margin: 20px 15px;
+	margin: 0px 0px;
 	flex: 1 1 auto;
 	min-width: 0;
 	/* allows content to shrink below its intrinsic size instead of overflowing */
 	background-color: #ffffff;
-	padding: 20px;
+	padding: 5px;
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -99,8 +99,8 @@ a.btn {
 
 .table-container {
 	max-width: 1000px;
-	margin: 30px auto;
-	padding: 30px;
+	margin: 10px auto;
+	padding: 20px;
 	background-color: #fff;
 	border-radius: 10px;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);

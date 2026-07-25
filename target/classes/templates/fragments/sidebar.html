@@ -85,8 +85,8 @@
 					</ul>
 				</div>
 			</li>
-<!-- 
-			Purchases
+			
+			<!-- Purchases -->
 			<li class="nav-item"
 				th:if="${session.userRole == 'admin' or session.userRole == 'staff'}">
 				<a class="nav-link" data-bs-toggle="collapse" href="#purchasesMenu"
@@ -112,7 +112,7 @@
 				</div>
 			</li>
 
-			Sales
+			<!-- 	Sales -->
 			<li class="nav-item"
 				th:if="${session.userRole == 'admin' or session.userRole == 'staff' or session.userRole == 'sale'}">
 				<a class="nav-link" data-bs-toggle="collapse" href="#salesMenu"
@@ -137,7 +137,6 @@
 					</ul>
 				</div>
 			</li>
- -->
 			<!-- Users -->
 			<li class="nav-item" th:if="${session.userRole == 'admin'}"><a
 				class="nav-link" data-bs-toggle="collapse" href="#usersMenu"

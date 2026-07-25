@@ -64,7 +64,6 @@
 
 .supplier-table {
 	border-radius: 10px;
-	overflow: hidden;
 }
 
 .supplier-name {
@@ -101,7 +100,7 @@
 
 /* ---- Table wrapper ---- */
 .table-scroll-wrap {
-	max-height: 450px;
+	max-height: 500px;
 	overflow-y: auto;
 	border-radius: 10px;
 	border: 1px solid #dee2e6;
@@ -109,6 +108,17 @@
 
 .table-scroll-wrap .table {
 	margin-bottom: 0;
+}
+
+/* ---- Custom Pagination Group ---- */
+.custom-pagination-group .btn:disabled {
+	background-color: #e9ecef !important;
+	color: #6c757d !important;
+	opacity: 0.85;
+}
+
+.custom-pagination-group .btn:not(:disabled):hover {
+	background-color: #f1f3f5;
 }
 </style>
 </head>
@@ -134,6 +144,7 @@
 				data-bs-toggle="modal" data-bs-target="#addSupplierModal">
 				<i class="bi bi-plus-circle me-1"></i> Add Supplier
 			</button>
+
 			<!-- Search Suppliers -->
 			<div class="mb-3" style="width: 50%;">
 				<div class="input-group">
@@ -162,7 +173,6 @@
 						</tr>
 					</thead>
 					<tbody>
-
 						<tr th:each="s ,iterStat: ${suppliers}" class="text-center">
 							<td th:text="${iterStat.count}"></td>
 							<td class="supplier-name" th:text="${s.name}"></td>
@@ -195,6 +205,45 @@
 					</tbody>
 				</table>
 			</div>
+
+			<!-- Pagination & Entries Controls -->
+			<div
+				class="d-flex justify-content-between align-items-center mt-3 px-1"
+				style="font-size: 0.9rem;">
+				<!-- Left: Page Size Selector -->
+				<div class="d-flex align-items-center gap-2 text-secondary">
+					<label for="pageSizeSelect"
+						class="form-label mb-0 fw-semibold text-dark">Show</label> <select
+						id="pageSizeSelect" class="form-select form-select-sm shadow-none"
+						style="width: auto; padding-right: 1.8rem; border-color: #dee2e6; border-radius: 6px;">
+						<option value="10" selected>10</option>
+						<option value="25">25</option>
+						<option value="50">50</option>
+						<option value="all">All</option>
+					</select> <span>entries per page</span>
+				</div>
+
+				<!-- Right: Info Text & Clean Button Group -->
+				<div class="d-flex align-items-center gap-3">
+					<span id="pageInfo" class="text-secondary">Showing 0 to 0 of
+						0 entries</span>
+
+					<div class="btn-group btn-group-sm custom-pagination-group"
+						role="group" aria-label="Page Navigation">
+						<button type="button" class="btn btn-light border text-secondary"
+							id="prevPageBtn" disabled
+							style="background-color: #f8f9fa; border-top-left-radius: 6px; border-bottom-left-radius: 6px;">
+							<i class="bi bi-chevron-left me-1"></i> Previous
+						</button>
+						<button type="button"
+							class="btn btn-light border text-primary fw-medium"
+							id="nextPageBtn" disabled
+							style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">
+							Next <i class="bi bi-chevron-right ms-1"></i>
+						</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -208,7 +257,6 @@
 					<h5 class="modal-title text-center" id="addSupplierModalLabel">
 						<i class="bi bi-plus-circle"></i> Add New Supplier
 					</h5>
-
 				</div>
 
 				<div class="modal-body" id="addSupplierForm">
@@ -216,16 +264,15 @@
 						<div class="spinner-border text-primary"></div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
+
 	<!-- Edit Supplier Modal -->
 	<div class="modal fade" id="editSupplierModal" tabindex="-1"
 		aria-labelledby="editSupplierModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg modal-dialog-centered">
 			<div class="modal-content">
-
 				<!-- Modal Header -->
 				<div
 					class="modal-header text-dark justify-content-center position-relative"
@@ -235,15 +282,12 @@
 					</h5>
 				</div>
 
-
 				<!-- Modal Body -->
 				<div class="modal-body" id="editSupplierForm">
-					<!-- Spinner while loading form -->
 					<div class="text-center py-4">
 						<div class="spinner-border text-primary"></div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -293,115 +337,150 @@
 
 	<!-- ✅ Bootstrap JS -->
 	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Combined Search + Pagination Script -->
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const supplierSearch = document.getElementById('supplierSearch');
+		const pageSizeSelect = document.getElementById('pageSizeSelect');
+		const prevPageBtn = document.getElementById('prevPageBtn');
+		const nextPageBtn = document.getElementById('nextPageBtn');
+		const pageInfo = document.getElementById('pageInfo');
+		const tableRows = Array.from(document.querySelectorAll('tbody tr')).filter(row => !row.querySelector('td[colspan="7"]'));
+
+		let currentPage = 1;
+		let pageSize = parseInt(pageSizeSelect.value, 10);
+
+		function updateTableDisplay() {
+			const filter = supplierSearch.value.toLowerCase();
+
+			// Filter rows based on Name, Email, or Phone
+			const matchingRows = tableRows.filter(row => {
+				const name = row.cells[1]?.textContent.toLowerCase() || '';
+				const email = row.cells[3]?.textContent.toLowerCase() || '';
+				const phone = row.cells[4]?.textContent.toLowerCase() || '';
+
+				return name.includes(filter) || email.includes(filter) || phone.includes(filter);
+			});
+
+			const totalEntries = matchingRows.length;
+			const totalPages = pageSize === -1 ? 1 : Math.ceil(totalEntries / pageSize) || 1;
+
+			if (currentPage > totalPages) currentPage = totalPages;
+			if (currentPage < 1) currentPage = 1;
+
+			// Hide all data rows
+			tableRows.forEach(row => row.style.display = 'none');
+
+			// Slice rows for current pagination page
+			let startIndex = 0;
+			let endIndex = totalEntries;
+
+			if (pageSize !== -1 && totalEntries > 0) {
+				startIndex = (currentPage - 1) * pageSize;
+				endIndex = Math.min(startIndex + pageSize, totalEntries);
+			}
+
+			for (let i = startIndex; i < endIndex; i++) {
+				if (matchingRows[i]) matchingRows[i].style.display = '';
+			}
+
+			// Handle "No suppliers found" display
+			const noDataRow = document.querySelector('tbody tr td[colspan="7"]')?.parentElement;
+			if (noDataRow) {
+				noDataRow.style.display = totalEntries === 0 ? '' : 'none';
+			}
+
+			// Update pagination text & buttons state
+			if (totalEntries === 0) {
+				pageInfo.textContent = 'Showing 0 to 0 of 0 entries';
+			} else {
+				const startDisplay = pageSize === -1 ? 1 : startIndex + 1;
+				pageInfo.textContent = `Showing ${startDisplay} to ${endIndex} of ${totalEntries} entries`;
+			}
+
+			prevPageBtn.disabled = currentPage <= 1;
+			nextPageBtn.disabled = currentPage >= totalPages || totalEntries === 0;
+		}
+
+		// Event listeners for Controls
+		supplierSearch.addEventListener('keyup', () => {
+			currentPage = 1;
+			updateTableDisplay();
+		});
+
+		pageSizeSelect.addEventListener('change', function() {
+			pageSize = this.value === 'all' ? -1 : parseInt(this.value, 10);
+			currentPage = 1;
+			updateTableDisplay();
+		});
+
+		prevPageBtn.addEventListener('click', () => {
+			if (currentPage > 1) {
+				currentPage--;
+				updateTableDisplay();
+			}
+		});
+
+		nextPageBtn.addEventListener('click', () => {
+			currentPage++;
+			updateTableDisplay();
+		});
+
+		// Initial display render
+		updateTableDisplay();
+	});
 	</script>
 
-	<!-- add new form  -->
-	<script>
-document.getElementById('supplierSearch').addEventListener('keyup', function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('tbody tr');
-
-    let visibleCount = 0;
-
-    rows.forEach(row => {
-        // Skip "No suppliers found" row
-        if (row.querySelector('td[colspan="7"]')) return;
-
-        // Get text from multiple columns: Name, Email, Phone
-        const name = row.cells[1].textContent.toLowerCase();
-        const email = row.cells[3].textContent.toLowerCase();
-        const phone = row.cells[4].textContent.toLowerCase();
-
-        if (name.includes(filter) || email.includes(filter) || phone.includes(filter)) {
-            row.style.display = '';
-            visibleCount++;
-        } else {
-            row.style.display = 'none';
-        }
-    });
-
-    // Show "No suppliers found" row if nothing matches
-    const noDataRow = document.querySelector('tbody tr td[colspan="7"]').parentElement;
-    if (noDataRow) {
-        noDataRow.style.display = visibleCount === 0 ? '' : 'none';
-    }
-});
-</script>
-
+	<!-- Modal Loaders & Toast Scripts -->
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
+		    // Add Modal Loader
 		    const addSupplierModal = document.getElementById('addSupplierModal');
-		    const formContainer = document.getElementById('addSupplierForm');
+		    const addFormContainer = document.getElementById('addSupplierForm');
 		
 		    addSupplierModal.addEventListener('show.bs.modal', function() {
-		        // Fetch the form HTML from your server
-		        fetch('/suppliers/add') // Make sure this endpoint returns the fragment 'add_new_products :: form'
+		        fetch('/suppliers/add')
 		            .then(response => response.text())
-		            .then(html => {
-		                formContainer.innerHTML = html;
-		            })
+		            .then(html => addFormContainer.innerHTML = html)
 		            .catch(error => {
-		                formContainer.innerHTML = '<p class="text-danger">Failed to load form.</p>';
+		                addFormContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
 		                console.error(error);
 		            });
 		    });
 		
-		    // Clear form when modal is closed
 		    addSupplierModal.addEventListener('hidden.bs.modal', function() {
-		        formContainer.innerHTML = '';
+		        addFormContainer.innerHTML = '';
 		    });
-		});
-	</script>
-	<!-- edit form -->
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
+
+		    // Edit Modal Loader
 		    const editSupplierModal = document.getElementById('editSupplierModal');
-		    const formContainer = document.getElementById('editSupplierForm');
+		    const editFormContainer = document.getElementById('editSupplierForm');
 	
 		    editSupplierModal.addEventListener('show.bs.modal', function(event) {
 		        const button = event.relatedTarget;
-		        const supplierId = button.getAttribute('data-id'); // use consistent variable name
+		        const supplierId = button.getAttribute('data-id');
 	
-		        // Show spinner while loading
-		        formContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+		        editFormContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
 	
-		        // Fetch the edit form from the server
 		        fetch(`/suppliers/edit/${supplierId}`) 
 		            .then(response => {
 		                if (!response.ok) throw new Error('Network response was not ok');
 		                return response.text();
 		            })
-		            .then(html => {
-		                formContainer.innerHTML = html;
-		            })
+		            .then(html => editFormContainer.innerHTML = html)
 		            .catch(error => {
-		                formContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
+		                editFormContainer.innerHTML = '<p class="text-danger text-center">Failed to load form.</p>';
 		                console.error('Error fetching edit form:', error);
 		            });
 		    });
 	
-		    // Optional: clear form when modal is hidden
 		    editSupplierModal.addEventListener('hidden.bs.modal', function() {
-		        formContainer.innerHTML = '';
+		        editFormContainer.innerHTML = '';
 		    });
-		});
-		</script>
 
-	<!-- ✅ Auto-hide alerts after 3 seconds -->
-	<script>
-			setTimeout(() => {
-			    const alert = document.querySelector('.alert');
-			    if (alert) {
-			        const bsAlert = new bootstrap.Alert(alert);
-			        bsAlert.close();
-			    }
-			}, 3000);
-	</script>
-
-	<!-- ✅ Delete Modal Logic -->
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
+		    // Delete Modal Logic
 		    const deleteModal = document.getElementById('deleteModal');
 		    const deleteForm = document.getElementById('deleteForm');
 		    const deleteSupplierName = document.getElementById('deleteSupplierName');
@@ -414,15 +493,13 @@ document.getElementById('supplierSearch').addEventListener('keyup', function() {
 		        deleteSupplierName.textContent = supplierName;
 		        deleteForm.action = '/suppliers/delete/' + supplierId;
 		    });
-		});
-	</script>
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-		    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+
+		    // Toast Initialization
+		    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
 		    toastElList.map(function (toastEl) {
-		        var toast = new bootstrap.Toast(toastEl)
-		        toast.show()
-		    })
+		        var toast = new bootstrap.Toast(toastEl);
+		        toast.show();
+		    });
 		});
 	</script>
 </body>
