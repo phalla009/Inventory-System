@@ -124,6 +124,62 @@
 				<div th:replace="~{fragments/toasts :: toast-container}"></div>
 			</div>
 
+			<!-- Server-side Date Filters & Client-side Live Search -->
+			<div class="card shadow-sm border-0 mb-4 bg-light" >
+				<div class="col-md-1" style="width:150px;">
+					<a
+						th:href="@{/purchase-summary/export-excel(week=${selectedWeek}, month=${selectedMonth}, year=${selectedYear})}"
+						class="btn btn-success btn-sm w-100" title="Export to Excel">
+						<i class="bi bi-file-earmark-excel"> </i> Export to Excel
+					</a>
+				</div>
+				<div class="card-body p-3">
+					<form th:action="@{/purchase-summary}" method="get"
+						class="row g-2 align-items-end">
+						<div class="col-md-2">
+							<label class="form-label fw-semibold text-secondary small">Week</label>
+							<select name="week" class="form-select form-select-sm">
+								<option value="">All Weeks</option>
+								<option th:each="w : ${weeks}" th:value="${w}"
+									th:text="'Week ' + ${w}" th:selected="${w == selectedWeek}"></option>
+							</select>
+						</div>
+						<div class="col-md-2">
+							<label class="form-label fw-semibold text-secondary small">Month</label>
+							<select name="month" class="form-select form-select-sm">
+								<option value="">All Months</option>
+								<option th:each="m : ${months}" th:value="${m}" th:text="${m}"
+									th:selected="${m == selectedMonth}"></option>
+							</select>
+						</div>
+						<div class="col-md-2">
+							<label class="form-label fw-semibold text-secondary small">Year</label>
+							<select name="year" class="form-select form-select-sm">
+								<option value="">All Years</option>
+								<option th:each="y : ${years}" th:value="${y}" th:text="${y}"
+									th:selected="${y == selectedYear}"></option>
+							</select>
+						</div>
+						<div class="col-md-2">
+							<button type="submit" class="btn btn-primary btn-sm w-100">
+								<i class="bi bi-funnel me-1"></i> Filter Date
+							</button>
+						</div>
+						<div class="col-md-3">
+							<label class="form-label fw-semibold text-secondary small">Live
+								Search</label>
+							<div class="input-group input-group-sm">
+								<span class="input-group-text bg-white" id="supplier-icon">
+									<i class="bi bi-search"></i>
+								</span> <input type="text" id="supplierSearch" class="form-control"
+									placeholder="Search by supplier or product...">
+							</div>
+						</div>
+
+					</form>
+				</div>
+			</div>
+
 			<!-- Summary Cards -->
 			<div class="row mb-3 text-center">
 				<div class="col-md-4">
@@ -161,17 +217,6 @@
 								$</h4>
 						</div>
 					</div>
-				</div>
-			</div>
-
-			<!-- Search by Supplier Input -->
-			<div class="mb-3" style="width: 50%;">
-				<div class="input-group">
-					<span class="input-group-text bg-white" id="supplier-icon"
-						style="border-right: 0;"> <i class="bi bi-search"></i>
-					</span> <input type="text" id="supplierSearch" class="form-control"
-						placeholder="Search by supplier or product..."
-						style="border-left: 0;">
 				</div>
 			</div>
 
