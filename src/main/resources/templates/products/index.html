@@ -64,6 +64,14 @@
 	background-color: #f4f7fb;
 }
 
+.btn-outline-success, .btn-outline-secondary {
+	border-radius: 24px;
+}
+
+.btn-success {
+	border-radius: 24px;
+}
+
 .product-table {
 	border-radius: 10px;
 }
@@ -186,6 +194,17 @@
 					<button type="button" class="btn btn-primary"
 						data-bs-toggle="modal" data-bs-target="#addProductModal">
 						<i class="bi bi-plus-circle me-1"></i> Add Product
+					</button>
+
+					<button type="button" class="btn btn-outline-success"
+						data-bs-toggle="modal" data-bs-target="#importProductModal">
+						<i class="bi bi-file-earmark-excel me-1"></i> Import Excel
+					</button>
+
+					<button type="button" id="btnExportSelected"
+						class="btn btn-outline-primary d-none">
+						<i class="bi bi-download me-1"></i> Export Selected (<span
+							id="exportSelectCount">0</span>)
 					</button>
 
 					<button type="button" id="btnBulkDelete"
@@ -337,6 +356,49 @@
 					</div>
 				</div>
 			</form>
+		</div>
+	</div>
+
+	<!-- Import Excel Modal -->
+	<div class="modal fade" id="importProductModal" tabindex="-1"
+		aria-labelledby="importProductModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<form th:action="@{/products/import}" method="post"
+					enctype="multipart/form-data">
+					<div class="modal-header bg-success text-white">
+						<h5 class="modal-title" id="importProductModalLabel">
+							<i class="bi bi-file-earmark-excel"></i> Import Products from
+							Excel
+						</h5>
+						<button type="button" class="btn-close btn-close-white"
+							data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p class="text-muted small mb-2">
+							Expected columns (first row = header): <strong>Name,
+								Quantity, Price, Category, Supplier, Status</strong>.<br> Unknown
+							categories/suppliers are created automatically. Products with a
+							matching name are updated instead of duplicated.
+						</p>
+						<a href="/products/import/template"
+							class="btn btn-sm btn-outline-secondary mb-3"> <i
+							class="bi bi-download me-1"></i> Download Template
+						</a>
+						<div class="mb-3">
+							<label for="importFile" class="form-label">Excel File
+								(.xlsx)</label> <input type="file" name="file" id="importFile"
+								class="form-control" accept=".xlsx,.xls" required>
+						</div>
+					</div>
+					<div class="modal-footer border-0">
+
+						<button type="submit" class="btn btn-success">
+							<i class="bi bi-upload me-1"></i> Upload &amp; Import
+						</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	</div>
 
@@ -570,6 +632,10 @@
 		const bulkDeleteForm = document.getElementById('bulkDeleteForm');
 		const confirmBulkDeleteBtn = document.getElementById('confirmBulkDeleteBtn');
 
+		// --- Export Selected Elements ---
+		const btnExportSelected = document.getElementById('btnExportSelected');
+		const exportSelectCount = document.getElementById('exportSelectCount');
+
 		// --- Search, Filter & Pagination Elements ---
 		const searchInput = document.getElementById('searchInput');
 		const categoryFilter = document.getElementById('categoryFilter');
@@ -595,7 +661,7 @@
 			}
 		});
 
-		// Calculate & Update Bulk Delete Button State
+		// Calculate & Update Bulk Delete / Export Button State
 		function updateBulkDeleteButton() {
 			const rowCheckboxes = document.querySelectorAll('.row-checkbox');
 			const checkedCount = Array.from(rowCheckboxes).filter(cb => cb.checked && cb.closest('tr').style.display !== 'none').length;
@@ -603,8 +669,12 @@
 			if (checkedCount > 0) {
 				btnBulkDelete.classList.remove('d-none');
 				selectCount.textContent = checkedCount;
+
+				btnExportSelected.classList.remove('d-none');
+				exportSelectCount.textContent = checkedCount;
 			} else {
 				btnBulkDelete.classList.add('d-none');
+				btnExportSelected.classList.add('d-none');
 			}
 		}
 
@@ -627,6 +697,24 @@
 
 		confirmBulkDeleteBtn.addEventListener('click', function() {
 			bulkDeleteForm.submit();
+		});
+
+		// Export Selected: temporarily point the same form (with its checked
+		// productIds inputs) at the export endpoint as a plain POST, then
+		// restore it back to its delete-with-_method-override configuration.
+		btnExportSelected.addEventListener('click', function() {
+			const methodInput = bulkDeleteForm.querySelector('input[name="_method"]');
+			const originalAction = bulkDeleteForm.action;
+
+			bulkDeleteForm.action = '/products/export-selected';
+			methodInput.disabled = true;
+
+			bulkDeleteForm.submit();
+
+			setTimeout(() => {
+				bulkDeleteForm.action = originalAction;
+				methodInput.disabled = false;
+			}, 200);
 		});
 
 		// Core Logic: Filtering + Paginated Rendering

@@ -3,6 +3,8 @@ package com.krsm.repository;
 
 import com.krsm.entity.Supplier;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +14,6 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 	boolean existsByEmail(String email);
 
 	boolean existsByEmailAndIdNot(String email, Long id);
+	Optional<Supplier> findByNameIgnoreCase(String name);
 
 }
