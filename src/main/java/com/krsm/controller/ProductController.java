@@ -252,6 +252,7 @@ public class ProductController {
 	}
 
 	/* ================= STOCK ADJUSTMENT ================= */
+	@Hidden
 	@Operation(summary = "Adjust product stock", description = "Increases or decreases product quantity (IN/OUT)")
 	@PostMapping("/stock-adjust")
 	public String adjustStock(@RequestParam("productId") Long productId,
@@ -304,6 +305,7 @@ public class ProductController {
 	}
 
 	/* ================= STOCK HISTORY (JSON) ================= */
+	@Hidden
 	@Operation(summary = "Get stock movement history for a product", description = "Returns all IN/OUT stock movements for a product in JSON format")
 	@ApiResponses({
 			@ApiResponse(responseCode = "200", description = "Stock movements returned", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StockMovement.class))) })
@@ -314,6 +316,7 @@ public class ProductController {
 	}
 
 	/* ================= IMPORT FROM EXCEL ================= */
+	@Hidden
 	@Operation(summary = "Import products from an Excel file", description = "Columns: Name, Quantity, Price, Category, Supplier, Status. "
 			+ "Unknown categories/suppliers are auto-created. Existing products (matched by name) are updated.")
 	@PostMapping("/import")
@@ -421,6 +424,7 @@ public class ProductController {
 
 
 	/* ================= EXPORT SELECTED PRODUCTS ================= */
+	@Hidden
 	@Operation(summary = "Export selected products to Excel", description = "Downloads the checked products as an .xlsx file")
 	@PostMapping("/export-selected")
 	public ResponseEntity<byte[]> exportSelectedProducts(
